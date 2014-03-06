@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" layout="absolute" cornerRadius="0"
+				headerHeight="0" borderColor="#000000" backgroundAlpha="1" 
+				height="{Application.application.height/2-25}" width="{Application.application.width/2-75}"
+				horizontalAlign="center" verticalAlign="middle" >
+	<fx:Script>
+		<![CDATA[
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
+			
+			private static var instance:BusyCursorPopup;
+			
+			[Bindable]
+			private var _loadingMsg:String="Loading Data. Please Wait...";
+			
+			public static function getInstance():BusyCursorPopup{
+				if(instance == null)
+					instance = new BusyCursorPopup;
+				return instance;	
+			}
+			
+			public function closePopup(event:Event=null):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			public function set ShowText(msg:String):void{
+				_loadingMsg = msg;									
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<mx:HBox horizontalAlign="center" verticalAlign="middle" textAlign="center" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" backgroundColor="#FFFFFF">
+		<mx:SWFLoader source="@Embed(source='../assets/images/spinner_SM.swf')" />
+		<mx:Text id="retriveText" text="{_loadingMsg}" fontWeight="bold"/>
+	</mx:HBox>
+	
+</mx:TitleWindow>

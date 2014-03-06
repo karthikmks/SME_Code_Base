@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			
+			import mx.core.UIComponent;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import mx.containers.TitleWindow;
+			
+			public function searchCustomer(event:MouseEvent):void{
+				customerDetailsBox.visible=true;
+				customerGrid.visible=true;
+				editBtn.visible=true;
+				if(customerDetailsBox.numChildren > 2) {
+					customerDetailsBox.removeChildAt(2);
+				}
+			}
+			public function dataGridChanged(event:Event):void{
+ 				editBtn.enabled=true;
+			} 
+			
+			public function handleEditClicked():void{
+				var addSchemePopUpWindow:AddLoanDenominations = AddLoanDenominations(PopUpManager.createPopUp(UIComponent(this.parentApplication), AddLoanDenominations, true) );
+				addSchemePopUpWindow.title="Add Denomination";
+				addSchemePopUpWindow.setStyle("borderAlpha", 0.9);
+				addSchemePopUpWindow.showCloseButton=true;
+				addSchemePopUpWindow.addEventListener(CloseEvent.CLOSE,closeAddSchemePopUp);
+				PopUpManager.centerPopUp(addSchemePopUpWindow);
+			}
+			
+			private function closeAddSchemePopUp(event:CloseEvent):void {
+				PopUpManager.removePopUp(TitleWindow(event.target));
+			}
+			
+			public function handlePrintClicked(event:MouseEvent):void{
+			
+			}
+			
+		]]>
+	</fx:Script>
+	<mx:Panel id="customerSearchPanel" borderColor="#FFFFFF" borderVisible="true"
+			  dropShadowVisible="true"
+			 title="Search Loans to add denominations" width="100%" height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" verticalGap="10">
+	<mx:VBox width="100%" height="100%" >
+		<mx:HBox verticalAlign="middle">
+			<mx:Label text="Search by:" />
+			<mx:ComboBox>
+				<mx:ArrayList>
+				     <fx:String>Jewel Loan</fx:String>
+				     <fx:String>Jewel Loan Payment</fx:String>
+				     <fx:String>Deposit Loan</fx:String>
+				     <fx:String>Deposit Loan Payment</fx:String>
+      			</mx:ArrayList>
+			</mx:ComboBox>
+			<mx:CheckBox  id="searchId"
+						label="Loan No">
+			</mx:CheckBox>
+			<s:TextInput id="custID" fontWeight="normal" />
+			<mx:Spacer width="30"  />
+			<mx:CheckBox id="createdDateCheck" label="Created Date"/>
+			<mx:ComboBox>
+				<mx:ArrayList>
+				     <fx:String>Today</fx:String>
+				     <fx:String>Last 3 days</fx:String>
+				     <fx:String>Last 7 days</fx:String>
+				     <fx:String>Last 14 days</fx:String>
+				     <fx:String>Last 30 days</fx:String>
+				     <fx:String>Date Range</fx:String>
+      			</mx:ArrayList>
+			</mx:ComboBox> 
+			<mx:DateField id="rangeStartDate" />
+			<s:Label text="to" fontWeight="bold" />
+			<mx:DateField id="rangeEndDate" />
+			<mx:Spacer width="35" />
+			<s:Button id="searchBtn" label="Search" click="searchCustomer(event)"/>
+		
+		</mx:HBox>
+		<mx:HRule width="100%" height="10" />
+		<mx:VBox id="customerDetailsBox" width="100%" height="100%" horizontalAlign="right" visible="false" >
+			<s:HGroup id="buttonGroup">
+				<mx:Button id="editBtn" label="Add Denomination"  visible="false"  enabled="false" click="handleEditClicked()"/>
+			</s:HGroup>
+			<mx:DataGrid id="customerGrid" visible="false" width="100%" height="100%"
+						 alternatingItemColors="[#ffffff,#f1f0ea]" change="dataGridChanged(event)"
+						 color="#1C6710">
+				<mx:dataProvider>
+					<mx:ArrayCollection>
+						<mx:source>
+							<fx:Object CustomerID="1234" CustomerName="ABC" 
+									   CreatedDate="10/12/2011" Address="Chennai" ContactNumber="9999999999" 
+									   totalLoans="10" totalOutstandingLoans="2" outstandingAmount="50,000" />
+						</mx:source>
+					</mx:ArrayCollection>
+				</mx:dataProvider>
+				<mx:columns>
+					<mx:DataGridColumn headerText="Loan No" dataField="CustomerID" fontWeight="bold"/>
+					<mx:DataGridColumn headerText="Created Date" dataField="CustomerName" fontWeight="bold"/>
+					<mx:DataGridColumn headerText="Loan Amount" dataField="CreatedDate" fontWeight="bold"/>
+					<mx:DataGridColumn headerText="Loan Tenure" dataField="totalLoans" fontWeight="bold"/>
+					<mx:DataGridColumn headerText="Interest Rate" dataField="totalOutstandingLoans" fontWeight="bold"/>
+					<mx:DataGridColumn headerText="Customer Id" dataField="outstandingAmount" fontWeight="bold"/>
+					<mx:DataGridColumn headerText="Customer Name" dataField="Address" fontWeight="bold"/>
+					<mx:DataGridColumn headerText="Created By" dataField="ContactNumber" fontWeight="bold"/>
+				</mx:columns> 
+			</mx:DataGrid>
+		</mx:VBox>
+		</mx:VBox>
+	</mx:Panel>
+</mx:Canvas>

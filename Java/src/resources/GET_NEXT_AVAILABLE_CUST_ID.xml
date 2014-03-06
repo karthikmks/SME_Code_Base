@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>
+		  SELECT max(customer_id) FROM customer ;
+		</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.RequestVO</inputvo>
+		<inputparams>
+		</inputparams>
+		<resultsets>
+			<resultset>
+				<resultsetname>RETURN_LIST</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.ResponseVO
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Status</voattribute>
+					<votype>String</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

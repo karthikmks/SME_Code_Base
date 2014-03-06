@@ -1,0 +1,1307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  layout="absolute" headerHeight="0" xmlns:components="components.*"
+		  horizontalScrollPolicy="off"
+		  >
+
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.DropdownEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import util.SMEConstants;
+			import util.SMEModel;
+			import util.SMEUtility;
+			
+			import valueobject.AddressVO;
+			import valueobject.ApplicationComponentsDataVO;
+			import valueobject.BankAccountTypeVO;
+			import valueobject.CustomerVO;
+			import valueobject.EducationVO;
+			import valueobject.GenderVO;
+			import valueobject.IdNAddressProofVO;
+			import valueobject.MaritalStatusVO;
+			import valueobject.NationalityVO;
+			import valueobject.OccupationVO;
+			
+			private var _editFlow:Boolean;
+			[Bindable]
+			[Embed(source="../assets/images/noimage.jpg")]
+			private var noImageFound:Class;
+			[Bindable]
+			public var isUpdateFlow:Boolean = false;
+			[Bindable]
+            public var nextAvailCustomerId:String = null;
+			[Bindable]
+            public var appMetaData:ApplicationComponentsDataVO = new ApplicationComponentsDataVO();
+			[Bindable]
+            public var isReferralIdSearch:Boolean = false;
+            [Bindable]
+            public var isLinkedIdSearch:Boolean = false;
+            [Bindable]
+            public var isCustomerInfoAvail:Boolean = true;
+
+			var facade:Facade=ApplicationFacade.getInstance(SME.MAIN_APPLN);
+						
+			public var linkedCustomerPopUpWindow:SearchCustomerWidget=null;
+
+            public function launchLinkedCustomerPopUp(customerList:ArrayCollection):void{
+                linkedCustomerPopUpWindow = SearchCustomerWidget(PopUpManager.createPopUp(UIComponent(this.parentDocument), SearchCustomerWidget, true) );
+                linkedCustomerPopUpWindow.isLinkedIdFlow = true;
+                linkedCustomerPopUpWindow.isCustomerUpdateFlow = isUpdateFlow;
+                linkedCustomerPopUpWindow.setSearchResultData(customerList);
+                linkedCustomerPopUpWindow.addEventListener(CloseEvent.CLOSE,closeSelectCustomerPopUp);
+                linkedCustomerPopUpWindow.selectCustomerBtn.addEventListener(MouseEvent.CLICK,closeSelectCustomerPopUp);
+               
+                PopUpManager.centerPopUp(linkedCustomerPopUpWindow);
+            }
+           
+            private function closeSelectCustomerPopUp(event:Event):void {
+                if(event as MouseEvent){
+                    setLinkedCustomerId(String(linkedCustomerPopUpWindow.selectedCustomer.customerId));
+                }
+                PopUpManager.removePopUp(linkedCustomerPopUpWindow);
+                linkedCustomerPopUpWindow = null;
+            }
+						
+						
+			public function set editFlow(edit:Boolean):void {
+				_editFlow=edit;
+			}		
+									
+			private function submit(event:Event):void {
+				if(!_editFlow) {
+					Alert.show("New Customer created successfully");
+				} else {
+					Alert.show("Customer details updated successfully");
+				}
+			}
+			
+
+			protected function save_clickHandler(event:MouseEvent):void{
+				if(checkBusinessValidation()){
+					facade.sendNotification(SMEConstants.SAVE_NEW_CUSTOMER_INFO,getFormData());
+				}
+			}
+			
+			protected function update_clickHandler(event:MouseEvent):void{
+				if(checkBusinessValidation()){
+					facade.sendNotification(SMEConstants.UPDATE_CUSTOMER_INFO,getFormData());
+				}
+			}
+
+			protected function reset_clickHandler(event:MouseEvent):void
+			{
+				Alert.show(SMEConstants.MSG_RESET_CONFIRM, "Reset",Alert.YES | Alert.NO, null,
+					resetConfirmHandler, null, Alert.NO); 
+			}
+			
+			private function resetConfirmHandler(event:CloseEvent):void {
+				// Check to see if the OK button was pressed.
+				if (event.detail==Alert.YES) {
+					clearAllfields();		
+				}
+			}
+			
+			public function getFormData():CustomerVO{
+				var customerVO:CustomerVO = new CustomerVO();
+
+				customerVO.branchId = int(SMEModel.getinstance().userProfileVO.branchId);
+				customerVO.createdBy = String(SMEModel.getinstance().userProfileVO.employeeId);
+				customerVO.customerNameInit  =  customerInit.text;
+				customerVO.fatherNameInit  = fatherInit.text ;
+				customerVO.spouceNameInit =  spouceInit.text  ;
+				
+				customerVO.customerId = Number(customerId.text);
+				customerVO.customerName = customerName.text;
+				customerVO.maritalStatusId = Number(maritalStatusCmb.selectedItem.maritalStatusId);
+				customerVO.occupationId = Number(occupationCmb.selectedItem.occupationId);
+				
+				customerVO.fatherName = fatherName.text;
+				customerVO.spouceName = spouceName.text;
+				customerVO.educationId = Number(educationCmb.selectedItem.educationId);
+				customerVO.companyName = companyName.text;
+				 
+				customerVO.dateOfBirth = dob.text; 
+				customerVO.genderId = Number(genderCmb.selectedItem.genderId);
+				customerVO.nationalityId = Number(nationalityCmb.selectedItem.nationalityId);
+				customerVO.yearlyIncome = Number(yearlyIncome.text);
+
+				customerVO.doorNo = doorNo.text;
+				customerVO.street = street.text;
+				customerVO.road = road.text;
+				customerVO.area = area.text;
+				customerVO.village = village.text;
+				customerVO.town = town.text;
+				customerVO.taluka = taluka.text;
+				customerVO.district = district.text;
+				customerVO.pincode = Number(pincode.text);
+				customerVO.distanceFromBranch =  disFromBranch.text;
+				
+				if(sameAsResAddr.selected){
+					customerVO.sameAsResAddr = 'Y';
+				}else{
+					customerVO.sameAsResAddr = 'N';	
+					customerVO.officeDoorNo = officeDoorNo.text;
+					customerVO.officeStreet = officeStreet.text;
+					customerVO.officeRoad = officeRoad.text;
+					customerVO.officeArea = officeArea.text;
+					customerVO.officeVillage = officeVillage.text;
+					customerVO.officeTown = officeTown.text;
+					customerVO.officeTaluka = officeTaluka.text;
+					customerVO.officeDistrict = officeDistrict.text;
+					customerVO.officePincode = Number(officePincode.text);
+					customerVO.officeDistanceFromBranch = officeDisFromBranch.text;
+				}	
+
+				customerVO.mobileNo = mobileNo.text;
+				customerVO.officeNo = officeNo.text;
+				customerVO.residenceLandLineNo = residenceLandLineNo.text;
+				customerVO.fatherOrMotherNo = fatherOrMotherNo.text;
+				customerVO.spouceNo = spouceNo.text;
+				customerVO.friendNo = friendNo.text;
+				customerVO.officeLandLineNo = officeLandLineNo.text;
+				customerVO.emailAddress = emailId.text;
+				
+				customerVO.bankAcctNo = bankAcctNo.text;
+				customerVO.bankAcctHolderName = bankAcctHolderName.text;
+				customerVO.bankName = bankName.text;
+				customerVO.bankAcctTypeId = Number(bankAcctTypeCmb.selectedItem.bankAcctTypeId)
+				
+				customerVO.idProofId = Number(idProofCmb.selectedItem.idNAddressProofId);
+				
+				customerVO.idProofOther = otherIdProof.text;
+				customerVO.idProofPhoto = ByteArray(idProofAttach.imgReference);
+				customerVO.addressProofId = Number(addrProofCmb.selectedItem.idNAddressProofId)
+				
+				customerVO.addressProofOther = otherAddrProof.text;
+				customerVO.addressProofPhoto = ByteArray(addrProofAttach.imgReference);
+				
+				customerVO.panCardNo = panCardNo.text;
+				customerVO.panCardPhoto = ByteArray(panCardAttach.imgReference);
+				
+				
+				customerVO.referenceCustomerId = Number(referralCustId.text);
+				customerVO.linkedCustomerId = Number(linkedCustId.text);
+				customerVO.remarks = remarks.text;
+				
+				customerVO.customerPhoto = ByteArray(customerImg.source);
+				
+				/* customerVO.createdBy = 
+				customerVO.branchId = Number(); */
+				return customerVO;
+			}
+
+			public function setCustomerInfo(customerVO:CustomerVO):void{
+				
+				nextAvailCustomerId = String(customerVO.customerId); //customerId.text
+				customerName.text = customerVO.customerName;
+				var dataColl:ArrayCollection = maritalStatusCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var maritalStatusVO:MaritalStatusVO = dataColl[inx] as MaritalStatusVO;
+					if(maritalStatusVO.maritalStatusId == customerVO.maritalStatusId ){
+						maritalStatusCmb.selectedIndex = inx;
+						break;
+					}
+				}
+				dataColl = occupationCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var occupationVO:OccupationVO = dataColl[inx] as OccupationVO;
+					if(occupationVO.occupationId == customerVO.occupationId){
+						occupationCmb.selectedIndex = inx;
+						break;
+					}
+				}
+				dataColl = educationCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var educationVO:EducationVO = dataColl[inx] as EducationVO;
+					if(educationVO.educationId == customerVO.educationId){
+						educationCmb.selectedIndex = inx;
+						break;
+					}
+				}
+				dataColl = genderCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var genderVO:GenderVO = dataColl[inx] as GenderVO;
+					if(genderVO.genderId == customerVO.genderId){
+						genderCmb.selectedIndex = inx;
+						break;
+					}
+				}
+				dataColl = nationalityCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var nationalityVO:NationalityVO = dataColl[inx] as NationalityVO;
+					if(nationalityVO.nationalityId == customerVO.nationalityId){
+						nationalityCmb.selectedIndex = inx;
+						break;
+					}
+				}
+				dataColl = bankAcctTypeCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var bankAcctTypeVO:BankAccountTypeVO = dataColl[inx] as BankAccountTypeVO;
+					if(bankAcctTypeVO.bankAcctTypeId == customerVO.bankAcctTypeId){
+						bankAcctTypeCmb.selectedIndex = inx;
+						break;
+					}
+				}
+				dataColl = addrProofCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var idNAddrProofVO:IdNAddressProofVO = dataColl[inx] as IdNAddressProofVO;
+					if(idNAddrProofVO.idNAddressProofId == customerVO.addressProofId){
+						addrProofCmb.selectedIndex = inx;
+						break;
+					}
+				}
+				dataColl = idProofCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var idNAddrProofVO:IdNAddressProofVO = dataColl[inx] as IdNAddressProofVO;
+					if(idNAddrProofVO.idNAddressProofId == customerVO.idProofId){
+						idProofCmb.selectedIndex = inx;
+						break;
+					}
+				}
+				
+				fatherName.text  = customerVO.fatherName ;
+				spouceName.text = customerVO.spouceName ;
+				companyName.text = customerVO.companyName ;
+		
+				customerInit.text  = customerVO.customerNameInit ;
+				fatherInit.text  = customerVO.fatherNameInit ;
+				spouceInit.text  = customerVO.spouceNameInit ;
+				
+				dob.text = customerVO.dateOfBirth ; 
+				yearlyIncome.text = String(customerVO.yearlyIncome);
+				
+				doorNo.text = customerVO.doorNo;
+				street.text = customerVO.street;
+				road.text  = customerVO.road ;
+				area.text = customerVO.area ;
+				village.text = customerVO.village ;
+				town.text = customerVO.town ;
+				taluka.text = customerVO.taluka ;
+				district.text = customerVO.district ;
+				pincode.text  = String(customerVO.pincode);
+				disFromBranch.text = customerVO.distanceFromBranch ;
+					
+				if(customerVO.sameAsResAddr == 'Y'){
+					sameAsResAddr.selected = true;
+					sameAsResAddr_changeHandler(null);
+				}else{ 
+					officeDoorNo.text = customerVO.officeDoorNo ;
+					officeStreet.text = customerVO.officeStreet ;
+					officeRoad.text = customerVO.officeRoad ;
+					officeArea.text = customerVO.officeArea ;
+					officeVillage.text = customerVO.officeVillage ;
+					officeTown.text = customerVO.officeTown ;
+					officeTaluka.text = customerVO.officeTaluka ;
+					officeDistrict.text = customerVO.officeDistrict ;
+					officePincode.text  = String(customerVO.officePincode); 
+					officeDisFromBranch.text = customerVO.officeDistanceFromBranch ;disFromBranch.text;
+				}	
+
+				mobileNo.text = customerVO.mobileNo;
+				officeNo.text = customerVO.officeNo;
+				residenceLandLineNo.text = customerVO.residenceLandLineNo;
+				fatherOrMotherNo.text = customerVO.fatherOrMotherNo;
+				spouceNo.text = customerVO.spouceNo;
+				friendNo.text = customerVO.friendNo;
+				officeLandLineNo.text = customerVO.officeLandLineNo;
+				emailId.text = customerVO.emailAddress ;
+				
+				bankAcctNo.text = customerVO.bankAcctNo;
+				bankAcctHolderName.text = customerVO.bankAcctHolderName;
+				bankName.text = customerVO.bankName ;
+				
+				otherIdProof.text = customerVO.idProofOther;
+				idProofAttach.imgReference = customerVO.idProofPhoto;
+				
+				otherAddrProof.text = customerVO.addressProofOther;
+				addrProofAttach.imgReference = customerVO.addressProofPhoto ;
+				
+				panCardNo.text = customerVO.panCardNo ;
+				panCardAttach.imgReference = customerVO.panCardPhoto ;
+				
+				
+				referralCustId.text = customerVO.referenceCustomerId!=0?String(customerVO.referenceCustomerId):"";
+				linkedCustId.text = customerVO.linkedCustomerId!=0?String(customerVO.linkedCustomerId):"";;
+				remarks.text = customerVO.remarks ;
+				
+				customerImg.source = customerVO.customerPhoto;
+				checkCustomerInfoAvail(null);
+				/* customerVO.createdBy = 
+				customerVO.branchId = Number(); */
+			}
+			
+			public function clearAllfields():void{
+				
+				nextAvailCustomerId = null; 
+				customerName.text = "";
+				customerIdCkb.selected = false;
+				
+				maritalStatusCmb.selectedIndex = 0;
+				occupationCmb.selectedIndex = 0;
+				educationCmb.selectedIndex = 0;
+				genderCmb.selectedIndex = 0;
+				nationalityCmb.selectedIndex = 0;
+				bankAcctTypeCmb.selectedIndex = 0;
+				addrProofCmb.selectedIndex = 0;
+				idProofCmb.selectedIndex = 0;
+					
+				fatherName.text  = "" ;
+				spouceName.text = "" ;
+				companyName.text = "" ;
+				
+				fatherInit.text  = "" ;
+				spouceInit.text = "" ;
+				customerInit.text = "" ;
+				
+				dob.text = "" ; 
+				yearlyIncome.text = "";
+				
+				doorNo.text = "";
+				street.text = "";
+				road.text  = "";
+				area.text = "";
+				village.text = "";
+				town.text = "";
+				taluka.text = "";
+				district.text = "";
+				pincode.text  = "";
+				
+				sameAsResAddr.selected = false;
+				
+				officeDoorNo.text = "";
+				officeStreet.text = "";
+				officeRoad.text = "";
+				officeArea.text = "";
+				officeVillage.text = "";
+				officeTown.text = "";
+				officeTaluka.text = "";
+				officeDistrict.text = "";
+				officePincode.text  = ""; 
+				disFromBranch.text = "";
+
+				mobileNo.text = "";
+				officeNo.text = "";
+				residenceLandLineNo.text = "";
+				fatherOrMotherNo.text = "";
+				spouceNo.text = "";
+				friendNo.text = "";
+				officeLandLineNo.text = "";
+				officeDisFromBranch.text = "" ;
+				emailId.text = "";
+				
+				bankAcctNo.text = "";
+				bankAcctHolderName.text = "";
+				bankName.text = "";
+				
+				otherIdProof.text = "";
+				idProofAttach.imgReference = null;
+				
+				otherAddrProof.text = "";
+				addrProofAttach.imgReference = null;
+				
+				panCardNo.text = "";
+				panCardAttach.imgReference = null ;
+				
+				referralCustId.text = "";
+				linkedCustId.text = "";
+				remarks.text = "";
+				
+				customerImg.source = noImageFound;
+				proofViewPanel.source = noImageFound;
+				nextAvailCustomerId = null;
+				/* customerVO.createdBy = 
+				customerVO.branchId = Number(); */
+				checkCustomerInfoAvail(null);
+				custSearchWidget.clearAllfields();
+			}
+			
+			public function checkBusinessValidation():Boolean{
+				
+				/*var valMsg:String = SMEUtility.doValidation(validatorArray); 
+				if(valMsg!=null && valMsg!=""){
+					Alert.show(SMEConstants.ERRR_MSG_ALL_FILEDS,"Error");
+					return false;
+				}else */if(customerImg.source==noImageFound){
+					Alert.show(SMEConstants.ERRR_MSG_CUST_IMAGE,"Error");
+					return false;
+				}else if(idProofAttach.imgReference==null){
+					Alert.show(SMEConstants.ERRR_MSG_UPLOAD_ID_PROOF,"Error");
+					return false;
+				}else if(addrProofAttach.imgReference==null){
+					Alert.show(SMEConstants.ERRR_MSG_UPLOAD_ADDR_PROOF,"Error");
+					return false;
+				}else if(panCardAttach.imgReference==null){
+					Alert.show(SMEConstants.ERRR_MSG_UPLOAD_PANCARD,"Error");
+					return false;
+				} 
+				return true;
+			}
+
+
+			protected function sameAsResAddr_changeHandler(event:Event):void{
+				if(sameAsResAddr.selected){
+					officeDoorNo.text = doorNo.text;
+					officeStreet.text = street.text;
+					officeRoad.text = road.text;
+					officeArea.text = area.text;
+					officeVillage.text = village.text;
+					officeTown.text = town.text;
+					officeTaluka.text = taluka.text;
+					officeDistrict.text = district.text ;
+					officePincode.text  = pincode.text ; 
+					officeDisFromBranch.text = disFromBranch.text;
+				}else if(!sameAsResAddr.selected){
+					officeDoorNo.text = "";
+					officeStreet.text = "";
+					officeRoad.text = "";
+					officeArea.text = "";
+					officeVillage.text = "";
+					officeTown.text = "";
+					officeTaluka.text = "";
+					officeDistrict.text = "";
+					officePincode.text  = ""; 
+					officeDisFromBranch.text = "";
+				}
+			}
+			
+			protected function customerIdCkb_changeHandler(event:Event):void{
+                if(customerIdCkb.selected && nextAvailCustomerId==null){
+                    facade.sendNotification(SMEConstants.GET_NEXT_AVAILABLE_CUST_ID,true);
+                }else{
+					nextAvailCustomerId = null;
+				}
+            }
+			
+			protected function linkedOrReferralId_clickHandler(event:Event):void
+            {
+                var textInputBox:mx.controls.TextInput = null;
+                var customerVO:CustomerVO = new CustomerVO;
+				customerVO.allBranchIds = SMEModel.getinstance().userProfileVO.branchId;
+                var searchObj:Object = new Object;
+                searchObj.isUpdateFlow = isUpdateFlow;
+                if(event.currentTarget.name == "REFERRAL_ID_FLOW"){
+                    isReferralIdSearch = true;
+                    isLinkedIdSearch = false;
+                    textInputBox = referralCustId;
+                }else if(event.currentTarget.name == "LINKED_ID_FLOW"){
+                    isReferralIdSearch = false;
+                    isLinkedIdSearch = true;
+                    textInputBox = linkedCustId;
+                }
+                      
+               if(textInputBox && textInputBox.text!="" && int(textInputBox.text.charAt(0))){
+                   customerVO.customerId = Number(textInputBox.text);
+                   searchObj.customerVo = customerVO;
+                   facade.sendNotification(SMEConstants.LINKED_OR_REFERRAL_CUSTOMER_SEARCH,searchObj);
+               }else if(textInputBox && textInputBox.text!=""){
+                   customerVO.customerName = textInputBox.text;
+                   searchObj.customerVo = customerVO;
+                   facade.sendNotification(SMEConstants.LINKED_OR_REFERRAL_CUSTOMER_SEARCH,searchObj);
+               }else{
+                   Alert.show("Please Enter Valid Customer ID","Error");
+               }
+            }
+
+            public function setLinkedCustomerId(customerId:String):void{
+                if(isReferralIdSearch == true){
+                    referralCustId.text = customerId;
+                }else if(isLinkedIdSearch == true){
+                    linkedCustId.text = customerId;
+                }
+            }
+			
+            public function checkCustomerInfoAvail(evt:Event):void{
+                if(isUpdateFlow){
+					if(nextAvailCustomerId!=null && nextAvailCustomerId!=''){
+						isCustomerInfoAvail = true;
+					}else{
+						isCustomerInfoAvail = false;
+					}
+                }else{
+					isCustomerInfoAvail = true;
+                }
+            }
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+	<fx:Array id="validatorArray">   
+		<mx:StringValidator id="vlrCustomerInit" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{customerInit}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_INITIAL}"
+							/>	
+		<mx:StringValidator id="vlrFatherInit" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{fatherInit}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_INITIAL}"
+							/>	
+		<mx:StringValidator id="vlrSpouceInit" enabled="{maritalStatusCmb.selectedIndex==1}"
+							required="{maritalStatusCmb.selectedIndex==1}"
+							minLength="1"							
+							source="{spouceInit}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_INITIAL}"
+							/>	
+		<!--<mx:NumberValidator id="vlrCustomerId" enabled="false"
+							required="false"
+							minValue="1"		 				
+							source="{customerId}"
+							property="text"
+							requiredFieldError="Please Enter Valid Customer ID"
+							lowerThanMinError="Please Enter Valid Customer ID"
+							/>	-->
+		<mx:StringValidator id="vlrCustomerName" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{customerName}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_NAME}"
+							/>	
+		<mx:StringValidator id="vlrFatherName" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{fatherName}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_NAME}"
+							/>	
+		<mx:StringValidator id="vlrSpouceName" enabled="{maritalStatusCmb.selectedIndex==1}"
+							required="{maritalStatusCmb.selectedIndex==1}"
+							minLength="1"							
+							source="{spouceName}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_NAME}"
+							/>	
+		<mx:StringValidator id="vlrCompanyName" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{companyName}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_NAME}"
+							/>	
+		<mx:StringValidator id="vlrDob" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{dob}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_DATE}"
+							/>	
+		<mx:NumberValidator id="vlrYearlyIncome" enabled="true"
+							required="true"
+							minValue="1"							
+							source="{yearlyIncome}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_AMOUNT}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_AMOUNT}"
+							/>	
+		<mx:StringValidator id="vlrDoorNo" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{doorNo}"
+							property="text"
+							requiredFieldError="Please Enter Valid Door Number"
+							/>	
+		<mx:StringValidator id="vlrStreet" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{street}"
+							property="text"
+							requiredFieldError="Please Enter Valid Street"
+							/>	
+		<mx:StringValidator id="vlrRoad" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{road}"
+							property="text"
+							requiredFieldError="Please Enter Valid Road"
+							/>	
+		<mx:StringValidator id="vlrArea" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{area}"
+							property="text"
+							requiredFieldError="Please Enter Valid Area"
+							/>	
+		<mx:StringValidator id="vlrVillage" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{village}"
+							property="text"
+							requiredFieldError="Please Enter Valid Village"
+							/>	
+		<mx:StringValidator id="vlrTown" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{town}"
+							property="text"
+							requiredFieldError="Please Enter Valid Town"
+							/>	
+		<mx:StringValidator id="vlrTaluka" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{taluka}"
+							property="text"
+							requiredFieldError="Please Enter Valid Taluka"
+							/>	
+		<mx:StringValidator id="vlrDistrict" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{district}"
+							property="text"
+							requiredFieldError="Please Enter Valid District"
+							/>	
+		<mx:NumberValidator id="vlrPincode" enabled="true"
+							required="true"
+							minValue="6"	
+							source="{pincode}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_PINCODE}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_INVALID_PINCODE}"
+							/>	
+		
+		<mx:StringValidator id="vlrOfficeDoorNo" enabled="{!sameAsResAddr.selected}"
+							required="{!sameAsResAddr.selected}"
+							minLength="1"							
+							source="{officeDoorNo}"   
+							property="text"
+							requiredFieldError="Please Enter Valid Door Number"
+							/>	
+		<mx:StringValidator id="vlrOfficeStreet" enabled="{!sameAsResAddr.selected}"
+							required="{!sameAsResAddr.selected}"
+							minLength="1"							
+							source="{officeStreet}"
+							property="text"
+							requiredFieldError="Please Enter Valid Street"
+							/>	
+		<mx:StringValidator id="vlrOfficeRoad" enabled="{!sameAsResAddr.selected}"
+							required="{!sameAsResAddr.selected}"
+							minLength="1"							
+							source="{officeRoad}"
+							property="text"
+							requiredFieldError="Please Enter Valid Road"
+							/>	
+		<mx:StringValidator id="vlrOfficeArea" enabled="{!sameAsResAddr.selected}"
+							required="{!sameAsResAddr.selected}"
+							minLength="1"							
+							source="{officeArea}"
+							property="text"
+							requiredFieldError="Please Enter Valid Area"
+							/>	
+		<mx:StringValidator id="vlrOfficeVillage" enabled="{!sameAsResAddr.selected}"
+							required="{!sameAsResAddr.selected}"
+							minLength="1"							
+							source="{officeVillage}"
+							property="text"
+							requiredFieldError="Please Enter Valid Village"
+							/>	
+		<mx:StringValidator id="vlrOfficeTown" enabled="{!sameAsResAddr.selected}"
+							required="{!sameAsResAddr.selected}"
+							minLength="1"							
+							source="{officeTown}"
+							property="text"
+							requiredFieldError="Please Enter Valid Town"
+							/>	
+		<mx:StringValidator id="vlrOfficeTaluka" enabled="{!sameAsResAddr.selected}"
+							required="{!sameAsResAddr.selected}"
+							minLength="1"							
+							source="{officeTaluka}"
+							property="text"
+							requiredFieldError="Please Enter Valid Taluka"
+							/>	
+		<mx:StringValidator id="vlrOfficeDistrict" enabled="{!sameAsResAddr.selected}"
+							required="{!sameAsResAddr.selected}"
+							minLength="1"							
+							source="{officeDistrict}"
+							property="text"
+							requiredFieldError="Please Enter Valid District"
+							/>	
+		<mx:NumberValidator id="vlrOfficePincode" enabled="{!sameAsResAddr.selected}"
+							required="{!sameAsResAddr.selected}"
+							minValue="6"
+							source="{officePincode}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_PINCODE}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_INVALID_PINCODE}"
+							/>	
+		
+		<mx:NumberValidator id="vlrMobileNo" enabled="true"
+							required="true"
+							minValue="10"		
+							source="{mobileNo}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							/>	
+		<mx:NumberValidator id="vlrOfficeNo" enabled="true"
+							required="true"
+							minValue="7"							
+							source="{officeNo}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							/>	
+		<mx:NumberValidator id="vlrResidenceLandLineNo" enabled="true"
+							required="true"
+							minValue="7"							
+							source="{residenceLandLineNo}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							/>	
+		<mx:NumberValidator id="vlrFatherOrMotherNo" enabled="true"
+							required="true"
+							minValue="10"			
+							source="{fatherOrMotherNo}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							/>	
+		<mx:NumberValidator id="vlrSpouceNo" enabled="{maritalStatusCmb.selectedIndex==1}"
+							required="{maritalStatusCmb.selectedIndex==1}"
+							minValue="10"	
+							source="{spouceNo}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							/>	
+		<mx:NumberValidator id="vlrFriendNo" enabled="true"
+							required="true"
+							minValue="10"		
+							source="{friendNo}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							/>	
+		<mx:NumberValidator id="vlrOfficeLandLineNo" enabled="true"
+							required="true"
+							minValue="7"							
+							source="{officeLandLineNo}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_INVALID_PHONE_NO}"
+							/>	
+		<mx:EmailValidator  id="vlrEmailId" enabled="true"
+							required="true"
+							source="{emailId}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_EMAIL}"
+							/>   
+		<mx:NumberValidator id="vlrBankAcctNo" enabled="true"
+							required="true"
+							minValue="4"							
+							source="{bankAcctNo}"
+							property="text"
+							requiredFieldError="Please Enter VAlid Bank Account Number"
+							lowerThanMinError="Please Enter VAlid Bank Account Number"
+							/>  
+		<mx:StringValidator id="vlrBankAcctHolderName" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{bankAcctHolderName}"
+							property="text"
+							requiredFieldError="Please Enter Valid Bank Account Holder Name"
+							/>	
+		<mx:StringValidator id="vlrBankName" enabled="true" 
+							required="true"
+							minLength="1"							
+							source="{bankName}"
+							property="text"
+							requiredFieldError="Please Enter Valid Bank Account Holder Name"
+							/>	
+							
+		<mx:StringValidator id="vlrOtherIdProof" enabled="{idProofCmb.selectedIndex == appMetaData.idNAddressList.length-1}" 
+							required="{idProofCmb.selectedIndex == appMetaData.idNAddressList.length-1}"
+							minLength="1"							
+							source="{otherIdProof}"
+							property="text"
+							requiredFieldError="Please Enter Valid Proof Name"
+							/>	
+		<mx:StringValidator id="vlrOtherAddrProof" enabled="{addrProofCmb.selectedIndex == appMetaData.idNAddressList.length-1}" 
+							required="{addrProofCmb.selectedIndex == appMetaData.idNAddressList.length-1}"
+							minLength="1"							
+							source="{otherAddrProof}"
+							property="text"
+							requiredFieldError="Please Enter Valid Proof Name"
+							/>	
+		<mx:StringValidator id="vlrPanCardNo" enabled="true"
+							required="true"
+							minLength="10"		
+							source="{panCardNo}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_PANCARD_NO}"
+							tooShortError="{SMEConstants.ERRR_MSG_INVALID_PANCARD_NO}"
+							/>	
+		<!--<mx:StringValidator id="vlrReferralCustId" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{referralCustId}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_CUST_ID}"
+							minLength="{SMEConstants.ERRR_MSG_INVALID_CUST_ID}"
+							/>	-->
+		<!--<mx:StringValidator id="vlrLinkedCustId" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{linkedCustId}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_CUST_ID}"
+							minLength="{SMEConstants.ERRR_MSG_INVALID_CUST_ID}"
+							/>	-->
+	</fx:Array>   
+       
+	</fx:Declarations>
+	
+	<!--<mx:HBox styleName="smeLoansBackground" width="100%" height="100%" horizontalGap="3" >-->
+
+	<mx:VBox styleName="smeLoansBackground" width="100%" height="100%" paddingLeft="5" horizontalScrollPolicy="off">
+		
+		<components:CustomerSearchCriteriaWidget id="custSearchWidget" styleName="smeLoansBackground" 
+						width="100%"  height="50" displayDateFilter="false" displaySearchDropDown="true"
+						paddingTop="8" visible="{isUpdateFlow}" includeInLayout="{isUpdateFlow}"/>
+		<!--<s:Spacer height="3" visible="{isUpdateFlow}" includeInLayout="{isUpdateFlow}"/>-->
+		
+	<mx:Box width="100%" enabled="{isCustomerInfoAvail}" creationComplete="checkCustomerInfoAvail(event)">
+		
+		<mx:VBox styleName="smeLoansBackground" width="100%"  >
+			<mx:HBox styleName="smeLoansBackground" width="100%" visible="{!isUpdateFlow}" includeInLayout="{!isUpdateFlow}">
+				<mx:Label text="Personal Details:" styleName="smeHeaderLabel"/>
+				<mx:CheckBox id="customerIdCkb" label="Get Next Available Customer ID" paddingRight="0"
+							 change="customerIdCkb_changeHandler(event)"/>
+				<components:CustomHeader width="100%" paddingLeft="0"/>
+			</mx:HBox>		
+			<components:CustomHeader headerText="Personal Details:" width="100%"  visible="{isUpdateFlow}" includeInLayout="{isUpdateFlow}"/>
+			<mx:HBox width="100%" horizontalGap="0" styleName="smeLoansBackground">
+				<mx:Form styleName="smeForm" width="283" >
+					<mx:FormItem styleName="smeFormItem" label="Customer ID:" >
+						<mx:TextInput id="customerId" editable="false" text="{nextAvailCustomerId}"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Father Name:" direction="horizontal" horizontalGap="0">
+						<s:TextInput id="fatherInit" prompt="Ini" tabIndex="4" width="30"/>
+						<s:TextInput id="fatherName" prompt="Name" tabIndex="5" /> 
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Maritial Status:" >
+						<mx:ComboBox id="maritalStatusCmb" width="100" labelField="maritalStatus"     
+						dataProvider="{appMetaData.maritalStatusList}" tabIndex="9"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Occupation:" >
+						<mx:ComboBox id="occupationCmb" width="100" labelField="occupation"    
+						dataProvider="{appMetaData.occupationList}" tabIndex="12"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="286" >
+					<mx:FormItem styleName="smeFormItem" label="Customer Name:" direction="horizontal" horizontalGap="0">
+						<s:TextInput id="customerInit" prompt="Ini" width="30" tabIndex="1"/> 
+						<s:TextInput id="customerName" prompt="Name" tabIndex="2"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Spouse Name:" direction="horizontal" horizontalGap="0">
+						<s:TextInput id="spouceInit" prompt="Ini" width="30" tabIndex="6"/>
+						<s:TextInput id="spouceName" prompt="Name" tabIndex="7"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Education:" direction="horizontal">
+						<mx:ComboBox id="educationCmb" width="100" labelField="education"
+							dataProvider="{appMetaData.educationList}" tabIndex="10"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Company Name:" direction="horizontal">
+						<mx:TextInput id="companyName" tabIndex="13"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="192" >
+					<mx:FormItem styleName="smeFormItem" label="DOB:" direction="horizontal">
+						<!--<mx:DateField id="dob" width="100" />-->
+						<s:TextInput id="dob" prompt="dd/mm/yyyy" width="90" tabIndex="3"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Gender:" direction="horizontal">
+						<mx:ComboBox id="genderCmb" width="90" labelField="gender"
+								dataProvider="{appMetaData.genderList}" tabIndex="8"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Nationality:" direction="horizontal">
+						<mx:ComboBox id="nationalityCmb" width="90" labelField="nationality"
+						dataProvider="{appMetaData.nationalityList}" tabIndex="11"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Yearly Income:" direction="horizontal">
+						<mx:TextInput id="yearlyIncome" width="90" restrict="0-9" tabIndex="14"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:VBox styleName="smeLoansBackground">
+					<mx:Image id="customerImg" width="175" maxWidth="175" height="110" maxHeight="110"
+							  maintainAspectRatio="false" source="{noImageFound}"/>
+					<components:ImageUploadButton imgReference="{customerImg}" label="Upload Customer Photo" 
+												  styleName="smeButton" tabIndex="15"/>
+				</mx:VBox>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<s:Spacer height="3"/>
+		<mx:VBox styleName="smeLoansBackground" width="100%" >
+			<!--<mx:Label text="Residence Address:" styleName="smeHeaderLabel"/>-->
+			<components:CustomHeader headerText="Residence Address:" width="100%"/>
+			<mx:HBox styleName="smeLoansBackground" width="100%" >
+				<mx:Form styleName="smeForm" width="160" >
+					<mx:FormItem styleName="smeFormItem" label="Door No:"  direction="horizontal">
+						<mx:TextInput id="doorNo" width="100" tabIndex="16"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Town:" direction="horizontal">
+						<mx:TextInput id="town" width="100" tabIndex="21"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="151" >
+					<mx:FormItem styleName="smeFormItem" label="Street:" direction="horizontal">
+						<mx:TextInput id="street" width="100"  tabIndex="17"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Taluka:" direction="horizontal">
+						<mx:TextInput id="taluka" width="100" tabIndex="22"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="154" >
+					<mx:FormItem styleName="smeFormItem" label="Road:" direction="horizontal">
+						<mx:TextInput id="road" width="100" tabIndex="18"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="District:" direction="horizontal">
+						<mx:TextInput id="district" width="100" tabIndex="23"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="157" >
+					<mx:FormItem styleName="smeFormItem" label="Area:" direction="horizontal">
+						<mx:TextInput id="area" width="100" tabIndex="19"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Pincode:" direction="horizontal">
+						<mx:TextInput id="pincode" width="100" restrict="0-9" maxChars="6" tabIndex="24"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="206" >
+					<mx:FormItem styleName="smeFormItem" label="Village:" direction="horizontal">
+						<mx:TextInput id="village" width="100" tabIndex="20"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Dist From Branch:" direction="horizontal">
+						<mx:TextInput id="disFromBranch" width="100" tabIndex="25"/>  
+					</mx:FormItem>
+				</mx:Form>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<s:Spacer height="3"/>
+		<mx:VBox styleName="smeLoansBackground" width="100%" >
+			<mx:HBox styleName="smeLoansBackground" width="100%" >
+				<mx:Label text="Office Address:" styleName="smeHeaderLabel"/>
+				<mx:CheckBox id="sameAsResAddr" label="Same as Residence Address" paddingRight="0"
+							 change="sameAsResAddr_changeHandler(event)"/>
+				<components:CustomHeader width="100%" paddingLeft="0"/>
+			</mx:HBox>
+			<mx:HBox styleName="smeLoansBackground" width="100%" >
+				<mx:Form styleName="smeForm" width="161" >
+					<mx:FormItem styleName="smeFormItem" label="Door No:" direction="horizontal">
+						<mx:TextInput id="officeDoorNo" width="100" tabIndex="26"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Town:" direction="horizontal">
+						<mx:TextInput id="officeTown" width="100" tabIndex="31"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="151" >
+					<mx:FormItem styleName="smeFormItem" label="Street:" direction="horizontal">
+						<mx:TextInput id="officeStreet" width="100" tabIndex="27"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Taluka:" direction="horizontal">
+						<mx:TextInput id="officeTaluka" width="100" tabIndex="32"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="155" >
+					<mx:FormItem styleName="smeFormItem" label="Road:" direction="horizontal">
+						<mx:TextInput id="officeRoad" width="100" tabIndex="28"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="District:" direction="horizontal">
+						<mx:TextInput id="officeDistrict" width="100" tabIndex="33"/>
+					</mx:FormItem>
+				</mx:Form>	
+				<mx:Form styleName="smeForm" width="158" >
+					<mx:FormItem styleName="smeFormItem" label="Area:" direction="horizontal">
+						<mx:TextInput id="officeArea" width="100" tabIndex="29"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Pincode:" direction="horizontal">
+						<mx:TextInput id="officePincode" width="100" restrict="0-9" maxChars="6" tabIndex="34"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="20%" >
+					<mx:FormItem styleName="smeFormItem" label="Village:" direction="horizontal">
+						<mx:TextInput id="officeVillage" width="100" tabIndex="30"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Dist From Branch:" direction="horizontal">
+						<mx:TextInput id="officeDisFromBranch" width="100" tabIndex="35"/>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<s:Spacer height="3"/>
+		<mx:VBox styleName="smeLoansBackground" width="100%" >
+			<!--<mx:Label text="Contact Details:" styleName="smeHeaderLabel"/>-->
+			<components:CustomHeader headerText="Contact Details:" width="100%" />
+			<mx:HBox styleName="smeLoansBackground" width="100%" >
+				<mx:Form styleName="smeForm" width="162" >
+					<mx:FormItem styleName="smeFormItem" label="Mobile#:" direction="horizontal">
+						<mx:TextInput id="mobileNo" width="100" restrict="0-9" maxChars="10" tabIndex="36"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Office#:" direction="horizontal">
+						<mx:TextInput id="officeNo" width="100" restrict="0-9" tabIndex="40"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="174" >
+					<mx:FormItem styleName="smeFormItem" label="Res LL#:" direction="horizontal">
+						<mx:TextInput id="residenceLandLineNo" width="100" restrict="0-9" tabIndex="37"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Office LL#:" direction="horizontal">
+						<mx:TextInput id="officeLandLineNo" width="100" restrict="0-9" tabIndex="41"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="167" >
+					<mx:FormItem styleName="smeFormItem" label="Father#:" direction="horizontal">
+						<mx:TextInput id="fatherOrMotherNo" width="100" restrict="0-9" maxChars="10" tabIndex="38"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Friend#:" direction="horizontal">
+						<mx:TextInput id="friendNo" width="100" restrict="0-9" maxChars="10" tabIndex="42"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="219" >
+					<mx:FormItem styleName="smeFormItem" label="Spouse#:" direction="horizontal">
+						<mx:TextInput id="spouceNo" width="100"  restrict="0-9" maxChars="10" tabIndex="39"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Email-Id:" direction="horizontal">
+						<mx:TextInput id="emailId" tabIndex="43" />
+					</mx:FormItem>
+				</mx:Form>
+				
+			</mx:HBox>
+		</mx:VBox>
+		
+		<s:Spacer height="3"/>
+		<mx:VBox styleName="smeLoansBackground" width="100%" >
+			<!--<mx:Label text="Bank Acount Details:" styleName="smeHeaderLabel"/>-->
+			<components:CustomHeader headerText="Bank Acount Details:" width="100%" />
+			<mx:HBox styleName="smeLoansBackground" width="100%" >
+				<mx:Form styleName="smeForm" width="234" >
+					<mx:FormItem styleName="smeFormItem" label="Bank Name:" direction="horizontal">
+						<mx:TextInput id="bankName" tabIndex="44"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="25%" >
+					<mx:FormItem styleName="smeFormItem" label="Account Name:" direction="horizontal">
+						<mx:TextInput id="bankAcctHolderName" tabIndex="45"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="225" >
+					<mx:FormItem styleName="smeFormItem" label="Account#:" direction="horizontal">
+						<mx:TextInput id="bankAcctNo" restrict="0-9" tabIndex="46"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" width="179" >
+					<mx:FormItem width="175" label="Account Type:" direction="horizontal" styleName="smeFormItem">
+						<mx:ComboBox id="bankAcctTypeCmb" width="90" labelField="bankAcctType"
+									 dataProvider="{appMetaData.bankAcctTypeList}" tabIndex="47"/>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:HBox>
+		</mx:VBox>
+		
+		
+		<s:Spacer height="3"/>
+		<mx:HBox styleName="smeLoansBackground" width="100%" >
+			<mx:VBox styleName="smeLoansBackground" width="75%" >
+				<!--<mx:Label text="Proof Details:" styleName="smeHeaderLabel"/>-->
+				<components:CustomHeader headerText="Proof Details:" width="100%" />
+			
+				<mx:HBox styleName="smeLoansBackground" width="100%" >
+			
+				<!--	<mx:VBox styleName="smeLoansBackground" width="50%" >-->
+					<mx:Form styleName="smeForm" width="20%" paddingRight="0" paddingLeft="0">
+						<mx:FormItem styleName="smeFormItem" label="ID Proof:" >
+								<mx:HBox styleName="smeLoansBackground">
+									<mx:ComboBox id="idProofCmb" width="120" labelField="idNAddressProof"
+											    dataProvider="{appMetaData.idNAddressList}" tabIndex="48"/>
+									<components:ImageUploadButton id="idProofAttach" label="Attach"  tabIndex="49"/>
+									<s:TextInput id="otherIdProof" width="100" prompt="Add Other"
+												 includeInLayout="{idProofCmb.selectedIndex == appMetaData.idNAddressList.length-1}"
+												 visible="{idProofCmb.selectedIndex == appMetaData.idNAddressList.length-1}" 
+												 tabIndex="50"/>
+								</mx:HBox>
+						</mx:FormItem>
+					<!--</mx:Form>
+					
+					<mx:Form styleName="smeForm" width="25%" >-->
+						<mx:FormItem styleName="smeFormItem" label="Address Proof:" >
+								<mx:HBox styleName="smeLoansBackground">
+									<mx:ComboBox id="addrProofCmb" width="120" labelField="idNAddressProof"
+											 dataProvider="{appMetaData.idNAddressList}" tabIndex="51"/> 
+									<components:ImageUploadButton id="addrProofAttach" label="Attach"  tabIndex="52"/>
+									<s:TextInput id="otherAddrProof" width="100" prompt="Add Other"
+											 includeInLayout="{addrProofCmb.selectedIndex == appMetaData.idNAddressList.length-1}"
+											 visible="{addrProofCmb.selectedIndex == appMetaData.idNAddressList.length-1}" 
+											 tabIndex="53"/>
+								</mx:HBox>
+						</mx:FormItem>
+					<!--</mx:Form>
+					<mx:Form styleName="smeForm" width="25%" >-->
+						<mx:FormItem styleName="smeFormItem" label="Pan Card No:" direction="horizontal">
+							<mx:TextInput id="panCardNo" width="120" maxChars="10" tabIndex="54"/>
+							<components:ImageUploadButton id="panCardAttach" label="Attach"  tabIndex="55"/>
+						</mx:FormItem>
+					</mx:Form>
+				<!--</mx:VBox>-->
+			
+				<!--<mx:HBox styleName="smeLoansBackground" width="80%" >-->
+					<mx:VBox label="View Proof Details" styleName="smeLoansBackground" width="175" height="100%" >
+						<mx:Label id="viewIdProof" text="View Attached ID Proof" styleName="smeHyperLinkLabel" 
+								  mouseChildren="false" useHandCursor="true" buttonMode="true"
+								  click="{if(viewIdProof.enabled){
+								  viewIdProof.setStyle('fontWeight','bold');
+								  viewAddrProof.setStyle('fontWeight','normal');
+								  viewPanCardProof.setStyle('fontWeight','normal');
+								  proofViewPanel.source = idProofAttach.imgReference;}}"
+								  enabled="{idProofAttach.imgReference!=null}"
+								  />
+						<mx:Label id="viewAddrProof" text="View Attached Address Proof" styleName="smeHyperLinkLabel"
+								  mouseChildren="false" useHandCursor="true" buttonMode="true" 
+								  click="{if(viewAddrProof.enabled){
+								  viewAddrProof.setStyle('fontWeight','bold');
+								  viewIdProof.setStyle('fontWeight','normal');
+								  viewPanCardProof.setStyle('fontWeight','normal');
+								  proofViewPanel.source = addrProofAttach.imgReference;}}" 
+								  enabled="{ addrProofAttach.imgReference!=null}"
+								  />
+						<mx:Label id="viewPanCardProof" text="View Attached Pancard" styleName="smeHyperLinkLabel"
+								  mouseChildren="false" useHandCursor="true" buttonMode="true"
+								  click="{if(viewPanCardProof.enabled){
+								  viewPanCardProof.setStyle('fontWeight','bold');
+								  viewAddrProof.setStyle('fontWeight','normal');
+								  viewIdProof.setStyle('fontWeight','normal');
+								  proofViewPanel.source = panCardAttach.imgReference;}}"
+								  enabled="{panCardAttach.imgReference!=null}"
+								  />
+					</mx:VBox>
+					<mx:Image id="proofViewPanel" width="185" maxWidth="240" height="110" maxHeight="110" maintainAspectRatio="false"
+							  source="{noImageFound}"/>
+				<!--	</mx:HBox>-->
+				</mx:HBox>
+				</mx:VBox>
+			
+				<mx:VBox visible="{isUpdateFlow}" width="25%" height="141" maxHeight="141"
+						 label="Update History" includeInLayout="{isUpdateFlow}"
+						 styleName="smeLoansBackground"> 
+					<components:CustomHeader headerText="Update History:" width="100%" />
+					<mx:DataGrid  width="90%" height="104" visible="{isUpdateFlow}" includeInLayout="{isUpdateFlow}">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Date"/>
+							<mx:DataGridColumn headerText="Old Value"/>
+							<mx:DataGridColumn headerText="New Value"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+			</mx:HBox>
+				
+		
+		
+		<s:Spacer height="3"/>
+		<mx:VBox styleName="smeLoansBackground" width="100%" >
+			<!--<mx:Label text="Reference Details:" styleName="smeHeaderLabel"/>-->
+			<components:CustomHeader headerText="Reference Details:" width="100%" />
+			<mx:HBox styleName="smeLoansBackground" width="100%" >
+				<mx:Form styleName="smeForm">
+					<mx:FormItem styleName="smeFormItem" label="Referral Customer ID:" direction="horizontal">
+						<mx:TextInput id="referralCustId" name="REFERRAL_ID_FLOW" enter="linkedOrReferralId_clickHandler(event)"  tabIndex="56"/>
+						<mx:Button label="Search"  name="REFERRAL_ID_FLOW" click="linkedOrReferralId_clickHandler(event)"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Linked Customer ID (Spouce/Father):" direction="horizontal">
+						<mx:TextInput id="linkedCustId" name="LINKED_ID_FLOW" enter="linkedOrReferralId_clickHandler(event)"  tabIndex="57"/>
+						<mx:Button label="Search" name="LINKED_ID_FLOW" click="linkedOrReferralId_clickHandler(event)"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm">
+					<mx:FormItem styleName="smeFormItem" label="Remarks:">
+						<mx:TextArea id="remarks" width="227" height="55"  tabIndex="58"/>
+					</mx:FormItem>
+				</mx:Form>
+				<s:Spacer width="4%"/>
+				<mx:VBox styleName="smeLoansBackground" >
+					<mx:Button label="Reset" click="reset_clickHandler(event)"/>
+					<mx:Button label="Save"
+                               visible="{!isUpdateFlow}"
+                               includeInLayout="{!isUpdateFlow}"
+                               enabled="{nextAvailCustomerId!=null &amp;&amp; nextAvailCustomerId!=''}"
+                               click="save_clickHandler(event)"  tabIndex="59"/>
+                    <mx:Button label="Update"
+                               visible="{isUpdateFlow}"
+                               includeInLayout="{isUpdateFlow}"
+                               enabled="{nextAvailCustomerId!=null &amp;&amp; nextAvailCustomerId!=''}"
+                               click="update_clickHandler(event)" tabIndex="60"
+							   />
+				</mx:VBox>
+			</mx:HBox>
+		</mx:VBox>
+		<s:Spacer height="5"/>
+	</mx:Box>
+	</mx:VBox>
+		<!--<mx:VRule width="0" height="100%"/>
+		
+		<mx:VBox styleName="smeLoansBackground" width="20%" height="100%" paddingTop="3" paddingRight="3" paddingBottom="3">
+			<mx:HRule width="100%" />
+			<mx:Accordion styleName="smeLoansBackground" width="100%" height="50%">
+				<mx:VBox label="View Proof Details" styleName="smeLoansBackground" width="100%" height="100%" >
+					<mx:Label id="viewIdProof" text="View Attached ID Proof" styleName="smeHyperLinkLabel" 
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewIdProof.enabled){
+							  viewIdProof.setStyle('fontWeight','bold');
+							  viewAddrProof.setStyle('fontWeight','normal');
+							  viewPanCardProof.setStyle('fontWeight','normal');
+							  proofViewPanel.source = idProofAttach.imgReference;}}"
+							  enabled="{idProofAttach.imgReference!=null}"
+							  />
+					<mx:Label id="viewAddrProof" text="View Attached Address Proof" styleName="smeHyperLinkLabel"
+							  mouseChildren="false" useHandCursor="true" buttonMode="true" 
+							  click="{if(viewAddrProof.enabled){
+							  viewAddrProof.setStyle('fontWeight','bold');
+							  viewIdProof.setStyle('fontWeight','normal');
+							  viewPanCardProof.setStyle('fontWeight','normal');
+							  proofViewPanel.source = addrProofAttach.imgReference;}}" 
+							  enabled="{ addrProofAttach.imgReference!=null}"
+							  />
+					<mx:Label id="viewPanCardProof" text="View Attached Pancard" styleName="smeHyperLinkLabel"
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewPanCardProof.enabled){
+							  viewPanCardProof.setStyle('fontWeight','bold');
+							  viewAddrProof.setStyle('fontWeight','normal');
+							  viewIdProof.setStyle('fontWeight','normal');
+							  proofViewPanel.source = panCardAttach.imgReference;}}"
+							  enabled="{panCardAttach.imgReference!=null}"
+							  />
+				</mx:VBox>
+				
+				<mx:VBox label="Update History" styleName="smeLoansBackground" width="100%" height="100%" 
+						 visible="{isUpdateFlow}" includeInLayout="{isUpdateFlow}"> 
+					<mx:DataGrid  width="100%" height="100%" visible="{isUpdateFlow}" includeInLayout="{isUpdateFlow}">
+						<mx:columns>
+							<mx:DataGridColumn headerText="Date"/>
+							<mx:DataGridColumn headerText="Old Value"/>
+							<mx:DataGridColumn headerText="New Value"/>
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+			</mx:Accordion>
+			
+		</mx:VBox>-->
+	
+	<!--</mx:HBox>-->
+</mx:Panel>

@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" 
+		 xmlns:local="*" xmlns:components="components.*"
+		 styleName="smeLoansBackground"
+		 creationComplete="vbox1_creationCompleteHandler(event)" horizontalScrollPolicy="off">
+	<fx:Script>
+		<![CDATA[
+			import mx.containers.TitleWindow;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import util.SMEConstants;
+			import util.SMEModel;
+			import util.SMEUtility;
+			
+			import valueobject.AppComponentVO;
+			import valueobject.CustomerVO;
+			import valueobject.JewelLoanModeVO;
+			import valueobject.JewelLoanTransactionVO;
+			import valueobject.JewelLoanTypeVO;
+			import valueobject.JewelSchemeVO;
+			import valueobject.JewelTakeOverFromVO;
+			import valueobject.PaymentTypeVO;
+			import valueobject.RequestVO;
+			
+			[Bindable]
+			[Embed(source="../assets/images/noimage.jpg")]
+			private var noImageFound:Class;
+			[Bindable]
+			public var customerVO:CustomerVO = new CustomerVO();
+			public var selectCustomerPopUpWindow:SearchCustomerWidget=null;
+			
+			var facade:Facade=ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			
+			[Bindable]
+			public var loanNumberStr:String;
+            private var _newLoanNum:Number;
+            public function get newLoanNum():Number {
+                return _newLoanNum;
+            }
+            public function set newLoanNum(value:Number):void {
+                _newLoanNum = value;
+				loanNumberStr = "" + SMEModel.getinstance().userProfileVO.branchId + JewelLoanTypeVO(loanTypeCmb.selectedItem).jewel_loan_type + value;
+            }
+			
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void{
+				facade.sendNotification(SMEConstants.LOAD_NEW_LOAN_META_DATA,true);
+				loanNumberStr = SMEConstants.LABEL_NOT_AVAILABLE;
+				/*if(SMEModel.getinstance().appCompMetaData.branchConfigData!=null){
+					for each(var appCompVO:AppComponentVO in SMEModel.getinstance().appCompMetaData.branchConfigData.componentList){
+						if(appCompVO.componentId == SMEConstants.DOC_SERVICE_TAX_CHARGES_ID){
+							this[SMEConstants.DOC_SERVICE_TAX_CHARGES_ID].visible = false;
+						}
+						if(appCompVO.componentId == SMEConstants.ADD_LOAN_TYPE_COMP_ID){
+						
+						}
+					}
+				}*/
+			}
+			
+			public function launchSelectCustomerPopUp(customerList:ArrayCollection):void
+			{
+				selectCustomerPopUpWindow = SearchCustomerWidget(PopUpManager.createPopUp(UIComponent(this.parentApplication), SearchCustomerWidget, true) );
+				selectCustomerPopUpWindow.setSearchResultData(customerList);
+				selectCustomerPopUpWindow.addEventListener(CloseEvent.CLOSE,closeSelectCustomerPopUp);
+				selectCustomerPopUpWindow.selectCustomerBtn.addEventListener(MouseEvent.CLICK,closeSelectCustomerPopUp);
+				
+				PopUpManager.centerPopUp(selectCustomerPopUpWindow);
+			}
+			
+			private function closeSelectCustomerPopUp(event:Event):void {
+				if(event as MouseEvent){
+					facade.sendNotification(SMEConstants.CUSTOMER_SELECTED,selectCustomerPopUpWindow.customerGrid.selectedItem);
+				}
+				PopUpManager.removePopUp(selectCustomerPopUpWindow);
+				selectCustomerPopUpWindow = null;
+			}
+		
+			protected function customerSearchBtn_clickHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+
+			public function getFormData():JewelLoanTransactionVO {
+				var jewelLoanTxVO:JewelLoanTransactionVO = new JewelLoanTransactionVO;
+				jewelLoanTxVO.transactionTypeId = 1;
+				jewelLoanTxVO.customerDetails = new CustomerVO;
+				
+				jewelLoanTxVO.customerDetails.customerId = Number(customerId.text);
+				jewelLoanTxVO.customerDetails.address = customerAddress.text;
+				jewelLoanTxVO.customerDetails.mobileNo = customerContactNo.text;
+				
+				//= enteredCustomerId.text;
+				jewelLoanTxVO.interest_rate = rateOfInretest.text;
+				jewelLoanTxVO.rateOfInterestId = 1;
+				
+				jewelLoanTxVO.customerDetails.customerName = customerName.text;
+				jewelLoanTxVO.jewelTakeOverFromPlace = place.text;
+				jewelLoanTxVO.instaLoanNo = Number(instaLoanNo.text);
+				jewelLoanTxVO.instaLoanAmount = Number(instaLoanAmt.text);
+				//jewelLoanTxVO. = Number(goldLoanAmt.text);
+				jewelLoanTxVO.jewel_loan_transaction_date = loanDate.text;
+				//jewelLoanTxVO. = redeemDate.text;
+				jewelLoanTxVO.averageRatePerGram = Number(avgRatePerGram.text);
+				jewelLoanTxVO.highLimitKey = Number(highLimitKey.text);
+				jewelLoanTxVO.jewelLoanNo = newLoanNum;
+				jewelLoanTxVO.loan_amount = loanAmt.text;
+				jewelLoanTxVO.document_charges = docCharges.text;
+				jewelLoanTxVO.service_charges = serviceCharges.text;
+				jewelLoanTxVO.serviceTax = serviceTax.text;
+				//jewelLoanTxVO. = totalCharges.text;
+				//jewelLoanTxVO. = custRating.text;
+				//jewelLoanTxVO. = totalActiveLoans.text;
+				//jewelLoanTxVO.to = totalLoanAmt.text;
+				//jewelLoanTxVO.paymentTransactions = noOfODLoans.text;
+				//jewelLoanTxVO.i = totalInterestDue.text;
+				jewelLoanTxVO.remarks = remarks.text;
+				
+				jewelLoanTxVO.customerPhoto = customerImg.source as  ByteArray;
+				jewelLoanTxVO.jewelPhoto = jewelImg.source as  ByteArray;
+				jewelLoanTxVO.customerDetails.overwriteCustomerPhoto = customerPhoto.overwrite;
+				
+				jewelLoanTxVO.jewelLoanModeId = JewelLoanModeVO(loanModeCmb.selectedItem).jewelLoanModeId;
+				jewelLoanTxVO.jewel_take_over_from_id = JewelTakeOverFromVO(takeoverFromCmb.selectedItem).jewelTakeOverFromId;
+				
+				if(tenureCmb.visible){
+					jewelLoanTxVO.loanTenure = Number(tenureCmb.selectedItem);
+				}else if(tenureLbl.visible){
+					jewelLoanTxVO.loanTenure = Number(tenureLbl.text);
+				}
+				
+				jewelLoanTxVO.jewel_scheme_id = JewelSchemeVO(schemeCmb.selectedItem).jewelSchemeId;
+				jewelLoanTxVO.jewelLoanType = Number(JewelLoanTypeVO(loanTypeCmb.selectedItem).jewelLoanTypeId);
+				jewelLoanTxVO.repaymentTypeId = PaymentTypeVO(repaymentTypeCmb.selectedItem).paymentTypeId;
+				
+				jewelLoanTxVO.loanAssetSplitUp = loanDeatilGrid.loanGridDataCol;
+				jewelLoanTxVO.branchId = Number(SMEModel.getinstance().userProfileVO.branchId);
+				//Alert.show("" + jewelLoanTxVO.branchId);				 
+				return jewelLoanTxVO;
+			}
+
+			public function loanType_clickHandler(event:Event):void{
+				var reqVO:RequestVO = new RequestVO();
+				reqVO.jewelLoanTypeId = Number(JewelLoanTypeVO(loanTypeCmb.selectedItem).jewelLoanTypeId);
+				facade.sendNotification(SMEConstants.GET_NEW_LOAN_NUMBER,reqVO);
+			}
+			
+			protected function resetBtn_clickHandler(event:MouseEvent):void{
+				Alert.show(SMEConstants.MSG_RESET_CONFIRM, "Reset",Alert.YES | Alert.NO, null,
+					resetConfirmHandler, null, Alert.NO); 
+			}
+			
+			private function resetConfirmHandler(event:CloseEvent):void {
+				// Check to see if the OK button was pressed.
+				if (event.detail==Alert.YES) {
+					clearAllfields();		
+				}
+			}
+
+			public function clearAllfields():void{
+				enteredCustomerId.text = "";
+				customerId.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				customerName.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				place.text = "";
+				//rateOfInretest.text = "";
+				instaLoanNo.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				instaLoanAmt.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				goldLoanAmt.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				//loanDate.text = "";
+				//redeemDate.text = "";
+				avgRatePerGram.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				highLimitKey.text = "";
+				loanNumberStr = SMEConstants.LABEL_NOT_AVAILABLE;//loanNum.text = "";
+				loanAmt.text = "0.00";
+				docCharges.text = "0";
+				serviceCharges.text = "0";
+				serviceTax.text = "0";
+				totalCharges.text = "0";
+				customerAddress.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				customerContactNo.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				custRating.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				totalActiveLoans.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				totalLoanAmt.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				noOfODLoans.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				totalInterestDue.text = SMEConstants.LABEL_NOT_AVAILABLE;
+				remarks.text = "";
+
+				customerImg.source = noImageFound;
+				jewelImg.source = noImageFound;
+				
+				loanModeCmb.selectedIndex = 0;
+				takeoverFromCmb.selectedIndex = 0;
+				tenureCmb.selectedIndex = 0;
+				schemeCmb.selectedIndex = 0;
+				loanTypeCmb.selectedIndex = -1;
+				repaymentTypeCmb.selectedIndex = 0;
+				
+				schemeCmb_changeHandler(null);
+				loanModeCmb_changeHandler(null);
+				
+				loanDeatilGrid.clearAllfields();       
+			}
+			
+			public function setSearchResultData(jewelLoanTransactionVO:JewelLoanTransactionVO):void{
+				loanDeatilGrid.loanGridDataCol = getNameFromId(jewelLoanTransactionVO.loanAssetSplitUp);
+				loanNum.text = jewelLoanTransactionVO.jewelLoanNo as String;				
+				var dataColl:ArrayCollection = loanTypeCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					if(Number(dataColl[inx].jewelLoanTypeId)==jewelLoanTransactionVO.jewelLoanType){
+						loanTypeCmb.selectedIndex = inx;
+					}
+				}
+				
+				dataColl = takeoverFromCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					if(Number(dataColl[inx].jewelTakeOverFromId)==jewelLoanTransactionVO.jewel_take_over_from_id){
+						takeoverFromCmb.selectedIndex = inx;
+					}
+				}
+				dataColl = schemeCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					if(Number(dataColl[inx].jewelSchemeId)==jewelLoanTransactionVO.jewel_scheme_id){
+						schemeCmb.selectedIndex = inx;
+					}
+				}
+				
+				var custDetails:CustomerVO = jewelLoanTransactionVO.customerDetails;
+				customerName.text = custDetails.customerName ;
+				customerAddress.text= custDetails.address;
+				customerContactNo.text = String(custDetails.mobileNo);
+				
+				
+				docCharges.text = jewelLoanTransactionVO.document_charges as String;
+				// text = jewelLoanTransactionVO.rate_per_gram;
+				rateOfInretest.text = jewelLoanTransactionVO.interest_rate  as String;
+				loanAmt.text = jewelLoanTransactionVO.loan_amount as String;
+				serviceCharges.text = jewelLoanTransactionVO.service_charges  as String;
+			}
+			
+			private function getNameFromId(inputColl:ArrayCollection):ArrayCollection{
+				for (var jnx:int=0;jnx<inputColl.length;jnx++){
+					var dataColl:ArrayCollection = loanDeatilGrid.loanJewelCategoryCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(Number(dataColl[inx].jewelCategoryId)==inputColl[jnx].jewel_category_id){
+							inputColl[jnx].jewelCategory = dataColl[inx].jewelCategoryName;
+						}
+					}
+					dataColl = loanDeatilGrid.loanJewelTypeCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(Number(dataColl[inx].jewelTypeId)==inputColl[jnx].jewel_type_id){
+							inputColl[jnx].jewelType = dataColl[inx].jewelTypeName;
+						}
+					}
+					dataColl = loanDeatilGrid.loanQualityCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(Number(dataColl[inx].jewelQualityId)==inputColl[jnx].quality_id){
+							inputColl[jnx].quality = dataColl[inx].jewelQualityName
+						}
+					}
+				}
+				return inputColl;
+			}
+			
+
+			public function checkBusinessValidation():Boolean{
+				
+				var validationArray:Array= new Array;
+				var validationMsg:String = "";
+				
+				validationArray.push(vlrLoanDate);
+				validationArray.push(vlrLoanAmount);
+				validationArray.push(vlrDocCharges);
+				validationArray.push(vlrServiceCharges);
+				validationArray.push(vlrServiceTax);
+				var valMsg:String = SMEUtility.doValidation(validationArray); 
+				
+				if(loanTypeCmb.selectedIndex==-1){
+					Alert.show("Please Select Loan Type","Error");
+					return false;
+				}else if(valMsg!=null && valMsg!=""){
+					Alert.show(SMEConstants.ERRR_MSG_ALL_FILEDS,"Error");
+					return false;
+				}else if(customerImg.source==noImageFound){
+					Alert.show(SMEConstants.ERRR_MSG_CUST_IMAGE,"Error");
+					return false;
+				}else if(jewelImg.source==noImageFound){
+					Alert.show(SMEConstants.ERRR_MSG_JEWEL_IMAGE,"Error");
+					return false;
+				}
+				return true;
+			}
+
+			private function daysRoiGrid(item:Object, column:DataGridColumn):String{
+				var sheme:JewelSchemeVO = item as JewelSchemeVO;
+				return (sheme.fromDay + "-" + sheme.toDay);
+			}
+			
+
+			protected function customerSearchHandler(event:Event):void{
+				var customerVO:CustomerVO = new CustomerVO; 
+				customerVO.allBranchIds = SMEModel.getinstance().userProfileVO.branchId;
+				if(enteredCustomerId.text!="" && int(enteredCustomerId.text.charAt(0))){
+					customerVO.customerId = Number(enteredCustomerId.text);
+					facade.sendNotification(SMEConstants.SEARCH_CUSTOMER,customerVO);
+				}else if(enteredCustomerId.text!=""){
+					customerVO.customerName = enteredCustomerId.text;
+					facade.sendNotification(SMEConstants.SEARCH_CUSTOMER,customerVO);
+				}
+				else{
+					Alert.show("Please Enter Valid Customer ID","Error");
+				}
+			}
+
+			
+			public function setCustomerInfo(customerInfo:CustomerVO):void{
+				customerId.text = customerInfo.customerId.toString();
+				customerName.text = customerInfo.customerName;
+				customerContactNo.text = String(customerInfo.mobileNo);
+				customerAddress.text = customerInfo.address;
+				if(customerInfo.customerPhoto!=null){
+					customerImg.source = customerInfo.customerPhoto;
+				}
+			}
+
+			protected function saveBtn_clickHandler(event:MouseEvent):void{
+				if(checkBusinessValidation()){
+					facade.sendNotification(SMEConstants.SAVE_NEW_JEWEL_LOAN,getFormData());
+				}
+			}
+			
+			protected function loanModeCmb_changeHandler(event:Event):void{
+                if(loanModeCmb.selectedItem.jewelLoanMode == "Take-Over from"){
+                    takeoverFromCmb.enabled = true;
+                }else{
+                    takeoverFromCmb.enabled = false;
+                }
+            }
+			
+			public function schemeCmb_changeHandler(event:Event):void{
+                var schemeVO:JewelSchemeVO = JewelSchemeVO(schemeCmb.selectedItem).jewelSchemeInterest.getItemAt(0) as JewelSchemeVO;
+                rateOfInretest.text = String(schemeVO.rateOfInterest) + "% pa";
+				tenure_changeHandler(null);
+            }
+			
+			protected function tenure_changeHandler(event:Event):void{
+               var noOfMonths:int;
+                if(tenureCmb.visible){
+                    noOfMonths = int(tenureCmb.selectedItem);
+                }else if(tenureLbl.visible){
+                    noOfMonths = int((schemeCmb.selectedItem.flexiMonths as ArrayCollection).getItemAt(0));
+                }
+                var today:Date = new Date();
+                noOfMonths += today.month;
+                today.setMonth(noOfMonths);
+                redeemDate.text = SMEUtility.getFormattedDate(today.toString());
+            }
+
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<mx:NumberValidator id="vlrLoanAmount" enabled="true"
+							required="true"
+							minValue="1"							
+							source="{loanAmt}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_AMOUNT}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_AMOUNT}"
+							/>	
+		<mx:NumberValidator id="vlrDocCharges" enabled="true"
+							required="true"
+							minValue="0"							
+							source="{docCharges}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_AMOUNT}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_AMOUNT}"
+							/>	
+		<mx:NumberValidator id="vlrServiceCharges" enabled="true"
+							required="true"
+							minValue="0"							
+							source="{serviceCharges}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_AMOUNT}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_AMOUNT}"
+							/>	
+		<mx:NumberValidator id="vlrServiceTax" enabled="true"
+							required="true"
+							minValue="0"							
+							source="{serviceTax}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_AMOUNT}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_AMOUNT}"
+							/>	
+		<mx:StringValidator id="vlrLoanDate" enabled="true"
+							required="true"
+							minLength="1"							
+							source="{loanDate}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_DATE}"
+							/>	
+	</fx:Declarations>
+	
+	
+	<mx:VBox styleName="smeLoansBackground" height="100%" width="100%"
+			 horizontalScrollPolicy="off">
+		<!--<mx:Label text="Add New Loan " styleName="smePageHeading"/>-->
+		<components:CustomHeader headerText="Add New Loan" hRuleVisible="false"/>
+		<mx:HBox styleName="smeLoansBackground" width="100%" paddingTop="2" 
+				 maxHeight="60" height="10%">
+			<mx:VBox styleName="smeLoansBackground" height="100%" width="216" horizontalScrollPolicy="off">
+				<mx:HBox styleName="smeLoansBackground" width="100%" height="50%">
+					<mx:Label text="Customer ID: " styleName="smeLabelBold"/>
+					<mx:TextInput id="enteredCustomerId" restrict="A-Z0-9" width="70"
+								  enter="customerSearchHandler(event)"/>
+					<mx:Button id="goCustomer" label="Go" styleName="smeButton" width="35" 
+							   click="customerSearchHandler(event)"/>
+					<!--<mx:Button id="searchCustomer" label="Search" styleName="smeButton" 
+							   click="customerSearchHandler(event)"/>-->
+				</mx:HBox>
+				<mx:HBox styleName="smeLoansBackground" width="100%" height="50%" horizontalScrollPolicy="off">
+					<mx:Label text="Customer Info: " styleName="smeLabelBold"/>
+					<mx:Label id="customerId" text="N/A" fontWeight="bold"/>
+					<mx:Label id="customerName" text="N/A" />
+				</mx:HBox>
+			</mx:VBox>
+			
+			<mx:VRule height="100%"/>
+			
+			<mx:Form styleName="smeForm" height="100%" width="190" >
+				<mx:FormItem styleName="smeFormItem" label="Loan Mode:" >
+					<mx:ComboBox id="loanModeCmb" labelField="jewelLoanMode" width="90" change="loanModeCmb_changeHandler(event)">
+						<mx:ArrayCollection>
+							<fx:String>Direct</fx:String>
+							<fx:String>Take Over From</fx:String>
+						</mx:ArrayCollection>
+					</mx:ComboBox>
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Take Over From:" >
+					<mx:ComboBox id="takeoverFromCmb" labelField="jewel_take_over_from" width="90" enabled="false"/>
+					<!--	<mx:ArrayCollection>
+							<fx:String>Muthoot</fx:String>
+							<fx:String>Sriram</fx:String>
+						</mx:ArrayCollection>
+					</mx:ComboBox>-->
+				</mx:FormItem>
+			</mx:Form>
+			
+			<mx:VRule height="100%"/>
+			
+			<mx:Form styleName="smeForm" height="100%" width="149">
+				<mx:FormItem styleName="smeFormItem" label="Scheme:">
+					<mx:ComboBox id="schemeCmb" labelField="jewel_scheme_name" width="90"
+							change="schemeCmb_changeHandler(event)"/>
+						
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Place:">
+					<mx:TextInput id="place" width="90" enabled="{takeoverFromCmb.enabled}"/>
+				</mx:FormItem>
+			</mx:Form>
+
+			<mx:VRule height="100%"/>
+			
+			<mx:Form styleName="smeForm" height="100%" width="126"> 
+				<mx:FormItem styleName="smeFormItem" label="Tenure(M):" direction="horizontal">
+					<mx:ComboBox id="tenureCmb" dataProvider="{schemeCmb.selectedItem.flexiMonths}" width="48"
+								 includeInLayout="{schemeCmb.selectedItem.flexiMonths.length>1}"
+								 visible="{schemeCmb.selectedItem.flexiMonths.length>1}"
+								 change="tenure_changeHandler(event)"/>
+					<mx:Label id="tenureLbl" text="{(schemeCmb.selectedItem.flexiMonths as ArrayCollection).getItemAt(0)}" 
+							  	includeInLayout="{schemeCmb.selectedItem.flexiMonths.length==1}"
+								visible="{schemeCmb.selectedItem.flexiMonths.length==1}"/>
+				</mx:FormItem>
+				<mx:FormItem label="ROI:" styleName="smeFormItem">
+					<mx:Label id="rateOfInretest" text="{'0.0'+'% pa'}" />
+				</mx:FormItem>
+			</mx:Form>
+			
+			<mx:VRule height="100%"/>
+			
+			<mx:Form width="189" height="100%" styleName="smeForm">
+				<mx:FormItem styleName="smeFormItem" label="Loan Date:"> 
+					<!--<mx:DateField id="loanDate" width="100" text="{SMEUtility.getFormattedDate(new Date().toString())}" enabled="false"/>-->
+					<mx:TextInput id="loanDate" width="90" text="{SMEUtility.getFormattedDate(new Date().toString())}" enabled="false"/>
+				</mx:FormItem>
+				<mx:FormItem label="Redeem Date:" styleName="smeFormItem">
+					<mx:Label id="redeemDate" text="N/A" />
+				</mx:FormItem>
+			</mx:Form>	
+			
+		</mx:HBox>
+		
+		<mx:HRule width="100%"/>
+		
+		<!--grid section-->
+		<components:ItemDetails id="loanDeatilGrid" height="80%" width="100%" />
+		
+		<mx:HRule width="100%"/> 
+		
+		<!--photo section-->
+		<mx:HBox styleName="smeLoansBackground" width="100%" paddingLeft="2" >
+			<!--photo-->
+			<mx:VBox styleName="smeLoansBackground" width="17%" height="100%" >
+				<mx:Image id="customerImg" height="100%" width="100%" maintainAspectRatio="false" maxHeight="150" maxWidth="180"
+						  source="{noImageFound}" />
+				<components:ImageUploadButton imgReference="{customerImg}" id="customerPhoto"
+												defaultImg="{noImageFound}"
+												getUserConfirmation="true"
+												label="Upload Customer Photo" styleName="smeButton"/>
+			</mx:VBox>
+			<mx:VBox styleName="smeLoansBackground" width="17%" height="100%" >
+				<mx:Image id="jewelImg" height="100%" width="100%" maintainAspectRatio="false" maxHeight="150" maxWidth="180"
+						  source="{noImageFound}"/>
+				<components:ImageUploadButton imgReference="{jewelImg}" label="Upload Jewel Photo" styleName="smeButton"/>
+			</mx:VBox>
+			
+			<mx:VRule height="100%"/>
+			
+			<mx:VBox styleName="smeLoansBackground" height="100%" width="24%">
+				<mx:HBox styleName="smeLoansBackground" width="100%" height="80%">
+					<mx:Form styleName="smeForm" >
+						<mx:FormItem id="ALLNTP" styleName="smeFormItem" label="Loan Type:">
+							<mx:ComboBox id="loanTypeCmb" labelField="jewel_loan_type" width="90" 
+										change="loanType_clickHandler(event)"
+										prompt="Select"/>
+						</mx:FormItem>
+						<mx:FormItem styleName="smeFormItem" label="Re-Payment Type:">
+							<mx:ComboBox id="repaymentTypeCmb" labelField="payment_type">
+								<mx:ArrayCollection>
+									<fx:String>Lump sum</fx:String>
+									<fx:String>EMI</fx:String>
+								</mx:ArrayCollection>
+							</mx:ComboBox>
+						</mx:FormItem>
+						<mx:FormItem label="Avg. Rate p/g:" styleName="smeFormItem">
+							<mx:Label id="avgRatePerGram" text="Not Available" />
+						</mx:FormItem>
+						<mx:FormItem styleName="smeFormItem" label="High Limit Key:">
+							<s:Group>
+								<mx:HBox>
+									<mx:TextInput id="highLimitKey" width="100" 
+												  enabled="{customerId.text!='' &amp;&amp; Number(loanAmt.text)>0}"/>
+									<mx:Button label="Check" styleName="smeButton" width="50"
+											   enabled="{customerId.text!='' &amp;&amp; Number(loanAmt.text)>0}"/>
+								</mx:HBox>					
+							</s:Group>				
+						</mx:FormItem>
+						<mx:FormItem label="Loan No.:" styleName="smeFormItem">
+							<mx:Label id="loanNum" text="{loanNumberStr}" fontSize="17" fontWeight="bold" color="#f78515"/>
+						</mx:FormItem>
+					</mx:Form>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="Remarks:"/>
+					<mx:TextArea id="remarks" height="40%" width="200"/>
+				</mx:HBox>
+			</mx:VBox>
+			
+			<mx:VRule height="100%"/>
+			
+			<mx:VBox id="loanAmtSection" styleName="smeLoansBackground" height="100%" width="20%">
+				<mx:Form styleName="smeForm" width="100%">
+					<mx:FormItem  styleName="smeFormItem" label="         Loan Amount:">
+						<mx:TextInput id="loanAmt" textAlign="right" fontWeight="bold"
+										text="{loanDeatilGrid.totalValue}" editable="false"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form styleName="smeForm" id="ALNCHG" width="100%" >
+					<mx:FormItem styleName="smeFormItem" label="Document Charge:">
+						<mx:TextInput id="docCharges" text="0" textAlign="right" restrict="0-9."/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Service Charge:">
+						<mx:TextInput id="serviceCharges" text="0" textAlign="right" restrict="0-9."/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Service Tax:">
+						<mx:TextInput id="serviceTax" text="0" textAlign="right" restrict="0-9."/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Total Charges:" >
+							<mx:Label id="totalCharges"  width="{docCharges.width}"
+								text="{Number(docCharges.text) + Number(serviceCharges.text) + Number(serviceTax.text) }" 
+								textAlign="right" fontWeight="bold"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:HBox styleName="smeLoansBackground" width="100%" horizontalGap="5" verticalAlign="middle">
+					<mx:Spacer width="20%"/>
+					<mx:Button id="saveBtn" label="Save" styleName="smeButton" click="saveBtn_clickHandler(event)" />	
+					<mx:Button id="resetBtn" label="Reset"  styleName="smeButton" click="resetBtn_clickHandler(event)"/>
+					<mx:Spacer width="20%"/>
+				</mx:HBox>
+			</mx:VBox>
+					 
+		</mx:HBox>
+		
+		<mx:HRule width="100%"/>
+		
+		<!--bottom section-->
+		<mx:HBox styleName="smeLoansBackground" width="100%" >
+			<mx:Form styleName="smeForm" height="100%" width="225">
+				<mx:FormItem styleName="smeFormItem" label="Address:">
+					<mx:Text id="customerAddress" width="100"/>
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Contact No.:">
+					<mx:Label id="customerContactNo" text="Not Available"/>
+				</mx:FormItem>
+			</mx:Form>
+			
+			<mx:VRule height="100%"/>
+			
+			<mx:Form styleName="smeForm" height="100%" width="210">
+				<mx:FormItem styleName="smeFormItem" label="Customer Rating:">
+					<mx:Label id="custRating" text="N/A"/>
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Total No.of Active Loans:">
+					<mx:Label id="totalActiveLoans" text="N/A"/>
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Total Loan Amount:">
+					<mx:Label id="totalLoanAmt" text="N/A"/>
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="No.of OD Loans:">
+					<mx:Label id="noOfODLoans" text="N/A"/>
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Total Interest Due:">
+					<mx:Label id="totalInterestDue" text="N/A"/>
+				</mx:FormItem>
+			</mx:Form>
+			
+			<mx:VRule height="100%"/>
+			
+			<mx:DataGrid id="daysRateOfIntGrid" width="250" styleName="smeDatagrid"
+						 dataProvider="{schemeCmb.selectedItem.jewelSchemeInterest}" rowCount="4">
+				<mx:columns>
+					<mx:DataGridColumn headerText="Days" labelFunction="daysRoiGrid" />
+					<mx:DataGridColumn headerText="ROI(p/m)" dataField="rateOfInterest" />
+					<mx:DataGridColumn headerText="Interest(p/m)" dataField="interestAmount"  />
+				</mx:columns> 
+			</mx:DataGrid>
+			
+			<mx:VRule height="100%"/>
+			
+			<mx:Form styleName="smeForm" height="100%" >
+				<mx:FormItem styleName="smeFormItem" label="Insta Loan No:">
+					<mx:Label id="instaLoanNo" text="N/A"/>
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Insta Loan Amount:">
+					<mx:Label id="instaLoanAmt" text="N/A"/>
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Gold Loan Amount:">
+					<mx:Label id="goldLoanAmt" text="N/A"/>
+				</mx:FormItem>
+			</mx:Form>
+			
+		</mx:HBox>
+		<s:Spacer height="2"/>
+	</mx:VBox>
+	
+</mx:VBox>

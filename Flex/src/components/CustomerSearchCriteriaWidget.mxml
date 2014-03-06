@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:components="components.*">
+
+	<fx:Script>
+		<![CDATA[
+			import flash.display.DisplayObject;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.DropdownEvent;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import util.SMEConstants;
+			import util.SMEModel;
+			import util.SMEUtility;
+			
+			import valueobject.ApplicationComponentsDataVO;
+			import valueobject.CustomerVO;
+			
+			public var selectCustomerPopUpWindow:SearchCustomerWidget = null;
+			private var facade:Facade=ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			public var searchFlow:Boolean=false;
+			public var displayDateFilter:Boolean=false;
+			public var displaySearchDropDown:Boolean=false;
+			[Bindable]
+			public var appCompData:ApplicationComponentsDataVO = ObjectUtil.copy(SMEModel.getinstance().appCompMetaData) as ApplicationComponentsDataVO;
+			
+			protected function date_focusInHandler(event:DropdownEvent):void{
+				if(DateField(event.currentTarget).selectedDate==null){
+					if(DateField(event.currentTarget).text == 'From'){
+						DateField(event.currentTarget).text = "";
+					}
+					if(DateField(event.currentTarget).text == 'To'){
+						DateField(event.currentTarget).text = "";
+					}
+					DateField(event.currentTarget).setStyle("color","#000000");
+					DateField(event.currentTarget).setStyle("fontStyle","normal");
+				}
+			}
+			
+			
+			protected function searchBtn_clickHandler(event:Event):void{
+				if(checkBusinessValidation()){
+					var customerVO:CustomerVO = new CustomerVO;
+					customerVO[searchCriteriaCmb.selectedItem.value] = customerSearchValue.text;
+					customerVO.allBranchIds = SMEModel.getinstance().userProfileVO.branchId;
+					if(fromDate.selectedDate){
+						customerVO.searchCustFromDate = fromDate.text;
+					}
+					if(toDate.selectedDate){
+						customerVO.searchCustToDate = toDate.text;
+					}
+					if(branchIdCmb.visible){
+						var idStr:String = "";
+						for(var ind:int = 0; ind<branchIdCmb.selectedItems.length;ind++){
+							if(String(branchIdCmb.selectedItems[ind].branchId) != "All") {
+								idStr += branchIdCmb.selectedItems[ind].branchId + ",";
+							}
+						}
+						idStr = idStr.substring(0,idStr.length-1);
+						customerVO.allBranchIds = idStr;
+					}
+					if(searchFlow){
+						facade.sendNotification(SMEConstants.SEARCH_FLOW_CUSTOMER_SEARCH,customerVO);
+					}else{
+						facade.sendNotification(SMEConstants.UPDATE_FLOW_CUSTOMER_SEARCH,customerVO);
+					}
+				}
+			}
+			
+			public function checkBusinessValidation():Boolean{
+				var valMsg:String = SMEUtility.doValidation(validatorArray); 
+				if(!searchFlow && valMsg!=null && valMsg!=""){
+					Alert.show(SMEConstants.ERRR_MSG_INVALID_CUST_NAME_ID,"Error");
+					return false;
+				}else if(!searchFlow && searchCriteriaCmb.selectedIndex==0 && !int(customerSearchValue.text.charAt(0))){
+					Alert.show("Please Enter Valid Customer ID","Error");
+					return false;
+				}
+				return true;
+			}
+			
+			public function launchSelectCustomerPopUp(customerList:ArrayCollection):void{
+				selectCustomerPopUpWindow = SearchCustomerWidget(PopUpManager.createPopUp(UIComponent(this.parentApplication), SearchCustomerWidget, true) );
+				selectCustomerPopUpWindow.setSearchResultData(customerList);
+				selectCustomerPopUpWindow.isCustomerUpdateFlow = true;
+				selectCustomerPopUpWindow.addEventListener(CloseEvent.CLOSE,closeSelectCustomerPopUp);
+				selectCustomerPopUpWindow.selectCustomerBtn.addEventListener(MouseEvent.CLICK,closeSelectCustomerPopUp);
+				
+				PopUpManager.centerPopUp(selectCustomerPopUpWindow);
+				
+			}
+			
+			private function closeSelectCustomerPopUp(event:Event):void {
+				if(event as MouseEvent){
+					facade.sendNotification(SMEConstants.UPDATE_FLOW_CUSTOMER_SELECTED,selectCustomerPopUpWindow.selectedCustomer);
+				}
+				PopUpManager.removePopUp(selectCustomerPopUpWindow);
+				selectCustomerPopUpWindow = null;
+			}
+			
+			public function clearAllfields():void{
+				customerSearchValue.text = "";
+				searchCriteriaCmb.selectedIndex = 0;
+				fromDate.text = "";
+				toDate.text = "";
+			}
+			
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<fx:Array id="validatorArray">  
+			<mx:StringValidator id="vlrCustomerSearchValue" enabled="{!searchFlow}"
+								required="{!searchFlow}"
+								minLength="1"							
+								source="{customerSearchValue}"
+								property="text"
+								requiredFieldError="{SMEConstants.ERRR_MSG_INVALID_CUST_NAME_ID}"
+								tooShortError="{SMEConstants.ERRR_MSG_INVALID_CUST_NAME_ID}"
+								/>	
+		</fx:Array>
+	</fx:Declarations>
+	<s:HGroup includeInLayout="{displaySearchDropDown}" visible="{displaySearchDropDown}">
+		<mx:FormItem styleName="smeFormItem" label="Search by:" fontWeight="bold" >
+			<mx:ComboBox id="searchCriteriaCmb" width="120" dataProvider="{SMEConstants.CUSTOMER_SEARCH_ARRAY}"/>
+		</mx:FormItem>
+		<mx:TextInput id="customerSearchValue" width="120" enter="searchBtn_clickHandler(event)"/>	
+	</s:HGroup>
+	<s:HGroup includeInLayout="{displayDateFilter}" visible="{displayDateFilter}">		
+		<mx:Label text="Customer Created Date:"/>
+		<mx:DateField id="fromDate" text="From" color="#999999" fontStyle="italic"
+					  open="date_focusInHandler(event)"/>
+		<mx:DateField id="toDate" text="To" color="#999999" fontStyle="italic"
+					  open="date_focusInHandler(event)"/>
+	</s:HGroup>
+	<mx:Label text="Branch ID:" includeInLayout="{SMEModel.getinstance().isAdminUser}" 
+								visible="{SMEModel.getinstance().isAdminUser }" />
+	<components:MultiSelectComboBox styleName="smeDropDownList" width="90"  id="branchIdCmb" 
+									dataProvider="{appCompData.allBranchDetails}"	
+									labelField="branchId"
+									includeInLayout="{SMEModel.getinstance().isAdminUser}"
+									visible="{SMEModel.getinstance().isAdminUser}"/>
+	<s:Spacer width="10"/>
+	<mx:Button id="searchBtn" label="Search" click="searchBtn_clickHandler(event)" />
+	
+</mx:HBox>

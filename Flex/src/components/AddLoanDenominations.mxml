@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" layout="vertical"
+				paddingLeft="10" paddingRight="10" paddingBottom="10" paddingTop="10"  
+				verticalAlign="top" horizontalAlign="center" height="600" width="800" color="#000000" >
+				<!--creationComplete="init()"  xmlns:net="flash.net.*">-->
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<!--<fx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+			import delegate.ApplicationUtil;
+			import delegate.ApplicationDelegate;
+			import valueobject.JewelSchemeVO;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.controls.Alert;
+			import mx.utils.ObjectUtil;
+			
+			protected function init():void {
+				//schemeCreatedByTxt.text = ApplicationUtil.getInstance().retrieveUserProfile().employeeName;
+			}
+			
+			[Bindable]
+			public var schemeGridData:ArrayCollection = new ArrayCollection;
+			
+			
+			private function onAddLoanScheme(event:Event):void {
+				LoadingMask.hide();
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onAddLoanScheme);
+					if ((event as ResultEvent).result != null){
+						Alert.show("Successfully added the new loan scheme");
+						schemeGridData = ArrayCollection((event as ResultEvent).result);
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onAddLoanScheme);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			
+			private function retrieveService(methodName:String,handler:Function,params:Object=null):void {
+				if(params==null){
+					ApplicationDelegate.getInstance().createAMFRequest(methodName,handler).send();
+				}else{
+					ApplicationDelegate.getInstance().createAMFRequest(methodName,handler).send(params);
+				}
+			}
+			
+			private function handleUpdateClick(event:MouseEvent):void{
+				
+			}
+			private function handleDeleteClick(event:MouseEvent):void{
+				
+			}
+			public function closePupup():void{
+				PopUpManager.removePopUp(this);
+			}
+			private function btn_click(evt:MouseEvent):void {
+                var arr:Array = [];
+                arr.push(new FileFilter("Images", ".gif;*.jpeg;*.jpg;*.png"));
+                fileReference.browse(arr);
+            }
+ 
+            private function fileReference_select(evt:Event):void {
+                fileReference.load();
+            }
+ 
+            private function fileReference_complete(evt:Event):void {
+                //img.source = fileReference.data;
+                Alert.show(ObjectUtil.toString(fileReference));
+            }	
+
+		]]>
+	</fx:Script>-->
+	
+	<!--<fx:Declarations>
+        <net:FileReference id="fileReference"
+                select="fileReference_select(event);"
+                complete="fileReference_complete(event);" />
+    </fx:Declarations>-->
+	<mx:HBox width="100%" verticalAlign="middle" horizontalAlign="left">
+		<mx:HBox>
+			<mx:Label text="Use the below form to add denominations for a loan" fontWeight="bold"/>
+		</mx:HBox>
+	</mx:HBox>
+	<mx:HRule width="100%" height="10" />
+	<mx:Form id="loanDetailsForm2" width="100%"
+			 paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0">
+		<mx:FormItem label="Transaction Date" color="#000000" fontWeight="normal"
+					 textAlign="left" >				
+			<mx:DateField id="transactionDateComp" fontSize="10" text="dd/mm/yyyy" 
+						  height="19" width="100" color="#000000" fontWeight="normal"/><!-- change="formatDate()"/>-->				
+		</mx:FormItem>
+		<mx:FormItem label="Transaction Type" borderVisible="false" color="#000000"
+					 fontWeight="normal"  textAlign="left">
+			<mx:TextInput height="19" width="100" id="transactionTypeTxt" fontWeight="normal" enabled="false"/>
+		</mx:FormItem>
+		<mx:FormItem label="Loan No" borderVisible="false" color="#000000"
+					 fontWeight="normal"  textAlign="left">
+			<mx:TextInput height="19" width="100" id="ratePerGramTxt" fontWeight="normal" enabled="false"/>
+		</mx:FormItem>
+		<mx:FormItem label="1000's" borderVisible="false" color="#000000"
+					 fontWeight="normal" textAlign="left">
+			<mx:TextInput height="19" width="100" id="thousands" fontWeight="normal" />
+		</mx:FormItem>
+		<mx:FormItem label="500's" color="#000000" fontWeight="normal"
+					 textAlign="left">
+			<mx:TextInput height="19" width="100" id="fivehundreds" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="100's" color="#000000" fontWeight="normal"
+					 textAlign="left">
+			<mx:TextInput height="19" width="100" id="hundreds" fontWeight="normal"/>
+		</mx:FormItem>
+		<mx:FormItem label="50's" color="#000000" fontWeight="normal"
+					 textAlign="left">
+			<mx:TextInput height="19" width="100" id="fifties" fontWeight="normal"  />
+		</mx:FormItem>
+		<mx:FormItem label="20's" color="#000000" fontWeight="normal"
+					 textAlign="left">
+			<mx:TextInput height="19" width="100" id="twenties" fontWeight="normal"  />
+		</mx:FormItem>
+		<mx:FormItem label="10's" color="#000000" fontWeight="normal"
+					 textAlign="left">
+			<mx:TextInput height="19" width="100" id="tens" fontWeight="normal"  />
+		</mx:FormItem>
+		<mx:FormItem label="5's" color="#000000" fontWeight="normal"
+					 textAlign="left">
+			<mx:TextInput height="19" width="100" id="fives" fontWeight="normal"  />
+		</mx:FormItem>
+		<mx:FormItem label="2's" color="#000000" fontWeight="normal"
+					 textAlign="left">
+			<mx:TextInput height="19" width="100" id="twos" fontWeight="normal"  />
+		</mx:FormItem>
+		<mx:FormItem label="1's" color="#000000" fontWeight="normal"
+					 textAlign="left">
+			<mx:TextInput height="19" width="100" id="ones" fontWeight="normal"  />
+		</mx:FormItem>
+		<mx:FormItem label="Total" color="#000000" fontWeight="normal"
+					 textAlign="left">
+			<mx:TextInput height="19" width="100" id="total" fontWeight="normal" enabled="false" editable="false" />
+		</mx:FormItem>
+		<mx:FormItem label="Remarks" color="#000000" fontWeight="normal"
+					 textAlign="left">
+			<mx:TextArea height="100" width="300" id="remarks" fontWeight="normal"  />
+		</mx:FormItem>
+	</mx:Form>	
+	<mx:HRule width="100%"/>
+	<mx:HBox>
+		<mx:Button label="Clear" />
+		<mx:Button label="Submit" />
+	</mx:HBox>
+</mx:TitleWindow>

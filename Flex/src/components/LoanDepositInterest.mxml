@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<!--<fx:Script>
+		<![CDATA[
+			import delegate.ApplicationDelegate;
+			
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueobject.ApplicationComponentsDataVO;
+			import valueobject.DepositLoanTransactionVO;
+			import valueobject.PaymentTransactionVO;
+			import valueobject.ResponseVO;
+			import valueobject.SearchRequestVO;
+			
+			[Bindable]
+			public var totalPrincipleAmount:String;
+			[Bindable]
+			public var totalInterestAmount:String;
+			
+			[Bindable]
+			public var depositIntrGridDataCol:ArrayCollection = new ArrayCollection;
+			[Bidable]
+			private var _applicationCompData:ApplicationComponentsDataVO = new  ApplicationComponentsDataVO();
+			public function get applicationCompData():ApplicationComponentsDataVO{
+				return _applicationCompData;
+			}
+			
+			public function set applicationCompData(value:ApplicationComponentsDataVO):void{
+				_applicationCompData = value;
+				setData(_applicationCompData);
+			}
+			
+			public function setData(appCompData:ApplicationComponentsDataVO):void{
+				depositLoanPaymentTypeCmb.dataProvider = appCompData.paymentTypes;
+				releaseTypeCmb.dataProvider = appCompData.releaseTypes;
+			}
+			
+			public function setSearchResultData(input:DepositLoanTransactionVO):void{
+				if(input != null) {
+					depositIntrGridDataCol = input.paymentTransactions;
+					if(depositIntrGridDataCol != null)
+						calculateTotalValues(depositIntrGridDataCol);
+				}
+			}
+			
+			private function paymentTypeFunction(item:Object, column:DataGridColumn):String{
+				var paymentTypeColl:ArrayCollection = ArrayCollection(depositLoanPaymentTypeCmb.dataProvider);
+				for (var inx:int=0;inx<paymentTypeColl.length;inx++){
+					if(item.paymentTypeId == paymentTypeColl[inx].paymentTypeId){
+						return paymentTypeColl[inx].payment_type;
+					}
+				}
+				return "";
+			}
+			
+			private function serialLabelFunction(item:Object, column:DataGridColumn):String{
+				var index:int = depositIntrGridDataCol.getItemIndex(item);
+				if (index > -1)
+					return (index + 1).toString();
+				return "";
+			}
+			
+			public function clearAllFields():void{
+				depositLoanPaymentTypeCmb.selectedIndex = 0;
+				depositLoanInterestSlabTxt.text = "";
+				depositLoanInterestAmountTxt.text = "";
+				depositLoanOverdueChargeTxt.text = "";
+				depositIntrGridDataCol = new ArrayCollection;
+				releaseLoanInterestGridBtn.enabled = true;
+				totalPrincipleAmount = "";
+				totalInterestAmount = "";
+			}
+			
+			protected function calculateTotalValues(arrayColl:ArrayCollection):void{
+				var totalPrincipleAmt:int = 0;
+				var totalInterestAmt:int = 0;
+				for (var inx:int=0;inx<arrayColl.length;inx++){
+					if(arrayColl.getItemAt(inx).paymentTypeId == 1)
+						totalInterestAmt += Number(arrayColl.getItemAt(inx).interest_amount); 
+					else if(arrayColl.getItemAt(inx).paymentTypeId == 2)
+						totalPrincipleAmt += Number(arrayColl.getItemAt(inx).principal_amount); 
+				}
+				totalPrincipleAmount = String(totalPrincipleAmt); 
+				totalInterestAmount = String(totalInterestAmt);
+			}
+			
+			protected function insertDepositnterestGridBtn_clickHandler(event:MouseEvent):void{
+				if(ManageLoans(parentDocument).transactionDateComp.selectedDate != null && ManageLoans(parentDocument).transactionDate != "") {
+					var paymentTxVO:PaymentTransactionVO = new PaymentTransactionVO;
+					paymentTxVO.loanNo = int(ManageLoans(this.parentDocument).depositLoanNoTxt.text);
+					paymentTxVO.transactionTypeId = 2;
+					paymentTxVO.paymentTypeId = depositLoanPaymentTypeCmb.selectedItem.paymentTypeId;
+					paymentTxVO.actualInterestRate = depositLoanInterestSlabTxt.text;
+					paymentTxVO.interest_amount = depositLoanInterestAmountTxt.text;
+					paymentTxVO.overDueCharges = depositLoanOverdueChargeTxt.text;
+					paymentTxVO.payment_date = ManageLoans(parentDocument).transactionDate;
+					retrieveService("addLoanInterestPayment",onAddLoanInterestPayment,paymentTxVO);
+				} else {
+					Alert.show("Please select the transaction date before proceeding");
+				}
+			}
+			
+			private function onAddLoanInterestPayment(event:Event):void {
+				clearAllFields();
+				LoadingMask.hide();
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onAddLoanInterestPayment);
+					if ((event as ResultEvent).result != null){
+						Alert.show("Payment added successfully","Deposit Loan Interest Payment");
+						depositIntrGridDataCol = ((event as ResultEvent).result) as ArrayCollection;
+						if(depositIntrGridDataCol != null)
+							calculateTotalValues(depositIntrGridDataCol);
+					}
+				} else if (event is FaultEvent){
+					Alert.show("Added fail, Please try again","Loan Interest Payment");
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onAddLoanInterestPayment);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			
+			private function retrieveService(methodName:String,handler:Function,params:Object=null):void {
+				if(params==null){
+					ApplicationDelegate.getInstance().createAMFRequest(methodName,handler).send();
+				}else{
+					ApplicationDelegate.getInstance().createAMFRequest(methodName,handler).send(params);
+				}
+			}
+			
+			protected function releaseDepositLoanInterestGridBtn_clickHandler(event:MouseEvent):void{
+				var serchReqVo:SearchRequestVO = new SearchRequestVO;
+				serchReqVo.loanNo = int(ManageLoans(this.parentDocument).depositLoanNoTxt.text);
+				serchReqVo.transactionDate = (this.parentDocument as ManageLoans).transactionDateComp.text;
+				serchReqVo.transactionTypeId = 2;
+				serchReqVo.releaseTypeId = releaseTypeCmb.selectedItem.releaseTypeId;
+				retrieveService("releaseLoan",onReleaseLoan,serchReqVo); 
+			}
+			
+			private function onReleaseLoan(event:Event):void {
+				LoadingMask.hide();
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onReleaseLoan);
+					if ((event as ResultEvent).result != null){
+						var response:ResponseVO = ((event as ResultEvent).result) as ResponseVO;
+						if(response!=null){
+							if(response.status=="SUCCESS"){
+								Alert.show(response.description,"Release Success");
+								releaseLoanInterestGridBtn.enabled = false;
+							}else if(response.status=="FAILURE"){
+								Alert.show(response.description,"Release Failure");
+							}
+						}else{
+							Alert.show("Release fail, Please try again","Release Failure");
+						}
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onReleaseLoan);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			
+		]]>	
+	</fx:Script>-->
+	<mx:VBox width="100%" height="100%" borderColor="#a8a172" borderStyle="solid"
+			 paddingLeft="5" paddingRight="5">
+		<mx:HBox width="100%" height="25" verticalAlign="middle" paddingBottom="0" >
+			<mx:Label id="depositLoanNoRB" color="#000000" fontWeight="normal"
+							text="Deposit Loan No:"/> <!--chromeColor="#E7E0CB"/click="depositLoanNoRB_changeHandler(event)"/>-->
+			<mx:TextInput height="19" width="80" id="depositLoanNoTxt" editable="true" 
+						  color="#000000" fontWeight="normal" restrict="0-9"/><!-- enter="loanSearchBtn_clickHandler(event)"
+			click="depositLoanNoTxt_clickHandler(event)"/>-->
+			<mx:Spacer width="5" />
+			<mx:Button height="19" id="loanSearchBtn" label="Search" cornerRadius="3"
+					   chromeColor="#E7E0CB" color="#000000" fontWeight="normal"/><!-- click="loanSearchBtn_clickHandler(event)"/>-->
+		</mx:HBox>
+		<mx:HRule width="100%" />
+		<s:HGroup width="100%" styleName="loanGroup">
+			<mx:HBox id="depositLoanInterestPaymentForm1" backgroundColor="#FFFFFF" borderVisible="false" width="100%">
+				<mx:Label text="Payment type" color="#000000" fontWeight="normal"
+							  textAlign="left"  />
+					<mx:ComboBox cornerRadius="0" arrowButtonWidth="16" openDuration="0" closeDuration="0" height="19" id="depositLoanPaymentTypeCmb" chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+								 color="#000000" labelField="payment_type" >
+						<mx:ArrayCollection>
+							<fx:String>Interest</fx:String>
+							<fx:String>Principle</fx:String>
+						</mx:ArrayCollection>
+					</mx:ComboBox>
+				<mx:Label text="Interest Slab" color="#000000" fontWeight="normal"
+							  textAlign="left"/>
+					<mx:TextInput height="19" width="100" id="depositLoanInterestSlabTxt" fontWeight="normal" />
+				
+				<mx:Label text="Interest Amount" color="#000000" fontWeight="normal"
+							 textAlign="left"/>
+					<mx:TextInput height="19" width="100" id="depositLoanInterestAmountTxt" fontWeight="normal" />
+				<mx:Label text="Over Due Charge(Penalty)" color="#000000" fontWeight="normal"
+							 textAlign="left"/>
+					<mx:TextInput height="19" width="100" id="depositLoanOverdueChargeTxt" fontWeight="normal" />
+				<mx:Button cornerRadius="3" height="19" id="insertDepositLoanInterestGridBtn" chromeColor="#E7E0CB"
+						   color="#000000" fontWeight="normal" label="Add"/><!-- click="insertDepositnterestGridBtn_clickHandler(event)"/>-->
+				
+				<mx:Button cornerRadius="3" height="19" id="updateDepositLoanInterestGridBtn" chromeColor="#E7E0CB"
+						   color="#000000" fontWeight="normal" label="Update"/>
+				
+				<mx:Button cornerRadius="3" height="19" id="deleteDepositLoanInterestGridBtn" chromeColor="#E7E0CB"
+						   color="#000000" fontWeight="normal" label="Delete"/>				
+			</mx:HBox>
+		</s:HGroup>
+		
+		
+		<mx:DataGrid id="depositLoanInterestPaymentGrid" width="100%" height="100%" headerHeight="21" fontSize="11"
+					 alternatingItemColors="[#ffffff,#f1f0ea]" rollOverColor="#E1DCCC" rowHeight="19"
+					 selectionColor="#D4CDB8" chromeColor="#E7E0CB" color="#000000" textAlign="center"
+					 fontWeight="normal" horizontalScrollPolicy="on" verticalScrollPolicy="on">
+					 <!--dataProvider="{depositIntrGridDataCol}">-->
+			
+			<mx:columns>
+				<mx:DataGridColumn headerText="S.No" width="40"  /> <!--labelFunction="serialLabelFunction" -->
+				<mx:DataGridColumn headerText="Pay Date" dataField="payment_date" />
+				<mx:DataGridColumn headerText="Payment Type" /> <!--labelFunction="paymentTypeFunction" -->
+				<mx:DataGridColumn headerText="Deposit Loan No" dataField="loanNo" />
+				<mx:DataGridColumn headerText="Principle Amount" dataField="principal_amount"  />
+				<mx:DataGridColumn headerText="Interest Amount" dataField="interest_amount"/>
+				<mx:DataGridColumn headerText="Interest Slab" dataField="actualInterestRate"  />
+				<mx:DataGridColumn headerText="Overdue charges" dataField="overDueCharges" />
+				<!--<mx:DataGridColumn headerText="Status" dataField="status" />-->
+			</mx:columns> 
+		</mx:DataGrid>
+		<mx:HBox id="totalDepositLoanInterestBox" height="20" backgroundColor="#f1f0ea" width="100%" borderColor="#a8a172" horizontalAlign="center" verticalAlign="middle" borderStyle="solid">
+			<mx:Label id="totalDepositLoanPrincipleAmnt" text="Total Principle Amount:" color="#000000" fontWeight="bold" /> 
+			<mx:Label id="totalDepositLoanPrincipleAmntTxt"  color="#EE380E" fontSize="15" 
+					  fontWeight="bold" /> <!--text="{totalPrincipleAmount}"-->
+			<mx:Spacer width="10" />
+			<mx:Label id="totalDepositLoanInterestAmnt" text="Total Interest Amount:" color="#000000" fontWeight="bold" /> 
+			<mx:Label id="totalDepositLoanInteresttTxt"  color="#EE380E" fontSize="15" 
+					  fontWeight="bold" /> <!--text="{totalInterestAmount}"-->
+		</mx:HBox>
+		<s:HGroup width="100%" verticalAlign="middle" horizontalAlign="center">			
+		</s:HGroup>
+		<s:HGroup width="100%" verticalAlign="middle" horizontalAlign="center">
+			<mx:Label text="Release Type" color="#000000" fontWeight="normal"
+					  textAlign="left" />
+			<mx:ComboBox cornerRadius="0" arrowButtonWidth="16" openDuration="0" closeDuration="0" height="19" id="releaseTypeCmb" chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+						 color="#000000" labelField="releaseType" >
+			</mx:ComboBox>
+			<mx:Spacer width="30"/>
+			<mx:Button cornerRadius="3" height="19" id="releaseLoanInterestGridBtn" chromeColor="#E7E0CB"
+					   color="#000000" fontWeight="normal" label="Release"/><!-- click="releaseDepositLoanInterestGridBtn_clickHandler(event)"/>-->
+		</s:HGroup>
+	</mx:VBox>
+
+</mx:Panel>	

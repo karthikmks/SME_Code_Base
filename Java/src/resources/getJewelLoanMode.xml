@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>select jewel_loan_mode, created_by, created_timestamp,
+			modified_by, modified_timestamp, active_flag, jewel_loan_mode_id from
+			jewel_loan_mode</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.JewelLoanModeVO
+		</inputvo>
+		<inputparams>
+		</inputparams>
+		<resultsets>
+			<resultset>
+				<resultsetname>DEPOSIT_PLACE</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.JewelLoanModeVO
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>JewelLoanMode</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>2</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>CreatedBy</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>3</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>CreatedTimestamp</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>4</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>ModifiedBy</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>5</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>ModifiedTimestamp</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>6</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>ActiveFlag</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>7</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>JewelLoanModeId</voattribute>
+					<votype>int</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

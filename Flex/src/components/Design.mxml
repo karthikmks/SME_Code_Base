@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:local="*" xmlns:components="components.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import mx.containers.TitleWindow;
+						
+			protected function selectCustomerBtn_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				var selectCustomerPopUpWindow:SearchCustomerWidget = SearchCustomerWidget(PopUpManager.createPopUp(UIComponent(this.parentApplication), SearchCustomerWidget, true) );
+				selectCustomerPopUpWindow.title="Select Customer";
+				selectCustomerPopUpWindow.setStyle("borderAlpha", 0.9);
+				selectCustomerPopUpWindow.showCloseButton=true;
+				selectCustomerPopUpWindow.addEventListener(CloseEvent.CLOSE,closeSelectCustomerPopUp);
+				PopUpManager.centerPopUp(selectCustomerPopUpWindow);
+			}
+			
+			private function closeSelectCustomerPopUp(event:CloseEvent):void {
+				PopUpManager.removePopUp(TitleWindow(event.target));
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:VBox width="100%" height="100%" borderStyle="solid">
+		<mx:HBox width="100%" height="20%" borderStyle="solid">
+			<mx:VBox borderStyle="solid" width="40%" height="100%">
+				<mx:HBox paddingTop="5" paddingLeft="5">					
+					<mx:Label text="Customer Details :" fontWeight="bold" textDecoration="underline"/>
+					<s:Button id="selectCustomerBtn" label="Select Customer" click="selectCustomerBtn_clickHandler(event)" />														
+				</mx:HBox>				
+				<components:Customer>
+				</components:Customer>
+			</mx:VBox>
+			<mx:VBox borderStyle="solid" width="40%" height="100%">	
+				<mx:Label text="Scheme Details :" fontWeight="bold" paddingTop="5" paddingLeft="5" textDecoration="underline"/>
+				<components:Scheme >					
+				</components:Scheme>
+			</mx:VBox>
+			<mx:VBox borderStyle="solid" width="20%" height="100%" paddingLeft="5" paddingRight="5" paddingBottom="5" paddingTop="5" horizontalAlign="center" verticalAlign="middle" autoLayout="false">
+				<mx:Image width="100" height="150"  source="C:\Documents and Settings\devtest\My Documents\Flex Builder 3\SME\src\assets\images\No_Photo_Available.jpg" />
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox width="100%" height="30%" borderStyle="solid">
+			<mx:VBox borderStyle="solid" width="80%" height="100%"> 
+				<mx:Label text="Loan Details :" fontWeight="bold" paddingTop="5" paddingLeft="5" textDecoration="underline"/>
+				<components:Loan>
+				</components:Loan>
+			</mx:VBox>
+			<mx:VBox borderStyle="solid" width="20%" height="100%" paddingLeft="5" paddingRight="5" paddingBottom="5" paddingTop="5" horizontalAlign="center" verticalAlign="middle" autoLayout="false">
+				<mx:Image width="150" height="150"  source="C:\Documents and Settings\devtest\My Documents\Flex Builder 3\SME\src\assets\images\No_Photo_Available.jpg" />
+			</mx:VBox>
+		</mx:HBox>
+		<mx:VBox width="100%" height="38%" borderStyle="solid">
+			<mx:VBox borderStyle="solid" width="100%" height="25%">
+				<mx:Label text="Jewel Master :" fontWeight="bold" paddingTop="5" paddingLeft="5" textDecoration="underline"/>
+				<components:JewelMaster paddingBottom="5">
+				</components:JewelMaster>
+			</mx:VBox>
+			<mx:VBox borderStyle="solid" width="100%" height="75%">
+				<mx:Label text="Item Details :" fontWeight="bold" paddingTop="5" paddingLeft="5" textDecoration="underline"/>
+				<components:ItemDetails paddingBottom="5" paddingLeft="5" paddingRight="5">
+				</components:ItemDetails>
+			</mx:VBox>
+		</mx:VBox>
+		<mx:HBox width="100%" height="12%" borderStyle="solid">
+			<mx:VBox borderStyle="solid" width="50%" height="100%">
+				<mx:Label text="Insta Loan Details (optional):" fontWeight="bold" paddingTop="5" paddingLeft="5" textDecoration="underline"/>
+				<components:InstaLoan>
+					
+				</components:InstaLoan>
+			</mx:VBox>
+			<mx:HBox borderStyle="solid" width="50%" height="100%">
+				<mx:VBox width="70%" height="100%" paddingLeft="5">
+					<mx:Label text="Remarks :" fontWeight="bold" paddingTop="5" paddingLeft="5" textDecoration="underline"/>
+					<s:TextArea width="70%" height="70%" paddingLeft="5"/>
+				</mx:VBox>
+				<mx:VBox width="30%" height="100%" verticalAlign="middle" horizontalAlign="left">
+					<mx:HBox>
+						<s:Button label="Reset" />
+						<mx:Spacer height="10" />
+						<s:Button label="Submit" />	
+					</mx:HBox>					
+				</mx:VBox>				
+			</mx:HBox>
+		</mx:HBox>
+	</mx:VBox>
+</mx:VBox>

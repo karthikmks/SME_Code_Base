@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 creationComplete="group1_creationCompleteHandler(event)" 
+		 > 
+	
+	<fx:Script> 
+		<![CDATA[                    
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			
+			[Bindable]
+			private var imgUrl:String;
+			
+			public function set assignImage(value:String):void 
+			{ 
+				imgUrl = value; 
+			} 
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				this.addEventListener(ResizeEvent.RESIZE, group1_resizeHandler); 
+			}    
+			
+			protected function group1_resizeHandler(event:ResizeEvent):void
+			{                           
+				updateImageDimensionsAndPosition(this.width, this.height);
+			}           
+			
+			private function updateImageDimensionsAndPosition(w:Number, h:Number):void 
+			{ 
+				var aspect:Number = imgA.width / imgA.height;    
+				var containerAspect:Number = w / h;
+				
+				if ( isNaN(aspect) == false )
+				{                       
+					if (aspect <= containerAspect)  
+					{ 
+						imgA.height = h; 
+						imgA.width = aspect * imgA.height;                  
+					} 
+					else  
+					{ 
+						imgA.width = w; 
+						imgA.height = imgA.width / aspect; 
+					} 
+					
+					// If you want to horizontally center the image, uncomment the following 
+					/*
+					var oldX:Number = imgA.x;                           
+					var newX:Number = w/2 - imgA.width/2; 
+					if ( (oldX != newX) && (newX > 0) )
+					{
+					imgA.x = newX;
+					}
+					*/                  
+				}            
+			} 
+		]]>  
+	</fx:Script>          
+	
+	<mx:Image id="imgA" visible="false" top="0" maintainAspectRatio="true"  source="{imgUrl}" />         
+</mx:VBox>

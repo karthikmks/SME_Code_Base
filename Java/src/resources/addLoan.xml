@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1">
+		<inputparams>
+			<inputparam>
+				<paramname>jewelLoanTypeId</paramname>
+				<paramtype>INTEGER</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.RequestVO
+					</classname>
+					<attribute>JewelLoanTypeId</attribute>
+					<votype>int</votype>
+				</function>
+			</inputparam>
+		</inputparams>
+		<outputparams>
+			<outputparam>
+				<paramname>loanNo</paramname>
+				<paramtype>INTEGER</paramtype>
+			</outputparam>
+		</outputparams>
+	</storedprocedure>
+</storedprocedures>

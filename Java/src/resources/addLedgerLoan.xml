@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>INSERT INTO jewel_loan_transaction (`jewel_loan_no`, `jewel_loan_transaction_date`, `active_flag`) 
+		 VALUES (now(), 'Y')</sqlquery>		
+		<databaseType>mysql</databaseType>		
+		<inputvo>com.bfp.valueobjects.JewelLoanTransactionVO</inputvo>		
+		<inputparams>
+			<inputparam>
+				<paramname>jewel_loan_no</paramname>
+				<paramtype>Int</paramtype>
+				<function> 
+					<classname>com.bfp.valueobjects.JewelLoanTransactionVO</classname>
+					<attribute>JewelLoanNo</attribute>
+					<votype>int</votype>    
+				</function>                   
+			</inputparam>
+		</inputparams>	
+	</storedprocedure>
+</storedprocedures>

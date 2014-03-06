@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" xmlns:components="components.*" >
+
+	<fx:Script>
+		<![CDATA[
+			import util.SMEConstants;
+			import util.SMEModel;
+			
+			import valueobject.AppComponentVO;
+			import valueobject.AppConfigurationVO;
+			import valueobject.JewelLoanTypeVO;
+			
+			public function getData(appConfigVO:AppConfigurationVO):void{
+				if(appConfigVO!=null){
+					var appCompVO:AppComponentVO;
+					if(addNewLoanHeader.checkBox.selected){
+						//ALNCHG
+						if(docServiceChargeCkb.selected){
+							appCompVO = new AppComponentVO;
+							appCompVO.componentId = docServiceChargeCkb.name;
+							appCompVO.visibleFlag = SMEConstants.FLAG_Y;
+						}else{
+							appCompVO = new AppComponentVO;
+							appCompVO.componentId = docServiceChargeCkb.name;
+							appCompVO.visibleFlag = SMEConstants.FLAG_N;
+						}
+						appConfigVO.componentList.addItem(appCompVO);
+						//ALLNTP
+						if(loanTypeCkb.selected){
+							appCompVO = new AppComponentVO;
+							appCompVO.componentId = loanTypeCmb.name;
+							appCompVO.visibleFlag = SMEConstants.FLAG_Y;
+							var listOfId:String = "";
+							for each(var loanTypeVO:JewelLoanTypeVO in loanTypeCmb.selectedItems){
+								listOfId += loanTypeVO.jewelLoanTypeId + ",";
+							}
+							listOfId = listOfId.substring(0,listOfId.length-1);
+							appCompVO.possibleValues = listOfId;
+						}else{
+							appCompVO = new AppComponentVO;
+							appCompVO.componentId = docServiceChargeCkb.name;
+							appCompVO.visibleFlag = SMEConstants.FLAG_N;
+						}
+						appConfigVO.componentList.addItem(appCompVO);
+					} 
+				}
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<!--item 1-->
+	<components:CollabsibleHeader id="addNewLoanHeader" headerTitle="Add New Loan" width="100%"/>
+	<mx:HBox paddingLeft="50" width="90%" styleName="smeLoansBackground">
+		<mx:VBox width="80%" borderStyle="solid" backgroundColor="#FFFFFF"
+				 paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10" 
+				 visible="{addNewLoanHeader._openIcon}" includeInLayout="{addNewLoanHeader._openIcon}">
+			<mx:CheckBox id="docServiceChargeCkb" name="ALNCHG" label="Document, Service and Tax Change Section"/>
+			<mx:HBox paddingLeft="0" paddingRight="0" paddingBottom="0" paddingTop="0">
+				<mx:CheckBox id="loanTypeCkb" label="Loan Type"/>
+				<components:MultiSelectComboBox id="loanTypeCmb" name="ALLNTP"
+												labelField="jewel_loan_type" enabled="{loanTypeCkb.selected}"
+												dataProvider="{SMEModel.getinstance().appCompMetaData.jewelLoanTypes}"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+	
+</mx:VBox>

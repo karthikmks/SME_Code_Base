@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			public var reportsGridData:ArrayCollection = new ArrayCollection;
+			
+			private function serialLabelFunction(item:Object, column:DataGridColumn):String{
+				var index:int = reportsGridData.getItemIndex(item);
+				if (index > -1)
+					return (index + 1).toString();
+				return "";
+			}
+			
+			protected function loanSearchBtn_clickHandler(event:Event):void{
+				reportsGrid.visible=true;
+			}
+		]]>
+	</fx:Script>
+	<mx:VBox id="loanPanel" width="100%" height="100%"
+			 label="Search Loan" verticalGap="0">
+		<mx:HBox width="100%" height="25" verticalAlign="middle" paddingBottom="0" >
+			<mx:Label id="transactionDateLbl" text="Created Date : " height="19" width="100" color="#000000" fontWeight="normal"/>
+			<mx:ComboBox>
+				<mx:ArrayList>
+					<fx:String>Today</fx:String>
+					<fx:String>Last 3 days</fx:String>
+					<fx:String>Last 7 days</fx:String>
+					<fx:String>Last 14 days</fx:String>
+					<fx:String>Last 30 days</fx:String>
+					<fx:String>Date Range</fx:String>
+				</mx:ArrayList>
+			</mx:ComboBox>
+			<mx:Spacer width="5" />
+			<mx:DateField id="rangeStartDate" />
+			<s:Label text="to" fontWeight="bold" />
+			<mx:DateField id="rangeEndDate" />
+			<mx:Spacer width="35" />
+			<mx:CheckBox id="loanNo" label="Loan No : "/>
+			<mx:TextInput height="19" width="80" id="depositLoanNoTxt" editable="true" 
+						  color="#000000" fontWeight="normal" restrict="0-9"/>
+			<mx:Spacer width="5" />
+			<mx:Button height="19" id="loanSearchBtn" label="Search" cornerRadius="3"
+					   chromeColor="#E7E0CB" color="#000000" fontWeight="normal" click="loanSearchBtn_clickHandler(event)"/>
+			<mx:Spacer width="5" />
+			<mx:Button height="19" id="resetBtn" label="Reset" cornerRadius="3"
+					   chromeColor="#E7E0CB" color="#000000" fontWeight="normal"/><!-- click="resetBtn_clickHandler(event)"/>-->
+		</mx:HBox>
+		
+		<mx:HRule width="100%" shadowColor="#a8a172"/>
+		<mx:Spacer height="5"/>
+		<mx:DataGrid id="reportsGrid" width="100%" height="100%" textAlign="left"
+					 alternatingItemColors="[#ffffff,#f1f0ea]"
+					 chromeColor="#E7E0CB" color="#000000" fontWeight="normal" fontSize="11"
+					 rollOverColor="#E1DCCC" selectionColor="#D4CDB8" headerHeight="21"
+					 dataProvider="{reportsGridData}"
+					 horizontalScrollPolicy="on" verticalScrollPolicy="auto" visible="false">
+			
+			<mx:columns>
+				<mx:DataGridColumn headerText="S.No" labelFunction="serialLabelFunction" width="60"/>
+				<mx:DataGridColumn headerText="Deposit Loan#" dataField="deposit_loan_no" />
+				<mx:DataGridColumn headerText="Jewel Loan#" dataField="loanNo" />
+				<mx:DataGridColumn headerText="Transaction Date" dataField="deposit_loan_transaction_date" />
+				<mx:DataGridColumn headerText="Loan Tenure" dataField="loanTenure" />
+				<mx:DataGridColumn headerText="Deposit Place" dataField="depositPlace" />
+				<mx:DataGridColumn headerText="Acct Holder Name" dataField="acctHolderName" />
+				<mx:DataGridColumn headerText="Rate per gram" dataField="rate_per_gram" />
+				<mx:DataGridColumn headerText="Loan Amount" dataField="loan_amount" />
+				<mx:DataGridColumn headerText="Interest Rate" dataField="interest_rate" />
+				<mx:DataGridColumn headerText="Joint Loan" dataField="isThisJointLoan" />
+				<mx:DataGridColumn headerText="Ledger Loan" dataField="ledgerLoan" />
+				<mx:DataGridColumn headerText="Other Charges" dataField="other_fee" />
+				<mx:DataGridColumn headerText="Penalty Interest" dataField="penaltyInterest" />
+				<mx:DataGridColumn headerText="Interest Period" dataField="interestPeriod" />
+				<mx:DataGridColumn headerText="Total gross weight" dataField="total_gross_weight" />
+				<mx:DataGridColumn headerText="Total reduced weight" dataField="total_reduced_weight" />
+				<mx:DataGridColumn headerText="Total net weight" dataField="total_net_weight" />
+				<mx:DataGridColumn headerText="Total count" dataField="total_count" />
+				<mx:DataGridColumn headerText="Authorized" dataField="authorized" />
+				<mx:DataGridColumn headerText="Created by" dataField="created_by" />
+				<mx:DataGridColumn headerText="Created timestamp" dataField="created_timestamp" />
+			</mx:columns>
+		</mx:DataGrid>	
+	</mx:VBox>
+</mx:Panel>

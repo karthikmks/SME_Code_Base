@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>select a.report_type_id, a.report_type, b.field_id, b.field_name
+from report_types a, report_fields b, report_fields_mapping c
+where c.report_type_id = a.report_type_id and c.field_id = b.field_id order by c.report_type_id, b.field_id</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.DepositPlaceVO</inputvo>
+		<inputparams>
+		</inputparams>
+		<resultsets>
+			<resultset>
+				<resultsetname>DEPOSIT_PLACE</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.ReportMetadata
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>ReportTypeId</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>2</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>ReportName</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>FieldId</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>4</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>FieldName</voattribute>
+					<votype>String</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

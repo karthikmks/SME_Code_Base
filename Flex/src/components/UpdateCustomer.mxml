@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" layout="absolute">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			
+			import mx.controls.Alert;
+			
+			private var _editFlow:Boolean;
+			
+			public function set editFlow(edit:Boolean):void {
+				_editFlow=edit;
+			}		
+			
+			private function submit(event:Event):void {
+				if(!_editFlow) {
+					Alert.show("New Customer created successfully");
+				} else {
+					Alert.show("Customer details updated successfully");
+				}
+			}
+			public function searchCustomer(event:MouseEvent):void{
+				customerDetailsBox.visible=true;
+			}
+			
+		]]>
+	</fx:Script>
+	<mx:VBox width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+		<mx:HBox verticalAlign="middle">
+			<mx:Label text="Search by:" />
+			<mx:ComboBox>
+				<mx:ArrayList>
+					<fx:String>Customer ID</fx:String>
+					<fx:String>Customer Name</fx:String>
+				</mx:ArrayList>
+			</mx:ComboBox>
+			<s:TextInput id="searchValue" fontWeight="normal" />
+			<mx:Spacer width="30"  />
+			<mx:CheckBox id="createdDateCheck" label="Created Date"/>
+			<mx:ComboBox>
+				<mx:ArrayList>
+					<fx:String>Today</fx:String>
+					<fx:String>Last 3 days</fx:String>
+					<fx:String>Last 7 days</fx:String>
+					<fx:String>Last 14 days</fx:String>
+					<fx:String>Last 30 days</fx:String>
+					<fx:String>Date Range</fx:String>
+				</mx:ArrayList>
+			</mx:ComboBox> 
+			<mx:DateField id="rangeStartDate" />
+			<s:Label text="to" fontWeight="bold" />
+			<mx:DateField id="rangeEndDate" />
+			<mx:Spacer width="35" />
+			<s:Button id="searchBtn" label="Search" click="searchCustomer(event)"/>
+		</mx:HBox>
+		<mx:Box id="customerDetailsBox" width="100%" height="100%" visible="false" >
+			<mx:HBox borderStyle="solid" borderVisible="true" dropShadowVisible="true"
+					 paddingLeft="10" paddingRight="10" width="100%" height="60%">
+				<mx:VBox id="customerDetailsForm" backgroundColor="#FFFFFF" borderVisible="false" width="50%" height="100%" paddingTop="10">
+					<mx:Label text="Name Information:" fontWeight="bold"/>
+					<mx:HRule width="100%" height="5" chromeColor="#1C6710"/>
+					<mx:HBox paddingTop="7">
+						<mx:Label text="Customer Name" />
+						<mx:TextInput id="custName" fontWeight="normal" />
+						<mx:Spacer width="50"/>
+						<mx:Label text="Initial" />
+						<mx:TextInput id="initial" fontWeight="normal" />
+						<mx:Spacer width="60"/>
+						<mx:Label text="Father/Spouse Name" />
+						<mx:TextInput id="dependentName" fontWeight="normal" />
+					</mx:HBox>
+					<mx:Label text="Personal Details:" fontWeight="bold"/>			
+					<mx:HRule width="100%" height="5" chromeColor="#1C6710"/>
+					<mx:HBox paddingTop="7">
+						<mx:Label text="Gender" />
+						<mx:ComboBox id="gender" >
+							<mx:ArrayCollection>
+								<fx:String>Male</fx:String>
+								<fx:String>Female</fx:String>
+							</mx:ArrayCollection>
+						</mx:ComboBox>
+						<mx:Spacer width="15" />
+						<mx:Label text="DOB" />
+						<mx:DateField id="custDob"/>
+						<mx:Spacer width="15" />
+						<mx:Label text="Marital Status" />
+						<mx:ComboBox id="maritalStatus">
+							<mx:ArrayCollection>
+								<fx:String>Single</fx:String>
+								<fx:String>Married</fx:String>
+								<fx:String>Divorced</fx:String>
+							</mx:ArrayCollection>
+						</mx:ComboBox>
+						<mx:Spacer width="15" />
+						<mx:Label text="Nationality" />
+						<mx:ComboBox id="nationality">
+							<mx:ArrayCollection>
+								<fx:String>Select</fx:String>
+								<fx:String>Indian</fx:String>
+							</mx:ArrayCollection>
+						</mx:ComboBox>
+						<mx:Spacer width="15" />
+						<mx:Label text="Email Id" />
+						<mx:TextInput id="emailId" fontWeight="normal" />
+					</mx:HBox>
+					<mx:Label text="Contact Details:" fontWeight="bold"/>
+					<mx:HRule width="100%" height="5" chromeColor="#1C6710"/>
+					<mx:HBox paddingTop="7" width="100%">
+						<mx:Label text="Contact Number1" />
+						<mx:TextInput id="custMobile" fontWeight="normal" width="250"/>
+						<mx:Spacer width="25%"/>
+						<mx:Label text="Contact Number2   " />
+						<mx:TextInput id="custLandline" fontWeight="normal" width="250"/>
+					</mx:HBox>
+					<mx:HBox paddingTop="10" width="100%">
+						<mx:Label text="Current Address   " />
+						<mx:TextArea id="currentAddress" height="75" width="250" fontWeight="normal"/>
+						<mx:Spacer width="19%"/>
+						<mx:Label text="Permanent Address" />
+						<mx:TextArea id="permanentAddress" height="75" width="250" fontWeight="normal"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VRule height="100%" />
+				<mx:VBox width="30%" height="100%" paddingTop="10" paddingBottom="5">
+					<mx:Label text="Preview - Customer attachment details:" fontWeight="bold"/>
+					<mx:HRule width="100%" height="5" chromeColor="#1C6710"/>
+					<mx:Label text="Document Type: ID Proof"/>
+					<mx:Label text="Document Name: 0001-PanCard.jpg" paddingTop="7"/>
+					<mx:HRule width="100%" height="5" chromeColor="#1C6710"/>
+					<mx:Box id="custImageBox" borderVisible="true" borderStyle="solid" 
+							width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+						<mx:Image id="custImage" />
+					</mx:Box>
+				</mx:VBox>
+			</mx:HBox>
+			<mx:HBox borderStyle="solid" borderVisible="true" dropShadowVisible="true"
+					 paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%" height="35%">
+				<mx:VBox id="customerProofForm" backgroundColor="#FFFFFF" borderVisible="false" width="50%">
+					<mx:Label text="Proof Details:" fontWeight="bold"/>
+					<mx:HRule width="100%" height="5" chromeColor="#1C6710"/>
+					<mx:HBox width="100%">
+						<mx:Label text="ID Proof" />
+						<mx:Spacer width="15%"/>
+						<mx:ComboBox id="idProof">
+							<mx:ArrayCollection>
+								<fx:String>PAN Card</fx:String>
+								<fx:String>Ration Card</fx:String>
+								<fx:String>Passport</fx:String>
+								<fx:String>Voter ID</fx:String>
+							</mx:ArrayCollection>
+						</mx:ComboBox>
+						<mx:Button label="Browse" />
+						<mx:Label text="C:\CustomerDetails\0001-PanCard.jpg" />
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="Address Proof" />
+						<mx:Spacer width="9%"/>
+						<mx:ComboBox id="addressProof" selectedIndex="1">
+							<mx:ArrayCollection>
+								<fx:String>PAN Card</fx:String>
+								<fx:String>Ration Card</fx:String>
+								<fx:String>Passport</fx:String>
+								<fx:String>Voter ID</fx:String>
+							</mx:ArrayCollection>
+						</mx:ComboBox>
+						<mx:Button label="Browse" />
+						<mx:Label text="C:\CustomerDetails\0001-RationCard.jpg" />
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="Signature Proof" />
+						<mx:Spacer width="8%"/>
+						<mx:ComboBox id="signatureProof" selectedIndex="2">
+							<mx:ArrayCollection>
+								<fx:String>PAN Card</fx:String>
+								<fx:String>Ration Card</fx:String>
+								<fx:String>Passport</fx:String>
+								<fx:String>Voter ID</fx:String>
+							</mx:ArrayCollection>
+						</mx:ComboBox>
+						<mx:Button label="Browse" />
+						<mx:Label text="C:\CustomerDetails\0001-Passport.jpg" />
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VRule height="100%" />
+				<mx:VBox id="bankAccountForm" backgroundColor="#FFFFFF" borderVisible="false" width="50%">
+					<mx:Label text="Bank Account Details:" fontWeight="bold"/>
+					<mx:HRule width="100%" height="5" chromeColor="#1C6710"/>
+					<mx:HBox width="100%">
+						<mx:Label text="Bank Name" />
+						<mx:Spacer width="29%"/>
+						<mx:ComboBox id="bankName">
+							<mx:ArrayCollection>
+								<fx:String>SBI</fx:String>
+								<fx:String>HDFC</fx:String>
+								<fx:String>South Indian</fx:String>
+								<fx:String>TMB</fx:String>
+							</mx:ArrayCollection>
+						</mx:ComboBox>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="Account Holder Name" />
+						<mx:Spacer width="20%"/>
+						<mx:TextInput id="accountHolderName" />
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="Account No" />
+						<mx:Spacer width="30%"/>
+						<mx:TextInput id="accountNo" />
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="Account Type" />
+						<mx:Spacer width="28%"/>
+						<mx:ComboBox id="accountType">
+							<mx:ArrayCollection>
+								<fx:String>Current</fx:String>
+								<fx:String>Savings</fx:String>
+							</mx:ArrayCollection>
+						</mx:ComboBox>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="IFSC Code" />
+						<mx:Spacer width="30%"/>
+						<mx:TextInput id="ifscCode" />
+					</mx:HBox>
+				</mx:VBox>
+			</mx:HBox>
+			<mx:HBox width="100%" height="5%" verticalAlign="middle" horizontalAlign="center">
+				<mx:Spacer width="80%" />
+				<mx:Button id="cancelBtn" label="Cancel" />
+				<mx:Button id="resetBtn" label="Reset" />
+				<mx:Button id="saveBtn" label="Save" change="submit(event);"/>
+			</mx:HBox>	
+			</mx:Box>
+	</mx:VBox>
+</mx:Panel>

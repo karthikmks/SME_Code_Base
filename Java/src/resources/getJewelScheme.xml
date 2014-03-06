@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>select a.jewel_scheme_name, a.created_by,
+			a.created_timestamp, a.modified_by, a.modified_timestamp,
+			a.active_flag,
+			a.jewel_scheme_id, a.loan_tenure_in_months, a.is_flexible_scheme,
+			b.possible_flexi_months from jewel_scheme a left join
+			jewel_scheme_flexible_durations b
+			on a.jewel_scheme_id = b.jewel_scheme_id order by a.order_id</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.JewelSchemeVO
+		</inputvo>
+		<inputparams>
+		</inputparams>
+		<resultsets>
+			<resultset>
+				<resultsetname>JEWEL_SCHEME_NAME</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.JewelSchemeVO
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Jewel_scheme_name</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>2</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Created_by</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>3</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Created_timestamp</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>4</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Modified_by</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>5</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Modified_timestamp</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>6</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Active_flag</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>7</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>JewelSchemeId</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>8</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>LoanTenureInMonths</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>9</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>FlexibleSchemeFlag</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>10</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>PossibleFlexiMonth</voattribute>
+					<votype>int</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

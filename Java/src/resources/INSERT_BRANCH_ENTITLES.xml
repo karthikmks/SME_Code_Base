@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+	<sqlquery>
+	
+	INSERT INTO branch_entitlements(
+	branch_id,
+	component_id,
+	visible_flag,
+	possible_values,
+	active) 
+	VALUES(?,?,?,?,'Y') 
+	</sqlquery>	
+	
+	<databaseType>mysql</databaseType>		
+		<inputvo>com.bfp.valueobjects.AppComponentVO</inputvo>	
+		<inputparams>
+			<inputparam>
+				<paramname>branchId</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.AppComponentVO
+					</classname>
+					<attribute>BranchId</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>componentId</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.AppComponentVO
+					</classname>
+					<attribute>ComponentId</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>visibleFlag</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.AppComponentVO
+					</classname>
+					<attribute>VisibleFlag</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>possibleValues</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.AppComponentVO
+					</classname>
+					<attribute>PossibleValues</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+		</inputparams>
+	</storedprocedure>
+</storedprocedures>

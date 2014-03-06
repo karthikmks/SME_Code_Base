@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>
+		SELECT id_and_address_proof_id, id_and_address_proof
+		FROM id_and_address_proof 
+		WHERE active_flag = 'Y'
+		</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.IdNAddressProofVO</inputvo>
+		<inputparams>
+		</inputparams>
+		<resultsets>
+			<resultset>
+				<resultsetname>RETURN_LIST</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.IdNAddressProofVO
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>IdNAddressProofId</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>2</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>IdNAddressProof</voattribute>
+					<votype>String</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" 
+			   xmlns:components="components.*" xmlns:local="*"
+			   creationComplete="initializeApp(event)"
+			   historyManagementEnabled="false">
+	 <fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here 
+		 currentStateChanging="application1_currentStateChangingHandler(event)"
+		 resize="application1_resizeHandler(event)"-->
+	</fx:Declarations>
+	
+	<fx:Style source="/assets/css/sme.css" />
+
+	<fx:Script>
+		<![CDATA[
+			import mediator.ManageLoansMediator;
+			import mediator.SMEMediaor;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			import mx.events.StateChangeEvent;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import proxy.ManageLoansProxy;
+			import proxy.SMEProxy;
+			
+			import util.SMEConstants;
+			//Main App
+			public static const MAIN_APPLN:String = 'SME';
+			public static const SME_MEDIATOR:String = "SMEMediaor";
+			private static const MIN_WIDTH:Number = 1250;
+			private static const MIN_HEIGHT:Number = 800;
+			
+			private var facade:Facade = ApplicationFacade.getInstance(MAIN_APPLN);
+			
+			protected function initializeApp(event:FlexEvent):void
+			{
+				var source:String = this.url;
+				var queryStringPos:int = source.indexOf("?");
+				if(queryStringPos != -1)
+					source = source.substring(0,queryStringPos);
+				source = source.substr(0,source.lastIndexOf("/")+1);
+				SMEConstants.APPLICATION_URL = source;
+				trace("Appln Url: "+SMEConstants.APPLICATION_URL);
+				
+				//Start Facade
+				startFacade();
+			}
+			
+			protected function startFacade():void
+			{
+				if(facade.hasMediator(SME_MEDIATOR)){
+					facade.removeMediator(SME_MEDIATOR);
+				}
+				if(facade.hasProxy(SMEProxy.PROXY_NAME)){
+					facade.removeProxy(SMEProxy.PROXY_NAME);
+				}
+				
+				var smeMediator:SMEMediaor = new SMEMediaor(this);
+				smeMediator.smeProxy = new SMEProxy()
+				facade.registerMediator(smeMediator);
+				facade.registerProxy(smeMediator.smeProxy);
+
+				facade.sendNotification(SMEConstants.FACADE_STATRED,true);
+			}
+			
+			/*var submitMsg:String="";
+                var alert:Alert = Alert.show(submitMsg, "Tilte here",Alert.YES | Alert.NO, null,
+                    confirmHandler, null, Alert.NO);
+                use namespace mx.core.mx_internal;
+                IUITextField(alert.alertForm.textField).htmlText = submitMsg;
+				*/
+			
+			protected function application1_currentStateChangingHandler(event:StateChangeEvent):void
+			{
+				callLater(scaleElements);
+				
+			}
+			
+			protected function application1_resizeHandler(event:ResizeEvent):void
+			{
+				scaleElements();
+				
+			}
+			
+			protected function scaleElements():void
+			{
+				var newScaleX:Number = 1;
+				var newScaleY:Number = 1;
+				
+				if (width < MIN_WIDTH)
+					newScaleX = width / MIN_WIDTH;
+				
+				if (height < MIN_HEIGHT)
+					newScaleY = height / MIN_HEIGHT;
+				
+				var newScale:Number = Math.min(newScaleX, newScaleY);
+				
+				for (var i:int = 0; i < numElements; i++)
+				{
+					var element:DisplayObject = getElementAt(i) as DisplayObject;
+					
+					if (element)
+					{
+						element.scaleX = newScale;
+						element.scaleY = newScale;
+					}
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:Canvas width="100%" height="100%" id="welcomeScreen" borderVisible="true" >
+		<mx:ViewStack id="homeWindowStack" width="100%" height="100%" selectedIndex="0">
+			<components:Login id="login" width="100%" height="100%" />
+			<local:UserHomePage id="homePage" width="100%" height="100%" />
+		</mx:ViewStack>
+	</mx:Canvas>
+</mx:Application>

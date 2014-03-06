@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<mx:HBox horizontalGap="0" paddingLeft="0" paddingRight="0" width="100%" height="100%">
+		<mx:Form styleName="smeForm" paddingLeft="0" paddingRight="0" width="50%" height="100%" >
+			<mx:FormItem styleName="smeFormItem" label="Transaction Date:">
+				<mx:DateField />
+			</mx:FormItem>
+			<mx:FormItem styleName="smeFormItem" label="Scheme : ">
+				<mx:ComboBox selectedIndex="0">
+					<mx:ArrayCollection>
+						<fx:String>Economic GL</fx:String>
+						<fx:String>Value GL</fx:String>
+						<fx:String>Super GL</fx:String>
+						<fx:String>Real GL</fx:String>
+						<fx:String>Special GL</fx:String>
+					</mx:ArrayCollection>
+				</mx:ComboBox>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Spacer width="2"/>
+		<mx:Form styleName="smeForm" width="50%" height="100%" paddingLeft="0" paddingRight="0" >
+			<mx:FormItem styleName="smeFormItem" label="Loan Type:">
+				<mx:ComboBox selectedIndex="0">
+					<mx:ArrayCollection>
+						<fx:String>JL</fx:String>
+						<fx:String>RL</fx:String>
+					</mx:ArrayCollection>
+				</mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem styleName="smeFormItem" label="Loan Mode:">
+				<mx:ComboBox selectedIndex="0">
+					<mx:ArrayCollection>
+						<fx:String>Direct</fx:String>
+						<fx:String>Take Over From </fx:String>
+					</mx:ArrayCollection>
+				</mx:ComboBox>
+			</mx:FormItem>
+		</mx:Form>
+	</mx:HBox>
+	
+	
+	<!--<mx:HBox horizontalGap="0" paddingLeft="0" paddingRight="0" width="100%" height="100%">
+		<mx:Form paddingLeft="0" paddingRight="0" width="50%" height="100%" >
+			<mx:FormItem label="Transaction Date:">
+				<mx:DateField />
+			</mx:FormItem>
+			<mx:FormItem label="Loan No Generated:" enabled="false">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+			<mx:FormItem label="Loan Amount:">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>			
+			<mx:FormItem label="Release Date:">
+				<mx:DateField enabled="false" />
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Form width="50%" height="100%">
+			<mx:FormItem label="Loan Type:">
+				<mx:ComboBox selectedIndex="0">
+					<mx:ArrayCollection>
+						<fx:String>JL</fx:String>
+						<fx:String>RL</fx:String>
+					</mx:ArrayCollection>
+				</mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="Loan Mode:">
+				<mx:ComboBox selectedIndex="0">
+					<mx:ArrayCollection>
+						<fx:String>Direct</fx:String>
+						<fx:String>Take Over From</fx:String>
+					</mx:ArrayCollection>
+				</mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="Take Over From:" enabled="false">
+				<mx:ComboBox selectedIndex="0">
+					<mx:ArrayCollection>
+						<fx:String>Muthoot</fx:String>
+						<fx:String>Sriram</fx:String>
+					</mx:ArrayCollection>
+				</mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="Rate of Interest:">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Form paddingLeft="0" paddingRight="0" width="50%" height="100%">			
+			<mx:FormItem label="Rate/Gram (Corporate Rate):">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+			<mx:FormItem label="Jewel Value:" enabled="false">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+			<mx:FormItem label="High Limit Key:">
+				<s:Group>
+					<mx:HBox>
+						<mx:TextInput width="100"/>
+						<mx:Image source="" />
+					</mx:HBox>					
+				</s:Group>				
+			</mx:FormItem>
+			<mx:FormItem label="Re-Payment Type:">
+				<mx:ComboBox selectedIndex="0">
+					<mx:ArrayCollection>
+						<fx:String>Lump sum</fx:String>
+						<fx:String>EMI</fx:String>
+					</mx:ArrayCollection>
+				</mx:ComboBox>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Form paddingLeft="0" paddingRight="0" width="50%" height="100%">			
+			<mx:FormItem label="Document Charges:">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+			<mx:FormItem label="Service Charges:">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>			
+		</mx:Form>
+	</mx:HBox>-->
+</mx:VBox>

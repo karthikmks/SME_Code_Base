@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+
+	<display-name>SME Portal</display-name>
+
+	<description>SME Portal</description>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/classes/ApplicationContext.xml
+		</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>classpath:log4j.xml
+		</param-value>
+	</context-param>
+	<context-param>
+		<param-name>log4jExposeWebAppRoot</param-name>
+		<param-value>false</param-value>
+	</context-param>
+
+	<!-- Http Flex Session attribute and binding listener support -->
+	<listener>
+		<listener-class>flex.messaging.HttpFlexSession
+		</listener-class>
+	</listener>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.util.Log4jConfigListener
+		</listener-class>
+	</listener>
+
+	<welcome-file-list>
+		<welcome-file>SMEPortal.html</welcome-file>
+	</welcome-file-list>
+
+	<servlet>
+		<servlet-name>sme</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>sme</servlet-name>
+		<url-pattern>/spring/*</url-pattern>
+	</servlet-mapping>
+</web-app>

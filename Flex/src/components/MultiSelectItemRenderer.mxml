@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="true" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.XMLListCollection;
+			
+			[Bindable]
+			public var xmlDataProvider:XMLListCollection;
+			var dataObject:Object;
+			
+			override public function set data(value:Object):void{
+				if(value){	
+					super.data=value;								
+					multiSelectCheck.selected=value.multiSelectChecked;
+					multiSelectCheck.label=value[this.parentDocument.parentDocument.customLabelField];
+					dataObject=value;
+				}							
+			}
+
+			protected function multiSelectCheck_changeHandler(evt:Event):void{
+				dataObject.multiSelectChecked = CheckBox(evt.target).selected;
+				if(CheckBox(evt.target).selected && dataObject[this.parentDocument.parentDocument.customLabelField]=="All"){	
+					for each (var record:Object in this.parentDocument.parentDocument.xmlDataProvider){
+						record.multiSelectChecked=true;
+					}
+				}else if(!CheckBox(evt.target).selected && dataObject[this.parentDocument.parentDocument.customLabelField]=="All"){
+					for each (var record:Object in this.parentDocument.parentDocument.xmlDataProvider){
+						record.multiSelectChecked=false;
+					}
+				}else if(!CheckBox(evt.target).selected && dataObject[this.parentDocument.parentDocument.customLabelField]!="All"){
+					for each (var record:Object in this.parentDocument.parentDocument.xmlDataProvider){
+						if(record[this.parentDocument.parentDocument.customLabelField]=="All" ){
+							record.multiSelectChecked=false;
+							break;
+						}
+					}
+				}else if(CheckBox(evt.target).selected && dataObject[this.parentDocument.parentDocument.customLabelField]!="All"){
+					var allselected:Boolean=true;
+					for each (var record:Object in this.parentDocument.parentDocument.xmlDataProvider){
+						if(record[this.parentDocument.parentDocument.customLabelField]!="All" && (record.multiSelectChecked==null || record.multiSelectChecked==false) ){
+							allselected=false;
+							break;
+						}
+					}
+					if(allselected){
+						for each (var record:Object in this.parentDocument.parentDocument.xmlDataProvider){
+							if(record[this.parentDocument.parentDocument.customLabelField]=="All" ){
+								record.multiSelectChecked=true;
+								break;
+							}
+						}
+					}
+				}
+				invalidateProperties();
+				this.parentDocument.parentDocument.ddlMultiSelection_focusOutHandler(null);
+				
+			}
+
+			private function evnetMouseEventControll(event:MouseEvent):void{
+				event.stopImmediatePropagation();
+			}
+
+		]]>
+	</fx:Script>
+	<mx:CheckBox id="multiSelectCheck"
+				width="100%" paddingLeft="3"
+				selected="{data.multiSelectChecked}"
+				change="multiSelectCheck_changeHandler(event)"
+				mouseUp="evnetMouseEventControll(event)" 
+				mouseDown="evnetMouseEventControll(event)" />
+	
+</s:ItemRenderer>

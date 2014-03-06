@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:local="*" xmlns:components="components.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			
+		]]>
+	</fx:Script>
+		
+	<mx:HBox paddingLeft="3" paddingRight="2" horizontalGap="1" paddingTop="3" paddingBottom="2" verticalGap="0" height="100%" width="100%">
+		<mx:VBox height="100%" width="60%"  borderVisible="true" borderStyle="solid">
+			<mx:Label text=" More Loan Details:" textDecoration="underline" fontWeight="bold"/>
+			<mx:HBox height="100%" width="100%" >
+				<mx:Form styleName="smeForm" width="33%" height="100%" paddingLeft="3">
+					<mx:FormItem styleName="smeFormItem" label="Loan No Generated:" enabled="false">
+						<mx:TextInput width="100"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Loan Amount:">
+						<mx:TextInput width="100"/>
+					</mx:FormItem>			
+					<mx:FormItem styleName="smeFormItem" label="Rate of Interest:">
+						<mx:TextInput width="100"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Take Over From:" enabled="false">
+						<mx:ComboBox selectedIndex="0">
+							<mx:ArrayCollection>
+								<fx:String>Muthoot</fx:String>
+								<fx:String>Sriram</fx:String>
+							</mx:ArrayCollection>
+						</mx:ComboBox>
+					</mx:FormItem>
+				</mx:Form>
+				
+				<mx:Form styleName="smeForm" width="33%" height="100%" paddingLeft="3">
+					<mx:FormItem styleName="smeFormItem" label="Loan Tenure :">
+						<mx:Label text="Not Available" textAlign="center"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Rate/Gram (Corporate Rate):">
+						<mx:TextInput width="100"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Jewel Value:" enabled="false">
+						<mx:TextInput width="100"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="High Limit Key:">
+						<s:Group>
+							<mx:HBox>
+								<mx:TextInput width="100"/>
+								<mx:Image source="" />
+							</mx:HBox>					
+						</s:Group>				
+					</mx:FormItem>
+				</mx:Form>
+				
+				<mx:Form styleName="smeForm" width="34%" height="100%" paddingLeft="3">
+					<mx:FormItem styleName="smeFormItem" label="Re-Payment Type:">
+						<mx:ComboBox selectedIndex="0">
+							<mx:ArrayCollection>
+								<fx:String>Lump sum</fx:String>
+								<fx:String>EMI</fx:String>
+							</mx:ArrayCollection>
+						</mx:ComboBox>
+					</mx:FormItem>
+					
+					<mx:FormItem styleName="smeFormItem" label="Redeem Date:">
+						<mx:TextInput width="100" enabled="false"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Document Charges:">
+						<mx:TextInput width="100"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Service Charges:">
+							<mx:TextInput width="100"/>
+					</mx:FormItem>		
+				</mx:Form>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<mx:HBox height="100%" width="40%" borderVisible="true" borderStyle="solid">
+			<mx:VBox height="100%" width="100%" >
+			<mx:Label text=" More Customer Details:" textDecoration="underline" fontWeight="bold"/>
+				<mx:HBox width="100%" height="100%">
+					
+				<mx:Form styleName="smeForm"  width="50%" height="100%" paddingLeft="3">
+					<mx:FormItem styleName="smeFormItem" label="Total No of Loans :">
+						<mx:Label text="Not Available" textAlign="center"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Outstanding Loans : ">
+						<mx:Label text="Not Available" textAlign="center"/>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:VRule height="45"/>
+				<mx:Form styleName="smeForm"  width="50%" height="100%" paddingLeft="3">
+					<mx:FormItem styleName="smeFormItem" label="Outstanding Amount : ">
+						<mx:Label text="Not Available" textAlign="center"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Customer Address : ">
+						<mx:Label text="Not Available" textAlign="center"/>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:HBox>
+				<mx:HRule width="100%" />
+			<mx:Label text="Scheme Details:" textDecoration="underline" fontWeight="bold"/>
+				<mx:Form styleName="smeForm"  width="100%" height="100%">
+					<mx:FormItem styleName="smeFormItem" label="Rate Of Interest Breakup:">
+						<mx:Label text="Not Available" textAlign="center"/>
+					</mx:FormItem>
+					<mx:FormItem styleName="smeFormItem" label="Loan Amount Breakup:">
+						<mx:Label text="Not Available" textAlign="center"/>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:HBox>
+	
+</mx:VBox>

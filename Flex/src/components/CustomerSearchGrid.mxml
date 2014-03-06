@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			import valueobject.CustomerVO;
+			[Bindable]
+			public var searchLoanGridData:ArrayCollection = new ArrayCollection;
+			
+			private function serialLabelFunction(item:Object, column:DataGridColumn):String{
+				var index:int = searchLoanGridData.getItemIndex(item);
+				if (index > -1)
+					return (index + 1).toString();
+				return "";
+			}
+			
+			private function customerNameFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					return CustomerVO(item).customerNameInit+"."+CustomerVO(item).customerName ;
+				}
+				return "";
+			}
+			private function fatherNameFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					return CustomerVO(item).fatherNameInit+"."+CustomerVO(item).fatherName ;
+				}
+				return "";
+			}
+			
+			public function setSearchResultData(arrColl:ArrayCollection):void{
+				searchLoanGridData = arrColl;
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:DataGrid id="reportsGrid" width="100%" height="100%" styleName="smeDatagrid" dataProvider="{searchLoanGridData}"
+				 horizontalScrollPolicy="on" >
+		<mx:columns>
+			<mx:DataGridColumn headerText="S.No" width="40" labelFunction="serialLabelFunction"/>
+			<mx:DataGridColumn headerText="Customer ID" dataField="customerId" width="80"/>
+			<mx:DataGridColumn headerText="Customer Name" labelFunction="customerNameFunction" width="90"/>
+			<mx:DataGridColumn headerText="Father Name" labelFunction="fatherNameFunction" width="90"/>
+			<mx:DataGridColumn headerText="DOB" dataField="dateOfBirth" width="80"/>
+			<mx:DataGridColumn headerText="Yearly Income" dataField="yearlyIncome" width="80"/>
+			<mx:DataGridColumn headerText="Mobile No" dataField="mobileNo" width="80"/>
+			<mx:DataGridColumn headerText="Office No" dataField="officeNo" width="80"/>
+			<mx:DataGridColumn headerText="Friend No" dataField="friendNo" width="80"/>
+			<mx:DataGridColumn headerText="Bank Acct No" dataField="bankAcctNo" width="100"/>
+			<mx:DataGridColumn headerText="Acct Holder Name" dataField="bankAcctHolderName" width="90"/>
+			<mx:DataGridColumn headerText="Bank Name" dataField="bankName" width="90"/>
+			<mx:DataGridColumn headerText="Pancard No" dataField="panCardNo" width="90"/>
+			<mx:DataGridColumn headerText="Ref. Customer ID" dataField="referenceCustomerId" width="60"/>
+			<mx:DataGridColumn headerText="Linked Customer ID" dataField="linkedCustomerId" width="60"/>
+			<mx:DataGridColumn headerText="Remarks" dataField="remarks" width="80"/>
+			<mx:DataGridColumn headerText="Created By" dataField="createdBy" width="90"/>
+			<mx:DataGridColumn headerText="Branch ID" dataField="branchId" width="40"/>
+			<mx:DataGridColumn headerText="Address" dataField="address" width="100"/>
+			<mx:DataGridColumn headerText="Office Address" dataField="officeAddress" width="100"/>
+		</mx:columns>
+		
+	</mx:DataGrid>
+	
+</mx:VBox>

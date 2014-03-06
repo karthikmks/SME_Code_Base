@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:components="components.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.DropdownEvent;
+			import mx.utils.ObjectUtil;
+			import mx.controls.Alert;
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import util.SMEConstants;
+			import util.SMEModel;
+			
+			import valueobject.ApplicationComponentsDataVO;
+			import valueobject.BasicSearchVO;
+			import valueobject.JewelLoanTypeVO;
+			import valueobject.JewelSchemeVO;
+			import valueobject.PaymentTypeVO;
+			import valueobject.ReleaseTypeVO;
+			import valueobject.RequestVO;
+			
+			[Bindable]
+			public var appCompData:ApplicationComponentsDataVO = ObjectUtil.copy(SMEModel.getinstance().appCompMetaData) as ApplicationComponentsDataVO;
+			
+			var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			
+			protected function date_focusInHandler(event:DropdownEvent):void{
+				if(DateField(event.currentTarget).selectedDate==null){
+					if(DateField(event.currentTarget).text == 'From'){
+						DateField(event.currentTarget).text = "";
+					}
+					if(DateField(event.currentTarget).text == 'To'){
+						DateField(event.currentTarget).text = "";
+					}
+					DateField(event.currentTarget).setStyle("color","#000000");
+					DateField(event.currentTarget).setStyle("fontStyle","normal");
+				}
+			}
+
+
+			protected function search_clickHandler(event:MouseEvent):void{
+				var requestVO:RequestVO = new RequestVO;
+				requestVO.basicSearchVO = getBasicSearchInput();
+				facade.sendNotification(SMEConstants.SEARCH_LOAN,requestVO);
+			}
+			
+			public function setSearchResult(responseVO:Object):void{
+				
+			}
+			
+			public function getBasicSearchInput():BasicSearchVO{
+				var basicSearchVO:BasicSearchVO = new BasicSearchVO;
+				
+				basicSearchVO.allBranchIds = SMEModel.getinstance().userProfileVO.branchId;
+				
+				if(loanDateFrom.text!="From"){
+					basicSearchVO.loanDateFrom = loanDateFrom.text;
+				}
+				if(loanDateFrom.text!="To"){
+					basicSearchVO.loanDateTo = loanDateTo.text;
+				}
+				basicSearchVO.loanAmountFrom = loanAmountFrom.text;
+				basicSearchVO.loanAmountTo = loanAmountTo.text;
+				
+				var idStr:String = "";
+				for(var ind:int = 0; ind<tenureMonths.selectedItems.length;ind++){
+					if(String(tenureMonths.selectedItems[ind].monthId) != "All") {
+						idStr += tenureMonths.selectedItems[ind].monthId + ",";
+					}
+				}
+				idStr = idStr.substring(0,idStr.length-1);
+				basicSearchVO.loanTenureMonths = idStr;
+				
+				idStr = "";
+				for(var ind:int = 0; ind<loanTypeCmb.selectedItems.length;ind++){
+					if(loanTypeCmb.selectedItems[ind].jewelLoanTypeId > 0) {
+						idStr += loanTypeCmb.selectedItems[ind].jewelLoanTypeId + ",";
+					}
+				}
+				idStr = idStr.substring(0,idStr.length-1);
+				basicSearchVO.loanTypeIds = idStr;
+				
+				idStr = "";
+				for(var ind:int = 0; ind<schemeCmb.selectedItems.length;ind++){
+					if(schemeCmb.selectedItems[ind].jewelSchemeId > 0) {
+						idStr += schemeCmb.selectedItems[ind].jewelSchemeId + ",";
+					}
+				}
+				idStr = idStr.substring(0,idStr.length-1);
+				basicSearchVO.loanSchemeIds = idStr;
+				
+				idStr = "";
+				for(var ind:int = 0; ind<loanStatusCmb.selectedItems.length;ind++){
+					if(String(loanStatusCmb.selectedItems[ind].loanStatusId) != "All") {
+						idStr += loanStatusCmb.selectedItems[ind].loanStatusId + ",";
+					}
+				}
+				idStr = idStr.substring(0,idStr.length-1);
+				basicSearchVO.loanStatusIds = idStr;
+				
+				idStr = "";
+				for(var ind:int = 0; ind<releaseCmb.selectedItems.length;ind++){
+					if(String(releaseCmb.selectedItems[ind].releaseTypeId) != "All") {
+						idStr += releaseCmb.selectedItems[ind].releaseTypeId + ",";
+					}
+				}
+				idStr = idStr.substring(0,idStr.length-1);
+				basicSearchVO.releaseTypeIds = idStr;
+				
+				idStr = "";
+				for(var ind:int = 0; ind<repaymentTypeCmb.selectedItems.length;ind++){
+					if(repaymentTypeCmb.selectedItems[ind].paymentTypeId > 0) {
+						idStr += repaymentTypeCmb.selectedItems[ind].paymentTypeId + ",";
+					}
+				}
+				idStr = idStr.substring(0,idStr.length-1);
+				basicSearchVO.repaymentTypeIds = idStr;
+				
+				if(branchIdCmb.visible){
+					idStr = "";
+					for(var ind:int = 0; ind<branchIdCmb.selectedItems.length;ind++){
+						if(String(branchIdCmb.selectedItems[ind].branchId) != "All") {
+							idStr += branchIdCmb.selectedItems[ind].branchId + ",";
+						}
+					}
+					idStr = idStr.substring(0,idStr.length-1);
+					basicSearchVO.allBranchIds = idStr;
+				}
+				
+				return basicSearchVO;
+			}
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<mx:VRule height="100%" strokeWidth="2"/>
+	<mx:VBox styleName="smeLoansBackground" width="90%" height="30%" verticalGap="0">
+		<!--<mx:Label text="Basic Search" textDecoration="underline" fontWeight="bold"/>-->
+		<components:CustomHeader headerText="Basic Search" hRuleVisible="false" width="100%"/>
+		<mx:HBox styleName="smeLoansBackground" width="100%" height="100%" horizontalGap="0" >
+			<mx:VBox styleName="smeLoansBackground" width="300" height="100%">
+				<s:Spacer height="20%"/>
+				<mx:HBox styleName="smeLoansBackground" height="40%" horizontalGap="1">
+					<mx:Label text="Loan Date:"/>
+					<mx:DateField text="From" color="#999999" fontStyle="italic" id="loanDateFrom"
+								  open="date_focusInHandler(event)"/>
+					<mx:DateField text="To" color="#999999" fontStyle="italic" id="loanDateTo"
+								  open="date_focusInHandler(event)"/>
+				</mx:HBox>
+				<mx:HBox styleName="smeLoansBackground" height="40%" horizontalGap="1">
+					<mx:Label text="Loan Amount:"/>
+					<s:TextInput width="80" prompt="From" id="loanAmountFrom"/>
+					<s:TextInput width="80" prompt="To" id="loanAmountTo"/>
+				</mx:HBox>
+			</mx:VBox>
+			
+			<mx:HBox styleName="smeLoansBackground" width="100%" horizontalGap="5">
+				<mx:VRule height="100%"/>
+				<mx:VBox verticalGap="0" verticalAlign="middle" width="120" >
+					<mx:Label text="Loan Type:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90"  id="loanTypeCmb"
+													dataProvider="{appCompData.jewelLoanTypes}" labelField="jewel_loan_type"/>
+						
+					<mx:Label text="Tenure Months:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90" id="tenureMonths"
+													dataProvider="{SMEConstants.TENURE_MONTHS}"
+													labelField="monthId"/> 
+				</mx:VBox> 
+				<!--<mx:VRule height="100%"/>-->
+				<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="120">
+					<mx:Label text="Scheme:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="95%"  id="schemeCmb" 
+													 dataProvider="{appCompData.jewelSchemes}" labelField="jewel_scheme_name"/>
+					
+					<mx:Label text="Loan Mode:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="95%"  id="loanMode" 
+													dataProvider="{appCompData.jewelLoanModes}" labelField="jewelLoanMode"/>
+						
+				</mx:VBox>
+				<!--<mx:VRule height="100%"/>-->
+				<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="120">
+					<mx:Label text="Loan Status:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90"  id="loanStatusCmb" 
+													dataProvider="{SMEConstants.LOAN_STATUS_ARRAY}" labelField="loanStatus"/>
+					<mx:Label text="Release" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90%"  id="releaseCmb" 
+												 dataProvider="{appCompData.releaseTypes}"	
+												 labelField="releaseType"/>
+				</mx:VBox>
+				<!--<mx:VRule height="100%"/>-->
+				<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="120">
+					<mx:Label text="Re-Payment Type:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90"  id="repaymentTypeCmb" 
+												 dataProvider="{appCompData.paymentTypes}"	labelField="payment_type"/>
+					<mx:Label text="Branch ID:" color="#000000" fontWeight="normal"
+							  includeInLayout="{SMEModel.getinstance().isAdminUser}" 
+							  visible="{SMEModel.getinstance().isAdminUser}" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90"  id="branchIdCmb" 
+													dataProvider="{appCompData.allBranchDetails}"	
+													labelField="branchId"
+													includeInLayout="{SMEModel.getinstance().isAdminUser}" 
+													visible="{SMEModel.getinstance().isAdminUser}"/>
+				</mx:VBox>
+				<mx:VRule height="100%"/>
+				<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="112">
+					<mx:Label name="hidden" visible="false"/>
+					<mx:Button visible="false"/>
+					<mx:Label name="hidden" visible="false"/>
+					<mx:Button label="Search" id="search" click="search_clickHandler(event)"/>
+				</mx:VBox>
+			</mx:HBox>
+			
+		</mx:HBox>
+		
+	</mx:VBox>
+</mx:HBox>

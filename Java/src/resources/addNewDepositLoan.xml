@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>INSERT INTO deposit_loan_transaction (`deposit_loan_transaction_date`, `active_flag`) 
+		 VALUES (now(), 'Y')</sqlquery>		
+		<databaseType>mysql</databaseType>		
+		<inputvo>com.bfp.valueobjects.DepositLoanTransactionVO</inputvo>		
+		<inputparams></inputparams>	
+	</storedprocedure>
+</storedprocedures>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:comps="components.*"
+		   creationComplete="userHome_creationComplete(event)">
+	<fx:Declarations>
+		<fx:XMLList id="menuList">
+			<!--<menuitem label="Manage Branch">
+				<menuitem label="Add Branch Detail"/>
+				<menuitem label="Update Branch Detail"/>
+			</menuitem>-->
+			<menuitem label="Manage Customer">
+				<menuitem label="Add New Customer"/>
+				<menuitem label="Update Customer"/>
+				<menuitem label="Search Customer"/>
+			</menuitem>
+			<menuitem label="Manage Loans">
+				<menuitem label="Add New Loan"/>
+				<menuitem label="Search Loan"/>
+				<!--<menuitem label="Add Payment"/>-->
+			</menuitem>
+			<!--<menuitem label="Manage Deposits">
+				<menuitem label="Add New Loan" />
+				<menuitem label="Search Loan"/>
+				<menuitem label="Add Payment"/>
+			</menuitem>				-->
+			<menuitem label="Manage Documents">
+				<menuitem label="Upload Documents" />
+			</menuitem>
+		</fx:XMLList>
+		<!--<fx:XML id="adminMenuList">
+			<menuitem label="Admin Operations">
+				<menuitem label="Add Entitlemens To Branch" />
+				<menuitem label="Modify Entitlements"/>
+			</menuitem>
+		</fx:XML>
+		<menuitem label="Manage Denomination">
+			<menuitem label="Add Denomination" />
+		</menuitem>
+		<menuitem label="Manage Vouchers">
+			<menuitem label="Credit Voucher" />
+			<menuitem label="Debit Voucher"/>
+		</menuitem>-->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import flash.net.navigateToURL;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.MenuEvent;
+			import mx.formatters.DateFormatter;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import util.SMEConstants;
+			import util.SMEModel;
+			
+			[Bindable]
+			private var displayStackIndex:int=0;
+			[Bindable]
+			private var displayStackChildIndex:int=0;
+			private var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			[Bindable]
+			private var userId:String = "";
+			[Bindable]
+			private var userName:String = "";
+			[Bindable]
+			private var dateNTime:String;// = (new Date).toString();
+			private var ticker:Timer; 
+                                                
+
+			public function showUserInfo():void {
+				/*var userVo:UserProfileVO = ApplicationUtil.getInstance().retrieveUserProfile();
+				if(userVo!=null){
+					userId = userVo.userId;
+					userName = userVo.employeeName;
+				}*/
+				showTime();
+			}
+			 public function onTimerComplete(event:TimerEvent):void{ 
+				showTime(); 
+			} 
+			
+			public function showTime():void { 
+				var timeFormat:DateFormatter = new DateFormatter;
+				timeFormat.formatString = "KK:NN:SS A" //"HH:NN:SS"; for 24hr clock
+								
+				var currentTime:Date = new Date(); 
+				dateNTime = currentTime.toDateString() +"  "+ timeFormat.format(currentTime); 
+				ticker = new Timer(1,1); 
+				ticker.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete); 
+				ticker.start(); 
+			}
+			
+			protected function menu_clickHandler(event:MenuEvent):void{
+				displayStack.selectedIndex = event.currentTarget.selectedIndex+1;
+				displayStackChildIndex=event.index+1;
+			}
+			
+			protected function logout_clickHandler(event:Event):void{
+				//SME(this.parentDocument).homeWindowStack.selectedIndex = 0;
+				navigateToURL(new URLRequest(FlexGlobals.topLevelApplication.url),"_self");
+			}
+			
+			protected function homeLbl_clickHandler(event:MouseEvent):void
+            {
+                displayStack.selectedIndex = 0;
+            }
+			protected function userHome_creationComplete(event:FlexEvent):void
+			{
+				facade.sendNotification(SMEConstants.LOAD_APPLN_COMP_META_DATA,true);
+				if(SMEModel.getinstance().isAdminUser){
+					//menuList += adminMenuList;
+				}
+			}
+		]]>
+	</fx:Script>
+	<mx:VBox width="100%" height="100%" >
+	<mx:HBox id="selectionBar" width="100%" height="1%" styleName="smeUserHomePage" verticalAlign="middle" horizontalAlign="left">
+		<!--<mx:MenuBar id="menuBar" width="25%" labelField="@label" height="100%"
+		dataProvider="{menuData}" click="menuBar_clickHandler(event)" /> -->
+		
+		<mx:MenuBar id="myMenuBar" labelField="@label" itemClick="menu_clickHandler(event)"
+					dataProvider="{menuList}"/>
+			
+		<mx:HBox width="75%" height="100%" verticalAlign="middle" horizontalAlign="right">
+			<!--<mx:Spacer width="2" />
+			<mx:Label text="{userId}" styleName="SMELabel" />
+			<mx:VRule height="100%"/>
+			<mx:Spacer width="2" />
+			<mx:Label text="{userName}" styleName="SMELabel"/>
+			<mx:VRule height="100%"/>
+			<mx:Spacer width="2" />
+			<mx:Label text="{dateNTime}" styleName="SMELabel"/>
+			<mx:Spacer width="2" />
+			-->
+			<mx:Label id="homeLbl" text="Home" click="homeLbl_clickHandler(event)" styleName="SMELabel" 
+                      useHandCursor="true" mouseChildren="false" buttonMode="true"/>
+            <mx:VRule height="100%"/>
+            <mx:Label id="logoutLbl" text="Logout" click="logout_clickHandler(event)" styleName="SMELabel"
+                      useHandCursor="true" mouseChildren="false" buttonMode="true"/>
+
+			<!--<mx:LinkButton id="logoutBtn" label="Logout" rollOverColor="#4BE233" verticalCenter="0" styleName="SMELabel"
+						   selectionColor="#1EA907" click="logout_clickHandler(event)"/>-->
+		</mx:HBox>
+	</mx:HBox>
+	<mx:HRule width="100%" shadowColor="#FFFFFF"/>
+	<mx:HBox id="displayContent" width="100%" height="99%" >
+		<mx:ViewStack id="displayStack" width="100%" height="100%" selectedIndex="{displayStackIndex}" >
+			<comps:Home styleName="containerVBox" label="Home" width="100%" height="100%" id="home" backgroundColor="#EAF2DC"/>
+			<!--<comps:ManageBranch styleName="containerVBox" label="Manage Branch" width="100%" height="100%" 
+								selectedChildIndex="{displayStackChildIndex}"/>-->
+			<comps:ManageCustomer styleName="containerVBox" label="Manage Customer" width="100%" height="100%" 
+								  selectedChildIndex="{displayStackChildIndex}"/>
+			<comps:ManageLoans id="manageLoans" styleName="containerVBox" label="Manage Loans" width="100%" height="100%" 
+							   selectedChildIndex="{displayStackChildIndex}"/>
+			<!--<comps:ManageDeposits styleName="containerVBox" label="Manage Deposits" width="100%" height="100%" 
+								  selectedChildIndex="{displayStackChildIndex}" />			-->
+			<comps:ManageDocuments styleName="containerVBox" label="Manage Documents" width="100%" height="100%"/>
+			<!--<comps:ManageDenomination styleName="containerVBox" label="Manage Denomination" width="100%" height="100%"/>
+			<comps:ManageVouchers styleName="containerVBox" label="Manage Denomination" width="100%" height="100%"/>
+			
+			<comps:ManageEntitlementToBranch styleName="containerVBox" label="Manage Entitlements" width="100%" height="100%"
+											 selectedChildIndex="{displayStackChildIndex}"/>	-->
+			
+		</mx:ViewStack>
+	</mx:HBox>
+	</mx:VBox>
+</mx:Canvas>

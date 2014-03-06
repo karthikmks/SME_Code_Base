@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>select a.jewel_scheme_id, a.jewel_quality_id,
+			a.rate_per_gram from
+			jewel_scheme_quality_breakup a, jewel_quality b where a.jewel_quality_id = b.jewel_quality_id
+			order by a.jewel_scheme_id, a.jewel_quality_id</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.JewelSchemeVO
+		</inputvo>
+		<inputparams>
+		</inputparams>
+		<resultsets>
+			<resultset>
+				<resultsetname>JEWEL_QUALITY</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.JewelSchemeVO
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>JewelSchemeId</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>2</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>JewelQualityId</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>3</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>RatePerGram</voattribute>
+					<votype>int</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

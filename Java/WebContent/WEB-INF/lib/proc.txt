@@ -1,0 +1,469 @@
+<?xml version="1.0"?>
+<storedprocedures>
+    <storedprocedure code="0">
+        <storedprocedurename>SP_GET_REP_HIERARCHY_DETAILS</storedprocedurename>   
+        <inputparams>
+            <inputparam>
+                <paramname>iv_rr</paramname>
+                <paramtype>VARCHAR</paramtype>
+                <function>
+                    <classname>com.jpmc.gcs.bpm.servicecentre.valueobject.AccountDetailsVO
+                    </classname>
+                    <attribute>Advisor</attribute>
+                    <votype>String</votype>
+                </function>
+            </inputparam>
+            <inputparam>
+                <paramname>iv_occd</paramname>
+                <paramtype>VARCHAR</paramtype>
+                <function>
+                    <classname>com.jpmc.gcs.bpm.servicecentre.valueobject.AccountDetailsVO
+                    </classname>
+                    <attribute>OccdCode</attribute>
+                    <votype>String</votype>
+                </function>
+            </inputparam>
+        </inputparams>   
+        <outputparams>           
+            <outputparam>               
+                <paramname>ov_repdetails</paramname>
+                <paramtype>CURSOR</paramtype>
+                <Impl>com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl</Impl>
+                <valueobject>com.jpmc.gcs.bpm.servicecentre.valueobject.AdvisorDetailsVO</valueobject>
+                <column>
+                    <dbindex>1</dbindex>
+                    <dbtype>String</dbtype>
+                    <voattribute>AdvisorSID</voattribute>
+                    <votype>String</votype>
+                </column>
+                <column>
+                    <dbindex>2</dbindex>
+                    <dbtype>String</dbtype>
+                    <voattribute>AdvisorName</voattribute>
+                    <votype>String</votype>
+                </column>
+                <column>
+                    <dbindex>3</dbindex>
+                    <dbtype>String</dbtype>
+                    <voattribute>AdvisorPhone</voattribute>
+                    <votype>String</votype>
+                </column>
+                <column>
+                    <dbindex>14</dbindex>
+                    <dbtype>String</dbtype>
+                    <voattribute>MarketDirector</voattribute>
+                    <votype>String</votype>
+                </column>
+                <column>
+                    <dbindex>17</dbindex>
+                    <dbtype>String</dbtype>
+                    <voattribute>RegionalDirector</voattribute>
+                    <votype>String</votype>
+                </column>
+                <column>
+                    <dbindex>19</dbindex>
+                    <dbtype>String</dbtype>
+                    <voattribute>Region</voattribute>
+                    <votype>String</votype>
+                </column>
+            </outputparam>
+        </outputparams>
+    </storedprocedure>
+</storedprocedures>
+
+
+
+
+
+import java.io.File;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+import com.bear.gcs.bpm.enrichment.valueobjects.Holiday;
+import com.bear.gcs.bpm.of.activities.db.spring.sprunner.spexecutor.DDDAStoredProcedure;
+import com.bear.gcs.bpm.of.activities.db.spring.sqlrunner.sqlexecutor.ISQLRunner;
+import com.bear.gcs.bpm.of.utility.XMLParser;
+import com.jpmc.gcs.bpm.servicecentre.common.RIConstants;
+import com.jpmc.gcs.bpm.servicecentre.exception.RequestInitiatorException;
+import com.jpmc.gcs.bpm.servicecentre.requestinitiator.uifront.NodeByTypeProcessing;
+import com.jpmc.gcs.bpm.servicecentre.slaComponent.vo.ExternalSystemNameVO;
+import com.jpmc.gcs.bpm.servicecentre.slaComponent.vo.PushParamsVO;
+import com.jpmc.gcs.bpm.servicecentre.slaComponent.vo.SLADetailsVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.AccountDetailsVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.AccountsVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.AcctSrchIpVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.AdvisorDetailsVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.AutoPushVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.BoxServiceNameValueVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.DynamicRouteVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.EventVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.FirmUsersVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.FirmVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.OCCDListVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.RepDetailVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.SystematicDetailVO;
+import com.jpmc.gcs.bpm.servicecentre.valueobject.UserVO;
+
+
+public class JdbcTemplateQuery {
+    private DataSource dataSource ;
+    private DataSource dataSourceDB2CED;
+    private DataSource oracleDataSourceCED;
+    private DataSource cedDataSource;
+    private DataSource oracleMorcomDataSource;
+    private DataSource oracleMorcomRODataSource;
+   
+    public DataSource getOracleMorcomDataSource() {
+        return oracleMorcomDataSource;
+    }
+
+    public void setOracleMorcomDataSource(DataSource oracleMorcomDataSource) {
+        this.oracleMorcomDataSource = oracleMorcomDataSource;
+    }
+
+    public DataSource getOracleMorcomRODataSource() {
+        return oracleMorcomRODataSource;
+    }
+
+    public void setOracleMorcomRODataSource(DataSource oracleMorcomRODataSource) {
+        this.oracleMorcomRODataSource = oracleMorcomRODataSource;
+    }
+
+    public DataSource getCedDataSource() {
+        return cedDataSource;
+    }
+
+    public void setCedDataSource(DataSource cedDataSource) {
+        this.cedDataSource = cedDataSource;
+    }
+
+    private JdbcTemplate jdbcTemplate ;
+    private ISQLRunner sqlRunner;;
+    private static final Log log = LogFactory.getLog(NodeByTypeProcessing.class);
+    private static final String FORWARD_SLASH = File.separator;
+    private static final String RETRIEVE_PHONE_FROM_DB2 = "retrievePhoneNumber";
+
+    public void init(){
+
+    }
+
+    public List<FirmVO> fetchFirmIdFromCED(String filename,List<FirmVO> inputData){
+        return sqlRunner.executeSelect(XMLParser.parseXML( filename ), inputData, null, this.dataSource);//XMLParser.parseXML( filename )
+
+    }
+
+    public List<DynamicRouteVO> fetchDynamicRouteFlag(String filename,List<DynamicRouteVO> inputData){
+        return sqlRunner.executeSelect(XMLParser.parseXML( filename ), inputData, null, this.dataSource);//XMLParser.parseXML( filename )
+
+    }
+
+    public List<AutoPushVO> autoPushFlag(String filename,List<AutoPushVO> inputData){
+        return sqlRunner.executeSelect(XMLParser.parseXML( filename ), inputData, null, this.dataSource);//XMLParser.parseXML( filename )
+
+    }
+    //autoPushFlag
+
+    //fetchDynamicRouteFlag
+    public List<EventVO> getEvent(String filename,List<EventVO> inputData){
+        return sqlRunner.executeSelect(XMLParser.parseXML( filename ), inputData, null, this.dataSource);//XMLParser.parseXML( filename )
+
+    }
+
+
+    public List<OCCDListVO> getOCCDList(){
+        List<OCCDListVO> occdList = new ArrayList<OCCDListVO>();
+        occdList = sqlRunner.executeSelect(XMLParser.parseXML("GET_OCCD_LIST"), null, null, this.dataSource);//XMLParser.parseXML( filename )
+        return occdList ;
+    }
+
+
+    public List<UserVO> getUserList(){
+        List<UserVO> userList = new ArrayList<UserVO>();
+        userList = sqlRunner.executeSelect(XMLParser.parseXML("GET_USER_LIST"), null, null, this.dataSource);//XMLParser.parseXML( filename )
+        return userList ;
+    }
+
+    public List<UserVO> getUserListOnSelect(List<UserVO> input){
+        List<UserVO> userList = new ArrayList<UserVO>();
+        userList = sqlRunner.executeSelect(XMLParser.parseXML("GET_USER_LIST_ONSELECT"), input, null, this.dataSource);//XMLParser.parseXML( filename )
+        return userList ;
+    }
+
+    public List<Holiday> getHolidayList(){
+        List<Holiday> holidayList = new ArrayList<Holiday>();
+        holidayList = sqlRunner.executeSelect(XMLParser.parseXML("GET_HOLIDAY_LIST"), null, null, this.dataSource);//XMLParser.parseXML( filename )
+        return holidayList ;
+    }
+   
+    public List<RepDetailVO> getRepDetails(String filename, List<RepDetailVO> inputData){
+        return sqlRunner.executeSelect(XMLParser.parseXML( filename ), inputData, null, this.dataSource);//XMLParser.parseXML( filename )
+
+    }
+
+    public List<Long> getRequestId(String query) {
+        Long startTime=System.currentTimeMillis();
+        List<Long> requestId = null;
+        try {
+            requestId = jdbcTemplate.query(query, new RowMapper() {
+                public Long mapRow(ResultSet rs, int arg1)
+                throws SQLException {
+                    //Have to Add SLA Information also
+                    Long result=rs.getLong("request_Id");
+                    log.info(result);
+                    return result;
+                }
+            });
+        } catch (DataAccessException sql) {
+            sql.printStackTrace();
+            throw new RequestInitiatorException("DataAccessException Occurred",
+                    0000, sql);
+
+        }
+        log.info("Time Taken for selectRequestType jdbc query : " + (System.currentTimeMillis() - startTime));
+        return requestId;
+
+    }
+
+
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
+    }
+
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public List<PushParamsVO> autoPushCall(String filename,List inputData) {
+        log.debug("File name :"+filename);
+        return this.sqlRunner.executeSelect( XMLParser.parseXML( filename ),inputData, null, this.dataSource);
+    }
+
+    public List<SLADetailsVO> getAutoClose(String filename,List inputData) {
+        log.debug("File name :"+filename);
+        return this.sqlRunner.executeSelect( XMLParser.parseXML( filename ),inputData, null, this.dataSource);
+    }
+
+    public List<ExternalSystemNameVO> getExternalSystemName(String filename,List<ExternalSystemNameVO> inputData) {
+        log.debug("File name :"+filename);
+        return this.sqlRunner.executeSelect( XMLParser.parseXML( filename ),inputData, null, this.dataSource);
+    }
+
+
+    //getExternalSystemName
+
+    public ISQLRunner getSqlRunner() {
+        return sqlRunner;
+    }
+
+    public void setSqlRunner(ISQLRunner sqlRunner) {
+        this.sqlRunner = sqlRunner;
+    }
+
+    public List executeStoredProc(String fileName,Map inputMap){
+        log.debug("File Name :: "+fileName);
+        DDDAStoredProcedure spExecutor = new DDDAStoredProcedure(this.dataSource);
+        String storedProcedureName = fileName.substring( fileName.lastIndexOf( FORWARD_SLASH ) + 1,
+                fileName.length(  ) );
+        List result = spExecutor.executeStoredProc(inputMap,storedProcedureName,XMLParser.parseXML(fileName), null);
+        return result;
+    }
+
+    public void executeStoredProc1(String fileName,Map inputMap){
+        log.debug("File Name :: "+fileName);
+        DDDAStoredProcedure spExecutor = new DDDAStoredProcedure(this.dataSource);
+        String storedProcedureName = fileName.substring( fileName.lastIndexOf( FORWARD_SLASH ) + 1,
+                fileName.length(  ) );
+        spExecutor.executeStoredProc(inputMap,storedProcedureName,XMLParser.parseXML(fileName), null);
+    }
+
+    public List executeStoredProcDB2CED(String fileName,Map inputMap){
+        log.debug("File Name :: "+fileName);
+        DDDAStoredProcedure spExecutor = new DDDAStoredProcedure(this.dataSourceDB2CED);
+        String storedProcedureName = fileName.substring( fileName.lastIndexOf( FORWARD_SLASH ) + 1,
+                fileName.length(  ) );
+        List result = spExecutor.executeStoredProc(inputMap,storedProcedureName,XMLParser.parseXML(fileName), null);
+        return result;
+    }
+
+    public List getFirmUsers(FirmUsersVO inputParams){
+        List<FirmUsersVO> dataList=null;
+        try{
+            log.debug("OCCD Code" + inputParams.getOccdCode());
+            if(inputParams.getRrNumber() != null && inputParams.getRrNumber() != ""){
+                log.debug("Data with RR no.." + inputParams.getRrNumber());
+                List<FirmUsersVO> inputData = new ArrayList<FirmUsersVO>();
+                inputData.add(inputParams);
+                dataList = sqlRunner.executeSelect(XMLParser.parseXML("FirmRRUsers"), inputData, null, this.dataSource);
+                log.debug("dataList Size  ---> "+dataList.size());
+            }else{
+                log.debug("OCCD Code without RR" + inputParams.getOccdCode());
+                List<FirmUsersVO> inputData = new ArrayList<FirmUsersVO>();
+                inputData.add(inputParams);
+                dataList = sqlRunner.executeSelect(XMLParser.parseXML("FirmUsers"), inputData, null, this.dataSource);
+                log.debug("dataList Size  ---> "+dataList.size());
+            }
+            /*for(FirmUsersVO dataVO: dataList){
+                  log.debug(dataVO.getKopsId() +" - "+dataVO.getUserName()+" - "+dataVO.getOccdCode());
+              }*/
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return dataList;
+    }
+
+
+    public List getAccounts(AcctSrchIpVO inputParams) {
+        List<AccountsVO> dataList =null;       
+        try{
+            log.info("Entering getAccounts");
+            DDDAStoredProcedure spExecutor = new DDDAStoredProcedure(this.oracleDataSourceCED);
+            Map<String, Object> inputMap = new HashMap<String, Object>();
+            String valueObjectName=inputParams.getClass(  ).getName();
+            inputMap.put( valueObjectName.substring(valueObjectName.lastIndexOf(".")+1,
+                    valueObjectName.length()),inputParams );
+            List output = spExecutor.executeStoredProc(inputMap, "getAccounts", XMLParser.parseXML("getAccounts"), null);
+            Map outputData = (Map) output.get(1);
+            dataList = (List<AccountsVO>) outputData.get("pocur_result");
+            log.debug("dataList Size  ---> "+dataList.size());       
+            //        for(AccountsVO dataVO: dataList){
+            //              log.debug(dataVO.getAccountNo()+" - "+dataVO.getAccountName()+" - "+dataVO.getClassCode()+" - "+dataVO.getNickName());
+            //        }
+        }catch(Exception e){
+            log.error("Exception in get accounts ---> ",e);
+        }
+        return dataList;//dataList;
+    }
+
+
+    public DataSource getDataSourceDB2CED() {
+        return dataSourceDB2CED;
+    }
+
+    public void setDataSourceDB2CED(DataSource dataSourceDB2CED) {
+        this.dataSourceDB2CED = dataSourceDB2CED;
+    }
+
+    public DataSource getOracleDataSourceCED() {
+        return oracleDataSourceCED;
+    }
+
+    public void setOracleDataSourceCED(DataSource oracleDataSourceCED) {
+        this.oracleDataSourceCED = oracleDataSourceCED;
+    }
+
+    public UserVO retrieveKopsUserDetails(List<UserVO> inputData) {
+        UserVO userVO = null;
+        log.info("Method Entry retrieveKopsUserDetails " + inputData);
+        inputData = sqlRunner.executeSelect( XMLParser.parseXML( RETRIEVE_PHONE_FROM_DB2 ),inputData, null, this.dataSourceDB2CED);
+        if(inputData != null && !inputData.isEmpty()) {
+            userVO = (UserVO)inputData.get(0);                 
+        }
+        log.info("User Name " + userVO.getUserName());
+        log.info("Phone Number " + userVO.getPhoneNumber());
+        return userVO;
+    }
+   
+    /**
+     *
+     * @param inputParam
+     * @return Advisor SID
+     * @author e698842
+     */
+    public List<AdvisorDetailsVO> getAdvisorSID(List<AccountDetailsVO> inputData){
+        log.info("getSID- inputParam size: "+inputData.size());
+        List<AdvisorDetailsVO> outputData = null;
+        try{
+            outputData = sqlRunner.executeSelect( XMLParser.parseXML( RIConstants.GET_SID ),inputData, null, this.dataSource);
+        }catch(Exception e){
+            log.error("Exception in getSID: ",e);
+        }
+        log.info("outputData :"+outputData);
+        if(outputData!=null && outputData.size()>0){
+            log.info("DB Result: AdvisorSID: "+((AdvisorDetailsVO)outputData.get(0)).getAdvisorSID()
+                    +" RegionalDirector: "+((AdvisorDetailsVO)outputData.get(0)).getRegionalDirector()
+                    +" MarketDirector: "+((AdvisorDetailsVO)outputData.get(0)).getMarketDirector()
+            +" AdvisorName: "+((AdvisorDetailsVO)outputData.get(0)).getAdvisorName()
+            +" AdvisorPhone: "+((AdvisorDetailsVO)outputData.get(0)).getAdvisorPhone()
+            +" Region: "+((AdvisorDetailsVO)outputData.get(0)).getRegion());
+        }
+        return outputData;
+    }
+
+    /**
+     *
+     * @param Advisor rrOrSid
+     * @return outputData
+     * @author e698842
+     */
+    public List<AdvisorDetailsVO> validateSIDOrRR(List<AdvisorDetailsVO> inputData){
+        log.info("validateSIDOrRR: "+inputData);
+        List<AdvisorDetailsVO> outputData = null;
+        try{
+            outputData = sqlRunner.executeSelect(XMLParser.parseXML(RIConstants.VALIDATE_RR_SID) ,inputData, null, this.dataSource);
+        }catch(Exception e){
+            log.error("Exception in validateSIDOrRR: ",e);
+        }
+        return outputData;
+    }
+
+    /**
+     *
+     * @param boxID
+     * @return Box service details
+     * @author O579355
+     */
+    public List<BoxServiceNameValueVO> getBoxServiceDetails(SystematicDetailVO systematicDetailVO) {
+        log.debug("inside ValueObjectLoaderController :getBoxServiceDetails() boxId: " + systematicDetailVO.getBoxId());
+        List<SystematicDetailVO> inputData = new ArrayList<SystematicDetailVO>();
+        inputData.add(systematicDetailVO);
+        List<BoxServiceNameValueVO> outputData = null;
+        try{
+            outputData = sqlRunner.executeSelect(XMLParser.parseXML(RIConstants.GET_BOX_SERVICE_DETAIL) ,inputData, null, this.dataSource);
+            if(outputData!=null && outputData.size()>0){
+                for(BoxServiceNameValueVO boxServiceNameValueVO:outputData){
+                    log.info("Got Data: "+boxServiceNameValueVO.toString());
+                }
+            }
+        }catch(Exception e){
+            log.error("Exception in getBoxServiceDetails: ",e);
+        }
+        return outputData;
+    }   
+   
+    public List executeStoredProcCED(String fileName, Map inputMap) {
+        log.debug((new StringBuilder("File Name :: ")).append(fileName).toString());
+        DDDAStoredProcedure spExecutor = new DDDAStoredProcedure(oracleDataSourceCED);
+        String storedProcedureName = fileName.substring(fileName.lastIndexOf(FORWARD_SLASH) + 1, fileName.length());
+        List result = spExecutor.executeStoredProc(inputMap, storedProcedureName, XMLParser.parseXML(fileName), null);
+        return result;
+    }
+   
+    public List executeStoredProcMORCOM(String fileName, Map inputMap) {
+        log.debug((new StringBuilder("File Name :: ")).append(fileName).toString());
+        DDDAStoredProcedure spExecutor = new DDDAStoredProcedure(oracleMorcomDataSource);
+        String storedProcedureName = fileName.substring(fileName.lastIndexOf(FORWARD_SLASH) + 1, fileName.length());
+        List result = spExecutor.executeStoredProc(inputMap, storedProcedureName, XMLParser.parseXML(fileName), null);
+        return result;
+    }
+
+}

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:components="components.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.DropdownEvent;
+			
+			import util.SMEConstants;
+			protected function date_focusInHandler(event:DropdownEvent):void{
+				if(DateField(event.currentTarget).selectedDate==null){
+					if(DateField(event.currentTarget).text == 'From'){
+						DateField(event.currentTarget).text = "";
+					}
+					if(DateField(event.currentTarget).text == 'To'){
+						DateField(event.currentTarget).text = "";
+					}
+					DateField(event.currentTarget).setStyle("color","#000000");
+					DateField(event.currentTarget).setStyle("fontStyle","normal");
+				}
+			}
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<mx:VRule height="100%" strokeWidth="2"/>
+	<mx:VBox styleName="smeLoansBackground" width="90%" height="30%" verticalGap="0">
+		<!--<mx:Label text="Basic Search" textDecoration="underline" fontWeight="bold"/>-->
+		<components:CustomHeader headerText="Basic Search" hRuleVisible="false" width="100%"/>
+		<mx:HBox styleName="smeLoansBackground" width="100%" height="100%" >
+			<mx:VBox styleName="smeLoansBackground" width="30%" height="100%">
+				<s:Spacer height="20%"/>
+				<mx:HBox styleName="smeLoansBackground" height="40%" horizontalGap="1">
+					<mx:Label text="Loan Date:"/>
+					<mx:DateField text="From" color="#999999" fontStyle="italic"
+								  open="date_focusInHandler(event)"/>
+					<mx:DateField text="To" color="#999999" fontStyle="italic"
+								  open="date_focusInHandler(event)"/>
+				</mx:HBox>
+				<mx:HBox styleName="smeLoansBackground" height="40%" horizontalGap="1">
+					<mx:Label text="Loan Amount:"/>
+					<s:TextInput width="80" prompt="From"/>
+					<s:TextInput width="80" prompt="To"/>
+				</mx:HBox>
+			</mx:VBox>
+			
+			<mx:VRule height="100%"/>
+			
+			<mx:HBox styleName="smeLoansBackground" width="100%" horizontalGap="5">
+				<mx:VBox verticalGap="0" verticalAlign="middle" width="34%" >
+					<mx:Label text="Loan Type:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90"  id="loanTypeCmb" />
+						<!--<mx:ArrayCollection>
+							<fx:String>JL</fx:String>
+							<fx:String>RL</fx:String>
+						</mx:ArrayCollection>
+					</mx:ComboBox>-->
+					
+					<mx:Label text="Tenure Months:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90" labelField="label" 
+													dataProvider="{SMEConstants.TENURE_MONTHS_COLLECTION}"/>
+				</mx:VBox>
+				<mx:VRule height="100%"/>
+				<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="33%">
+					<mx:Label text="Scheme:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90"  id="schemeCmb" />
+						<!--<mx:ArrayCollection>
+							<fx:String>Economic GL</fx:String>
+							<fx:String>Value GL</fx:String>
+							<fx:String>Super GL</fx:String>
+							<fx:String>Real GL</fx:String>
+							<fx:String>Special GL</fx:String>
+						</mx:ArrayCollection>
+					</mx:ComboBox>-->
+					
+					<mx:Label text="Loan Mode:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90"  id="loanMode" />
+						<!--<mx:ArrayCollection>
+							<fx:String>Direct</fx:String>
+							<fx:String>Take Over From</fx:String>
+						</mx:ArrayCollection>
+					</mx:ComboBox>-->
+				</mx:VBox>
+				<mx:VRule height="100%"/>
+				<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="33%">
+					<mx:Label text="Loan Status:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90"  id="loanStatusCmb" />
+						<!--<mx:ArrayCollection>
+							<fx:String>Active</fx:String>
+							<fx:String>Release</fx:String>
+						</mx:ArrayCollection>
+					</mx:ComboBox>-->
+					<mx:Label text="Release" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90"  id="releaseCmb" enabled="{loanStatusCmb.selectedIndex==1}"/>
+						<!--<mx:ArrayCollection>
+							<fx:String>Auction</fx:String>
+							<fx:String>MGold</fx:String>
+							<fx:String>Customer</fx:String>
+						</mx:ArrayCollection>
+					</mx:ComboBox>--> 
+					
+				</mx:VBox>
+				<mx:VRule height="100%"/>
+				<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="33%">
+					<mx:Label text="Re-Payment Type:" color="#000000" fontWeight="normal" />
+					<components:MultiSelectComboBox styleName="smeDropDownList" width="90"  id="repaymentTypeCmb" />
+						<!--<mx:ArrayCollection>
+							<fx:String>Lump sum</fx:String>
+							<fx:String>EMI</fx:String>
+						</mx:ArrayCollection>
+					</mx:ComboBox>	--> 
+ 					<mx:Label name="hidden" visible="false"/>
+					<mx:Button label="Search"/>
+				</mx:VBox>
+			</mx:HBox>
+			
+		</mx:HBox>
+		
+	</mx:VBox>
+</mx:HBox>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!-- mySimpleBuild.xml --> 
+<project name="My App Builder" basedir="." default="main"> 
+    <taskdef resource="flexTasks.tasks" 
+        classpath="C:/Program Files/Adobe/Adobe Flash Builder 4.6/sdks/4.6.0/ant/lib/flexTasks.jar"/> 
+    <property name="FLEX_HOME" value="C:/Program Files/Adobe/Adobe Flash Builder 4.6/sdks/4.6.0"/> 
+    <property name="APP_ROOT" value="E:/SME/flex/FromCitrix"/> 
+    <property name="DEPLOY_DIR" value="E:/SME/java/DynamicCodebase/WebContent"/> 
+    <target name="main"> 
+        <mxmlc fork="true" file="${APP_ROOT}/src/SME.mxml" 
+		output="${DEPLOY_DIR}/SME.swf"
+		keep-generated-actionscript="false" debug="true"
+		show-binding-warnings="false" warnings="false" defaults-css-url="${APP_ROOT}/src/assets/css/sme.css"> 
+			<locale>en_US</locale>
+            <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/> 
+            <source-path path-element="${FLEX_HOME}/frameworks"/> 
+			<compiler.include-libraries dir="${APP_ROOT}/libs" append="true">
+				<include name="*.swc"/>
+			</compiler.include-libraries>
+        </mxmlc> 
+    </target> 
+</project>

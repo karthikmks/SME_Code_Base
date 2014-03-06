@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" 
+		 xmlns:components="components.*" styleName="smeLoansBackground" paddingLeft="10">
+
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import util.SMEConstants;
+			
+			import valueobject.AppComponentVO;
+			import valueobject.AppConfigurationVO;
+			
+			[Bindable]
+			public var isUpdateFlow:Boolean = false;
+			private var facade:Facade=ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			
+			protected function reset_clickHandler(event:MouseEvent):void
+			{
+				Alert.show(SMEConstants.MSG_RESET_CONFIRM, "Reset",Alert.YES | Alert.NO, null,
+					resetConfirmHandler, null, Alert.NO); 
+			}
+			
+			private function resetConfirmHandler(event:CloseEvent):void {
+				// Check to see if the OK button was pressed.
+				if (event.detail==Alert.YES) {
+					clearAllfields();		
+				}
+			}
+			
+			protected function save_clickHandler(event:MouseEvent):void{
+				
+				var slectedBranches:Array = branchList.selectedItems;
+				var selectedBranchId:String  = "";
+				var appCongigVO:AppConfigurationVO;
+				for(var ind:int=0;ind<slectedBranches.length;ind++){
+					selectedBranchId += slectedBranches[ind].branchId + ",";
+				}
+				selectedBranchId = selectedBranchId.substring(0,selectedBranchId.length-1);
+				appCongigVO = new AppConfigurationVO;
+				appCongigVO.selectedBranchIds = selectedBranchId;
+				//Get Add NEw Loan Data
+				addNewLoanEmt.getData(appCongigVO);
+				
+				facade.sendNotification(SMEConstants.SAVE_BRANCH_ENTITLEMENTS,appCongigVO);
+				
+			}
+			
+			public function clearAllfields():void{
+				
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<components:CustomHeader headerText="Add Entilements To Branch" width="100%" height="21" hRuleVisible="false"/>
+	<s:Spacer height="10"/>
+	<mx:HBox width="100%" height="90%">
+		<mx:VBox width="20%">
+			<mx:Label text="Select Branch:" fontWeight="bold"/>
+			<mx:List id="branchList" width="100%" rowCount="10" dataProvider="{SMEConstants.BRANCH_LIST}" labelField="branchName"
+					styleName="smeList" >
+				<mx:itemRenderer>
+					<fx:Component>
+						<mx:CheckBox selected="{data.isSelected=='true'}" change="checkbox1_changeHandler(event)">
+							<fx:Script>
+								<![CDATA[
+									import mx.collections.ArrayCollection;
+									protected function checkbox1_changeHandler(event:Event):void
+									{
+										if(CheckBox(event.currentTarget).selected){
+											data.isSelected = 'true';	
+										}else{
+											data.isSelected = 'false';
+										}
+										if(data.branchName=='All' && data.isSelected=='true'){
+											var arrColl:ArrayCollection = outerDocument.branchList.dataProvider as ArrayCollection;
+											for(var ind:int=0;ind<arrColl.length;ind++){
+												arrColl[ind].isSelected = 'true';
+											}
+										}else if(data.branchName=='All' && data.isSelected=='false'){
+											var arrColl:ArrayCollection = outerDocument.branchList.dataProvider as ArrayCollection;
+											for(var ind:int=0;ind<arrColl.length;ind++){
+												arrColl[ind].isSelected = 'false';
+											}
+										}
+										outerDocument.invalidateProperties();
+									}
+								]]>
+							</fx:Script>
+						</mx:CheckBox>
+					</fx:Component>
+				</mx:itemRenderer>
+			</mx:List>	
+		</mx:VBox>
+		<mx:VRule height="100%"/>
+		<mx:VBox styleName="smeLoansBackground" width="80%" height="100%">
+			<mx:Label text="Select Entitlements:"  fontWeight="bold"/>
+			<components:EntitleAddNewLoan id="addNewLoanEmt" width="100%"/>
+			
+		</mx:VBox>
+	</mx:HBox>
+	
+	<mx:HBox width="90%" horizontalAlign="right" styleName="smeLoansBackground">
+		<mx:Button label="Reset" click="reset_clickHandler(event)"/>
+		<mx:Button label="Save" 
+				   visible="{!isUpdateFlow}"
+				   includeInLayout="{!isUpdateFlow}"
+				   enabled="{branchList.selectedItems.length>0}" 
+				   click="save_clickHandler(event)"/>
+		<mx:Button label="Update" 
+				   visible="{isUpdateFlow}"
+				   includeInLayout="{isUpdateFlow}"
+				   enabled="{branchList.selectedItems.length>0}" 
+				   click="save_clickHandler(event)"/>
+	</mx:HBox>
+			
+			
+	
+</mx:VBox>

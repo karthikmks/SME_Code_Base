@@ -1,0 +1,723 @@
+/*	MORCOM STYLEGUIDE
+ *	LASTED EDITED: NOV 4th, 2009
+ *	ALL MODIFICATIONS SHOULD BE DIRECTED TO THE UX TEAM
+ */
+
+Module{fontFamily:Arial;fontSize:11;fontWeight:normal;color:#000000;backgroundColor:#FFFFFF;themeColor:#3274a9;disabledColor:#999999;paddingTop:0; paddingRight:0; paddingBottom:0; paddingLeft:0;background-size:"100%";horizontalGap:0;verticalGap:0;}
+Application{fontFamily:Arial;fontSize:11;fontWeight:normal;color:#000000;backgroundColor:#FFFFFF;themeColor:#3274a9;disabledColor:#999999;paddingTop:0; paddingRight:0; paddingBottom:0; paddingLeft:0;background-size:"100%";modalTransparency:"0.1"; modalTransparencyColor:#000000;modalTransparencyBlur:0;horizontalGap:0;verticalGap:0;}
+ToolTip {cornerRadius: 3;backgroundColor: #ffffcc;color: #000000;textAlign: left;fontFamily: Arial;fontSize: 11;}
+
+.smeFooter,.smeHeader {
+	backgroundColor:#999966;
+	borderThickness: 0;
+	borderColor: #000000;
+	cornerRadius: 1;
+/*	paddingLeft: 10; paddingRight: 10;
+	paddingTop: 10; paddingBottom: 10;*/
+/*	borderStyle: solid;
+	dropShadowEnabled:true;*/
+}
+
+
+/* BUTTONS=================================================*/
+.morcomButton			{height:19;fontWeight:normal;textRollOverColor:#000000;textSelectedColor:#000000;borderColor:#CCC6C3;paddingLeft:5; paddingRight:5;cornerRadius:3;
+highlightAlphas:1, 0;
+fillAlphas:1, 1, 1, 1;
+fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;}
+/*
+.morcomButtonAdd		{labelPlacement:left;height:19;fontWeight:normal;width:32;borderColor:#CCC6C3;cornerRadius:3;
+highlightAlphas:1, 0;
+fillAlphas:1, 1, 1, 1;
+fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;
+icon:Embed(source="../assets/morcomImages/icon_add.gif");disabledIcon:Embed(source="../assets/morcomImages/icon_add_dis.gif");}
+.morcomButtonAddAll		{labelPlacement:left;height:19;fontWeight:normal;width:32;borderColor:#CCC6C3;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;icon:Embed(source="../assets/morcomImages/icon_add_all.gif");disabledIcon:Embed(source="../assets/morcomImages/icon_add_all_dis.gif");}
+.morcomButtonRemove		{height:19;width:32;fontWeight:normal;borderColor:#CCC6C3;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;icon:Embed(source="../assets/morcomImages/icon_remove.gif");disabledIcon:Embed(source="../assets/morcomImages/icon_remove_dis.gif");}
+.morcomButtonRemoveAll	{height:19;width:32;fontWeight:normal;borderColor:#CCC6C3;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;icon:Embed(source="../assets/morcomImages/icon_remove_all.gif");disabledIcon:Embed(source="../assets/morcomImages/icon_remove_all_dis.gif");}
+
+.morcomButtonArrowUp	{height:19;width:32;borderColor:#CCC6C3;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;icon:Embed(source="../assets/morcomImages/icon_arrow_up.gif");disabledIcon:Embed(source="../assets/morcomImages/icon_arrow_up_dis.gif");}
+.morcomButtonArrowDown	{height:19;width:32;borderColor:#CCC6C3;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;icon:Embed(source="../assets/morcomImages/icon_add_down.gif");disabledIcon:Embed(source="../assets/morcomImages/icon_add_down_dis.gif");}
+.morcomButtonAddDown	{height:35;width:50;fontWeight:normal;textRollOverColor:#000000; textSelectedColor:#000000;borderColor:#CCC6C3;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;verticalGap:-2;paddingTop:-4;labelPlacement:top; icon:Embed(source="../assets/morcomImages/icon_add_down.gif");disabledIcon:Embed(source="../assets/morcomImages/icon_add_down_dis.gif");}
+.morcomButtonPaginationNext		{height:19;width:19;borderColor:#CCC6C3;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;icon:Embed(source="../assets/morcomImages/btn_pagination_next.gif");disabledIcon:Embed(source="../assets/morcomImages/btn_pagination_next_dis.gif");}
+.morcomButtonPaginationPrevious	{height:19;width:19;borderColor:#CCC6C3;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;icon:Embed(source="../assets/morcomImages/btn_pagination_previous.gif");disabledIcon:Embed(source="../assets/morcomImages/btn_pagination_previous_dis.gif");}
+.morcomButtonPaginationFirst	{height:19;width:19;borderColor:#CCC6C3;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;icon:Embed(source="../assets/morcomImages/btn_pagination_first.gif");disabledIcon:Embed(source="../assets/morcomImages/btn_pagination_first_dis.gif");}
+.morcomButtonPaginationLast		{height:19;width:19;borderColor:#CCC6C3;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;icon:Embed(source="../assets/morcomImages/btn_pagination_last.gif");disabledIcon:Embed(source="../assets/morcomImages/btn_pagination_last_dis.gif");}*/
+
+/*
+.morcomButtonRefresh{height:14;horizontalGap:0;fontWeight:normal;fontSize:9;color:#0072AF;paddingTop:0;paddingLeft:5;paddingRight:5;textRollOverColor:#0C82CD;textSelectedColor:#0C82CD;
+icon:Embed(source="../assets/morcomImages/btn_refresh.gif");
+disabledIcon:Embed(source="../assets/morcomImages/btn_refresh_dis.gif");
+up-skin:Embed(source="../assets/morcomImages/buttonSM.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");
+over-skin:Embed(source="../assets/morcomImages/buttonSM_over.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+down-skin:Embed(source="../assets/morcomImages/buttonSM_down.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+disabled-skin:Embed(source="../assets/morcomImages/buttonSM.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+}
+
+.morcomButtonResizeSM{height:16;width:14;fontSize:7;fontWeight:normal;color:#0072AF;paddingTop:4;paddingRight:0;paddingBottom:-2;paddingLeft:-1;textRollOverColor:#0C82CD;textSelectedColor:#0C82CD;
+up-skin:Embed(source="../assets/morcomImages/buttonSM.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+over-skin:Embed(source="../assets/morcomImages/buttonSM_over.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+down-skin:Embed(source="../assets/morcomImages/buttonSM_down.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+disabled-skin:Embed(source="../assets/morcomImages/buttonSM.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+}
+
+.morcomButtonResizeMed{height:16;width:15;fontSize:10;fontWeight:normal;color:#0072AF;paddingTop:0;paddingRight:0;paddingBottom:-1;paddingLeft:0;textRollOverColor:#0C82CD;textSelectedColor:#0C82CD;
+up-skin:Embed(source="../assets/morcomImages/buttonSM.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+over-skin:Embed(source="../assets/morcomImages/buttonSM_over.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+down-skin:Embed(source="../assets/morcomImages/buttonSM_down.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+disabled-skin:Embed(source="../assets/morcomImages/buttonSM.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+}
+.morcomButtonResizeLG{height:16;width:15;fontSize:14;fontWeight:normal;color:#0072AF; paddingTop:0; paddingRight:0; paddingBottom:2; paddingLeft:0;textRollOverColor:#0C82CD;textSelectedColor:#0C82CD;
+up-skin:Embed(source="../assets/morcomImages/buttonSM.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+over-skin:Embed(source="../assets/morcomImages/buttonSM_over.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+down-skin:Embed(source="../assets/morcomImages/buttonSM_down.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+disabled-skin:Embed(source="../assets/morcomImages/buttonSM.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+}*/
+
+.morcomPopUpButton{height:19;fontWeight:normal;textRollOverColor:#000000; textSelectedColor:#000000;borderColor:#CCC6C3;paddingLeft:5; paddingRight:5;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;arrowButtonWidth:16;popUpStyleName:"morcomPopUpButtonMenuStyle";}
+.morcomPopUpButtonMenuStyle{textAlign:left;rollOverColor:#C0D9E7; selectionColor:#9FC8DE;}
+.morcomPopUpMenuButton{height:19;fontWeight:normal;textRollOverColor:#000000; textSelectedColor:#000000;borderColor:#CCC6C3;rollOverColor:#C0D9E7; selectionColor:#9FC8DE;paddingRight:5; paddingLeft:5;cornerRadius:3;highlightAlphas:1, 0;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #c5d4db, #FFFFFF, #c5d4db;arrowButtonWidth:16;}
+
+/* COMBOBOX=================================================*/
+.morcomComboBox{
+	height:19;
+	fontWeight:normal;
+	textRollOverColor:#000000; textSelectedColor:#000000;
+	rollOverColor:#C0D9E7; selectionColor:#9FC8DE;
+	paddingTop:3; paddingRight:0; paddingBottom:0; paddingLeft:0;
+	cornerRadius:0;
+	arrowButtonWidth:16;
+	errorColor:#90837c; 
+	dropDownStyleName:morcomComboBoxDropDown;
+/*	up-skin:				Embed(source="../assets/morcomImages/combo_up.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+	over-skin:				Embed(source="../assets/morcomImages/combo_over.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+	down-skin:				Embed(source="../assets/morcomImages/combo_down.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+	disabled-skin:			Embed(source="../assets/morcomImages/combo_dis.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");   	
+	editableUpSkin:			Embed(source="../assets/morcomImages/combo_edit_up.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");
+	editableOverSkin:		Embed(source="../assets/morcomImages/combo_edit_over.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");
+	editableDownSkin:		Embed(source="../assets/morcomImages/combo_edit_down.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");
+	editableDisabledSkin:	Embed(source="../assets/morcomImages/combo_edit_dis.gif", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="3", scaleGridRight="4");*/
+}
+
+
+
+.morcomComboBoxDropDown{fontWeight:	normal;paddingLeft:2;}
+.errorTip { borderColor: #FBF8CD; color:#000000; }
+.morcomTextInput				{fontWeight:normal;height:19;borderColor:#90837c;paddingTop:-2; paddingBottom:-2;errorColor:#90837c;}
+.morcomTextInputErr				{fontWeight:normal;height:19;borderColor:#90837c;paddingTop:-2; paddingBottom:-2;errorColor:#DA2525;}
+.morcomTextInputRequired{fontWeight:normal;backgroundColor:#D6F3FF;borderColor:#3274a9;}
+.morcomTextInputError	{fontWeight:normal;backgroundColor:#facdca;borderColor:#ff3f3f;}
+.morcomTextInputHL	{fontWeight:normal;backgroundColor:#FFFFCC;borderColor:#90837c;}
+
+.morcomTimeStepper{borderStyle:none;textAlign:center;width:14;paddingRight:-2;paddingLeft:-2;paddingTop:-1;paddingBottom:-2;focusThickness:1;}
+.morcomDateField{height:19;borderColor:#90837c;rollOverColor:#C0D9E7; selectionColor:#9FC8DE;cornerRadius:0;headerColors:#ffffff,#d7d6d5;highlightAlphas:1, 0;fillAlphas:1, 0.5, 1, 0;fillColors:#D7D6D5, #D7D6D5, #D7D6D5, #D7D6D5;todayColor:#54301a;skin: ClassReference(null);upSkin: ClassReference(null);overSkin: ClassReference(null);downSkin: ClassReference(null);disabledSkin: ClassReference(null);}
+.morcomDateFieldRequired{height:19;borderColor:#90837c;rollOverColor:#C0D9E7; selectionColor:#9FC8DE;cornerRadius:0;headerColors:#ffffff, #d7d6d5;highlightAlphas:1, 0;fillAlphas:1, 0.5, 1, 0;fillColors:#D7D6D5, #D7D6D5, #D7D6D5, #D7D6D5;todayColor:#54301a;skin: ClassReference(null);upSkin: ClassReference(null);overSkin: ClassReference(null);downSkin: ClassReference(null);disabledSkin: ClassReference(null);textInputStyleName: morcomTextInputRequired;}
+.morcomCheckBox{height:17;paddingTop:0;horizontalGap:2;textSelectedColor:#0072AF;textRollOverColor:#005383;borderColor:#CCC6C3;textIndent:0;highlightAlphas:1, 1;fillAlphas:1, 1, 1, 1;fillColors:#c5d4db, #FFFFFF, #c5d4db, #c5d4db;}
+.morcomCheckBoxRequired{height:17;paddingTop:0;horizontalGap:2;textSelectedColor:#0072AF;textRollOverColor:#005383;borderColor:#CCC6C3;textIndent:0;highlightAlphas: 0, 0;fillAlphas: 1, 1, 1, 1;fillColors: #d6f3ff, #d6f3ff, #d6f3ff, #d6f3ff;}
+.morcomCheckBoxGroup{horizontalGap:5;}
+.morcomRadioButton{paddingTop:0;horizontalGap:2;textSelectedColor:#0072AF;textRollOverColor:#005383;borderColor:#CCC6C3;fillAlphas: 1, 1, 1, 1;fillColors: #ffffff, #ffffff, #ffffff, #ffffff;}
+.morcomRadioButtonRequired{paddingTop:0;horizontalGap:2;textSelectedColor:#0072AF;textRollOverColor:#005383;borderColor:#CCC6C3;highlightAlphas: 0, 0;fillAlphas: 1, 1, 1, 1;fillColors: #d6f3ff, #d6f3ff, #d6f3ff, #d6f3ff;}
+.morcomTextArea{borderColor:#CCC6C3;paddingRight:4; paddingLeft:4;}
+.morcomNoBorderTextArea{borderVisible:false;}
+.morcomTextAreaRequired{backgroundColor:#D6F3FF;borderColor:#CCC6C3;paddingRight:4; paddingLeft:4;}
+.morcomDateChooser{borderColor:#CCC6C3;rollOverColor:#C0D9E7; selectionColor:#9FC8DE;cornerRadius:0;headerColors:#ffffff, #d7d6d5;highlightAlphas:1, 0;fillAlphas:1, 0.5, 1, 0;fillColors:#D7D6D5, #D7D6D5, #D7D6D5, #D7D6D5;todayColor:#54301a;}
+.morcomList{borderStyle:solid;borderColor:#CCC6C3;leading:0;textRollOverColor:#000000;textSelectedColor:#000000;rollOverColor:#C0D9E7; selectionColor:#9FC8DE;alternating-item-colors:#FFFFFF, #FFFFFF;}
+
+/* DATAGRID=================================================*/
+DataGrid{alternatingItemColors:#ffffff, #ffffff;}
+AdvancedDataGrid{alternatingItemColors:#ffffff, #ffffff;}
+.morcomDataGrid{
+	paddingTop:0; paddingBottom:0;
+	textRollOverColor:#000000; textSelectedColor:#000000;
+	rollOverColor:#C0D9E7; selectionColor:#9FC8DE;
+	verticalGridLines:true;
+	horizontalGridLines:true;
+	horizontalGridLineColor:#E5E2DA;
+	borderStyle:solid;
+   	headerColors:#ffffff, #D7D5C7;
+   	borderColor:#CCC6C3;
+   	totalFontWeight:"bold";
+   	totalBackgroundColor:#cfcabf;
+   	totalBorderColor:#9c9890;
+   	headerStyleName:"DGHeaderStyle";
+/*   	sortArrowSkin:Embed(source="../assets/morcomImages/icon_sort.gif");*/
+}
+
+.DGHeaderStyle{color:#005383;textRollOverColor:#000000;}
+.leftAlignDataGridCol{textAlign:left;textDecoration:none; paddingLeft:2;}
+.rightAlignDataGridCol{textAlign:right;textDecoration:none; paddingRight:2}
+
+.leftAlignDataGridColNoSort{textAlign:left;textDecoration:none;color:#000000; paddingLeft:2;}
+.rightAlignDataGridColNoSort{textAlign:right;textDecoration:none;color:#000000;paddingRight:2}
+
+/* ADVANCED DATAGRID=================================================*/
+.morcomADG{
+	paddingTop:0; paddingBottom:0;
+	textRollOverColor:#000000; textSelectedColor:#000000;
+	rollOverColor:#C0D9E7; selectionColor:#9FC8DE;
+	verticalGridLines:false;
+	horizontalGridLines:true;
+	horizontalGridLineColor:#E5E2DA;
+	borderStyle:solid;
+   	headerColors:#ffffff, #D7D5C7;
+   	borderColor:#CCC6C3;
+   	headerStyleName:"ADGHeaderStyle";
+	depthColors: #E3E3D5, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1;
+/*	disclosureClosedIcon:Embed(source="../assets/morcomImages/btn_dataGridExpandRow.gif");
+	disclosureOpenIcon:Embed(source="../assets/morcomImages/btn_dataGridCollapseRow.gif");*/
+	defaultLeafIcon:ClassReference(null);
+	folderClosedIcon:ClassReference(null);
+	folderOpenIcon:ClassReference(null);
+	fontSize: 10;
+}
+.morcomADGGrouplist{
+    paddingTop:0; paddingBottom:0;
+    textRollOverColor:#000000; textSelectedColor:#000000;
+    rollOverColor:#C0D9E7; selectionColor:#9FC8DE;
+    verticalGridLines:false;
+    horizontalGridLines:true;
+    horizontalGridLineColor:#E5E2DA;
+    borderStyle:solid;
+    headerColors:#ffffff, #D7D5C7;
+    borderColor:#CCC6C3;
+    headerStyleName:"ADGHeaderStyle";
+    depthColors: #E3E3D5, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1, #EFEFE1;
+/*    disclosureClosedIcon:Embed(source="../assets/morcomImages/btn_dataGridExpandRow.gif");
+    disclosureOpenIcon:Embed(source="../assets/morcomImages/btn_dataGridCollapseRow.gif");
+    defaultLeafIcon:ClassReference(null);
+    folderClosedIcon:Embed(source="../assets/morcomImages/icon_group.gif");
+    folderOpenIcon:Embed(source="../assets/morcomImages/icon_group.gif");*/
+}
+.morcomADGGrouplistNoDepth{
+	paddingTop:0; paddingBottom:0;
+	textRollOverColor:#000000; textSelectedColor:#000000;
+	rollOverColor:#C0D9E7; selectionColor:#9FC8DE;
+	verticalGridLines:false;
+	horizontalGridLines:true;
+	horizontalGridLineColor:#E5E2DA;
+	borderStyle:solid;
+   	headerColors:#ffffff, #D7D5C7;
+   	borderColor:#CCC6C3;
+   	headerStyleName:"ADGHeaderStyle";
+/*	disclosureClosedIcon:Embed(source="../assets/morcomImages/btn_dataGridExpandRow.gif");
+	disclosureOpenIcon:Embed(source="../assets/morcomImages/btn_dataGridCollapseRow.gif");
+	defaultLeafIcon:ClassReference(null);
+	folderClosedIcon:Embed(source="../assets/morcomImages/icon_group.gif");
+	folderOpenIcon:Embed(source="../assets/morcomImages/icon_group.gif");*/
+}
+.morcomADGFlat{
+	paddingTop:0; paddingBottom:0;
+	textRollOverColor:#000000; textSelectedColor:#000000;
+	rollOverColor:#C0D9E7; selectionColor:#9FC8DE;
+	verticalGridLines:false;
+	horizontalGridLines:true;
+	horizontalGridLineColor:#E5E2DA;
+	borderStyle:solid;
+   	headerColors:#ffffff, #D7D5C7;
+   	borderColor:#CCC6C3;
+   	headerStyleName:"ADGHeaderStyle";
+	disclosureClosedIcon:ClassReference(null);
+	disclosureOpenIcon:ClassReference(null);
+	defaultLeafIcon:ClassReference(null);
+	folderClosedIcon:ClassReference(null);
+	folderOpenIcon:ClassReference(null);
+}
+.ADGHeaderStyle{color:#005383;}
+.ADGHeaderRight{horizontalAlign:right;}
+.ADGHeaderLeft{horizontalAlign:left;}
+
+/* LINKS=================================================*/
+.morcomLinkButton		{fontWeight:normal;color:#0072AF;textRollOverColor:#008FDC;textSelectedColor:#008FDC;textDecoration:underline;skin:ClassReference(null);}
+.morcomLinkButtonDKBG	{fontWeight:normal;color:#FFFFFF;textRollOverColor:#CFCABF;textSelectedColor:#CFCABF;rollOverColor:#90837C;selectionColor:#90837C;skin:ClassReference(null);}
+.morcomLinkBar			{fontWeight:normal;color:#0072af;horizontalGap:3;separatorWidth:1;separatorColor:#CCC6C3;textRollOverColor:#008FDC;textSelectedColor:#008FDC;textDecoration:underline;skin:ClassReference(null);linkButtonStyleName:morcomLinkButtonStyle;}
+.morcomLinkBarDKBG		{fontWeight:normal;color:#FFFFFF;horizontalGap:3;separatorWidth:1;separatorColor:#CCC6C3;textRollOverColor:#CFCABF;textSelectedColor:#CFCABF;rollOverColor:#90837C;selectionColor:#90837C;linkButtonStyleName:morcomLinkButtonStyle;}
+.morcomLinkButtonStyle	{fontWeight:normal;skin:ClassReference(null);}
+
+/* TAB NAVIGATION=================================================*/
+.morcomTabNavigator{tabHeight:25;horizontalGap:1;backgroundColor:#e3e3d5;borderStyle:solid;borderColor:#CCC6C3;borderThickness:1;paddingRight:0; paddingBottom:0; paddingLeft:0;tabStyleName:"morcomTab";selectedTabTextStyleName:"morcomSelectedtab";}
+.morcomTabNavigatorSmall{tabHeight:20;horizontalGap:1;backgroundColor:#e3e3d5;borderStyle:solid;borderColor:#CCC6C3;borderThickness:1;tabStyleName:"morcomTabSmall";selectedTabTextStyleName:"morcomSelectedTabSmall";}
+.morcomSelectedtab{fontWeight:bold;color:#54301A;}
+
+.morcomSelectedTabSmall{fontWeight:normal;color:#54301A;}
+.morcomTabBar{tab-height:25;horizontal-gap:1;tab-style-name:"morcomTab";selectedTabTextStyleName:"morcomSelectedtab";}
+
+/* PANELS & WINDOWS=================================================*/
+.morcomPanel{fontWeight:normal;borderStyle:solid;cornerRadius:0;background-size:"100%";headerHeight:25;title-style-name:"morcomTitlePanel";}
+.morcomTitlePanel{fontWeight:normal;color:#54301a;}
+.morcomControlBar{backgroundColor:#CFCABF;borderStyle:solid;borderColor:#CFCABF;paddingTop:0; paddingRight:0; paddingBottom:0; paddingLeft:0;}
+.morcomTitleWindow{	
+   	borderColor:#9C9890;
+   	borderAlpha:1;
+   	borderThickness:1;
+   	borderThicknessTop:0; borderThicknessRight:12; borderThicknessBottom:12; borderThicknessLeft:12;
+   	paddingTop:10; paddingRight:10; paddingBottom:10; paddingLeft:10;
+   	roundedBottomCorners:false;
+   	cornerRadius:0;
+   	headerHeight:25;
+   	backgroundAlpha:1;
+   	highlightAlphas:.5, .5;
+   	modalTransparency:"0.2"; modalTransparencyColor:#000000;modalTransparencyBlur:0;
+   	headerColors:#E0E0DF, #E0E0DF;
+   	dropShadowEnabled:true; shadowDistance:4; shadowDirection:right;
+   	titleStyleName:"morcomTitleWindowTitle";
+}
+
+.morcomTitleWindowTitle{fontWeight:bold;color:#54301a; paddingLeft:30;}
+.morcomErrorTitleWindowTitle{fontWeight:bold;color:#FFFFFF;}
+/* ApplicationControlBar{
+	highlightAlphas: 0, 0;
+   	fillAlphas: 1, 1;
+   	fillColors: #990000, #990000;
+   	backgroundAlpha: 1;
+   	cornerRadius: 0;
+   	dropShadowEnabled: false;
+} */
+
+
+Alert{
+	color:#000000;
+	backgroundColor:#FFFFFF;
+	borderColor:#CCC6C3;
+	borderAlpha:1;
+	borderThickness:1;
+	borderThicknessTop:0; borderThicknessRight:1; borderThicknessBottom:0; borderThicknessLeft:1;
+	roundedBottomCorners:false;
+	cornerRadius:0;
+	headerHeight:25;
+	highlightAlphas:1, 0;
+	headerColors:#d7d6d5, #d7d6d5;
+	dropShadowEnabled:true; shadowDistance:4; shadowDirection:right;
+	buttonStyleName:morcomButton;
+	titleStyleName:morcomTitleWindowTitle;
+}
+.morcomPopUpSplitPanelBG{backgroundColor:#CFCABF;}
+/*DIVIDED BOX*/
+/* ACCORDION, TREE, SCROLLBARS=================================================*/
+.morcomAccordion{borderStyle:solid;headerHeight:20;highlightAlphas:1, 0;fillAlphas:1, 0.52, 1, 0;fillColors:#c5d4db, #c5d4db, #c5d4db, #c5d4db;themeColor:#3274a9;borderColor:#CCC6C3;headerStyleName:"accHeader";}
+.accHeader{color:#005383;}
+VScrollBar{cornerRadius:0;highlightAlphas:0, 0;fillAlphas:.4, .8, .4, .8;fillColors:#CFCABF, #CFCABF, #CFCABF, #CFCABF;trackColors:#CFCABF, #FFFFFF;borderColor:#CFCABF;themeColor:#CFCABF;}
+HScrollBar{cornerRadius:0;highlightAlphas:0, 0;fillAlphas:.4, .8, .4, .8;fillColors:#CFCABF, #CFCABF, #CFCABF, #CFCABF;trackColors:#CFCABF, #FFFFFF;borderColor:#CFCABF;themeColor:#CFCABF;}
+
+
+/* 	=================
+	UNIQUE CONTAINERS
+	=================   */
+
+/* MASTHEAD==============================================================================*/
+.morcomLogo			{paddingBottom:12;paddingTop:12;paddingLeft:12;paddingRight:12;}
+.morcomTopNav		{fontSize:10;color:#CFCABF;horizontalAlign:right;paddingTop:2;paddingRight:2;horizontalGap:0;}
+.morcomTopNavDateLog{horizontalGap:0;paddingTop:-3;}
+.morcomTopNavLinks	{fontSize:10;color:#FFFFFF;horizontalGap:-8;separatorWidth:1;separatorColor:#6F5F57;textRollOverColor:#CFCABF; textSelectedColor:#CFCABF;rollOverColor:#432F25; selectionColor:#432F25;linkButtonStyleName:morcomLinkButtonStyle;paddingTop:-5;}
+.morcomLogout		{fontSize:10;color:#FFFFFF;backgroundColor:#6F5F57;paddingTop:-5;paddingRight:2;paddingLeft:2;}
+
+/* MAIN NAVIGATION=================================================*/
+
+.morcomSecNav{paddingTop:1;paddingBottom:1;paddingLeft:1;backgroundColor:#E3E3D5;borderColor:#CFCABF;borderStyle:solid;borderSides:bottom;}
+.morcomSecNavToggleBar{buttonHeight:17;paddingLeft:-3;paddingRight:-3;paddingTop:-1;horizontalGap:0;buttonStyleName:morcomSecNavToggleBarStyle;selectedButtonTextStyleName:morcomSecNavToggleBarStyleSelected;}
+
+.morcomSecNavToggleBarStyleSelected{color:#54301A;}
+.morcomMainMenu{color:#54301a;textRollOverColor:#83421F; textSelectedColor:#83421F;borderColor:#CCC6C3;separator-color:#CAC7BA;rollOverColor:#CAC7BA;selectionColor:#CAC7BA;separator-width:0.5;verticalGap:0;shadowDistance:4;shadowDirection:right;}
+
+/* ACCOUNT SUMMARY BAR============================================================================================================*/
+.morcomASBBox	{borderColor:#B8D1ED;borderSides:bottom;backgroundColor:#E5ECEF;borderStyle:solid;}
+.morcomASBLVBox	{horizontalGap:-2;paddingRight:3; paddingLeft:3;}
+.morcomASBButtons	{horizontalGap:2;paddingRight:2;paddingTop:1;}
+
+/* PAGE TITLE====================================================================================================================*/
+.morcomPageTitle			{paddingTop:3; paddingLeft:9;paddingRight:5}
+.morcomAccountInfo			{horizontalGap:5;verticalAlign:bottom;borderStyle:solid;borderSides:bottom;borderColor:#CCC6C3; paddingBottom:3;}
+.morcomClassCodes			{horizontalGap:2;verticalAlign:middle;borderStyle:solid;borderSides:bottom;borderColor:#CCC6C3;}
+.morcomPageTitleSearchbar	{horizontalGap:3;verticalAlign:middle;cornerRadius:3;borderColor:#CCC6C3;borderStyle:solid;borderSides:right,bottom,left;paddingTop:1; paddingRight:3; paddingBottom:1; paddingLeft:1;}
+.morcomPageTitleFilterBlock	{horizontalGap:0;verticalAlign:middle;paddingTop:1;paddingRight:4; paddingLeft:4;}
+
+/* ACCOUNT SUMMARY WINDOW========================================================================================================*/
+.morcomASWTitleWindow		{borderStyle:solid;borderColor:#CCC6C3;borderAlpha:1;borderThickness:1;borderThicknessTop:0; borderThicknessRight:1; borderThicknessBottom:0; borderThicknessLeft:1;roundedBottomCorners:false;cornerRadius:0;headerHeight:25;backgroundAlpha:1;highlightAlphas:0, 0;headerColors:#FFFFFF, #E0E0DF;dropShadowEnabled:true; shadowDistance:4; shadowDirection:right;titleStyleName:"morcomASWTitleWindowTitle";}
+.morcomASWTitleWindowTitle	{fontWeight:bold;color:#54301a;}
+.morcomASWPageTitle			{horizontalGap:0;verticalAlign:bottom;paddingLeft:7;paddingBottom:2;}
+.morcomASWLVBox				{paddingTop:-1;horizontalGap:0;} /* DEPRECATED USE .morcomLVBox INSTEAD */
+.morcomASWLVBoxRt			{paddingTop:-1;borderSides:bottom;borderStyle:solid;borderColor:#E5E2DA;horizontalGap:0;}
+
+.morcomQuickQuote{horizontalGap:3;paddingLeft:5;paddingRight:5;paddingTop:3;borderSides:left, right;borderColor:#6f5f57;borderStyle:solid;}
+
+/* HRULES AND VRULES==========================================================================================================HRULES AND VRULES*/
+.morcomHRule		{strokeColor:#CFCABF;strokeWidth:2;shadowColor:#ffffff;}
+.morcomHRule2		{strokeColor:#CFCABF;strokeWidth:1;}
+.morcomHRuleLight	{strokeColor:#E5E2DA;strokeWidth:1;}
+.morcomHRuleOrange	{strokeColor:#CBB17E;strokeWidth:2;shadowColor:#ffffff;}
+.morcomVRule		{strokeColor:#CFCABF;strokeWidth:2;shadowColor:#ffffff;}
+.morcomVRuleOrange	{strokeColor:#CBB17E;strokeWidth:2;shadowColor:#ffffff;}
+.morcomVRuleBlue	{strokeColor:#B8D1ED;strokeWidth:2;shadowColor:#ffffff;}
+
+/* LABELS ===============================================================================================================================LABELS*/
+/* DATA ENTRY FORMS*/
+.morcomForm		{verticalGap:4;paddingTop:0; paddingRight:0; paddingBottom:0; paddingLeft:0;indicatorGap:0;}
+.morcomFormVert	{verticalGap:4;paddingTop:0; paddingRight:0; paddingBottom:0; paddingLeft:0;indicatorGap:0;}
+.morcomFormLabelTop		{color:#464646;fontWeight:bold;paddingLeft:-2;paddingRight:-8;}
+.morcomFormLabelLeft	{color:#464646;fontWeight:bold;paddingRight:-8;}
+.morcomFormLabelRight	{color:#464646;fontWeight:bold;paddingRight:-8;}
+
+/* FILTERS*/
+.morcomFilterLabelTop	{color:#000000;fontWeight:normal;paddingLeft:-2;paddingBottom:-8;paddingTop:-3;}
+.morcomFilterLabelRight	{color:#000000;fontWeight:normal;paddingRight:-5;}
+
+/* REQUIRED INDICATOR*/
+.reqIndicator		{paddingLeft:-3;paddingRight:-17;color:#990000; fontSize:11; fontWeight: bold;}
+.reqIndicatorFilters{paddingLeft:-3;paddingRight:-14;color:#990000; fontSize:11; fontWeight: bold;}
+
+/* DATAGRIDS */
+.morcomDataGridLabel	{color:#54301A;fontWeight:bold;paddingLeft:4;}
+
+/*.morcomLabels		{color:#000000; fontSize:11; fontWeight:normal;}*/
+.morcomLabelsBold	{color:#464646; fontSize:11; fontWeight:bold;}
+/*.morcomLabel		{paddingRight:3; paddingLeft:3;}*/
+/*.morcomLabelBold	{paddingRight:3; paddingLeft:3;	color:#464646; fontWeight:bold;}*/
+
+/* LABEL VALUE PAIRS ===============================================================================================LABEL VALUE PAIRS*/
+.morcomLVBox	{horizontalGap:-2;}
+
+/*FOR RIGHT ALIGNED VALUES*/
+.morcomLVBoxRt{
+	horizontalGap:0;
+	paddingTop:1;
+	paddingBottom:-2;
+	paddingRight:3;
+	paddingLeft:3;
+	borderSides:bottom;
+	borderStyle:solid;
+	borderColor:#E5E2DA;
+}
+
+/* HEADERS */
+.morcomHeaderBoxBiege {
+	backgroundColor:#E3E3D5;
+	verticalAlign:top;
+	horizontalGap:-2;
+	paddingLeft:3;
+	paddingRight:3;
+	paddingTop:2;
+	paddingBottom:2;
+}
+
+.morcomContentPadding1{paddingTop:5; paddingBottom:5;paddingLeft:5;paddingRight:5; verticalGap:-2;}
+
+/* SPECIFIC CONTAINERS=================================================*/
+/* FILTERS */
+.morcomFilterBox		{horizontalGap:0;borderColor:#CFCABF;borderSides:bottom;borderStyle:solid;} /* DEPRECATED */
+.morcomFilterBar		{backgroundColor:#E3E3D5;horizontalGap:5;paddingBottom:1;paddingTop:2; paddingLeft:2; paddingRight:2;}
+.morcomFilterBarVert	{backgroundColor:#E3E3D5;verticalAlign:bottom;horizontalGap:8;paddingBottom:2;paddingTop:2; paddingLeft:2; paddingRight:2;}
+.morcomFilterBarCap		{backgroundColor:#E3E3D5;verticalAlign:bottom;paddingLeft:3;paddingRight:3;borderColor:#CCC6C3;borderSides:left, top, right;borderStyle:solid;}
+.morcomFilterBarDK		{backgroundColor:#CFCABF;verticalAlign:bottom;horizontalGap:3;paddingBottom:2; paddingLeft:2; paddingRight:2;}
+
+/* BUTTONS */
+.morcomButtonRow		{horizontalGap:3;paddingTop:2;paddingBottom:2;}
+.morcomButtonRow2		{horizontalGap:3;paddingTop:2;paddingBottom:2;paddingRight:3;paddingLeft:3;}
+.morcomButtonRowRight	{horizontalGap:3;paddingTop:2;paddingBottom:2;horizontalAlign:right;}
+.morcomButtonRowRight2	{horizontalGap:3;paddingTop:2;paddingBottom:2;paddingRight:3;paddingLeft:3;horizontalAlign:right;}
+
+/* ICONS */
+.morcomMsgIcons			{paddingTop:1; paddingBottom:1;paddingRight:1;}
+.morcomIconBox			{horizontalGap:5;verticalAlign:bottom;}
+.morcomResizeBox		{horizontalGap:1;backgroundColor:#807268;}
+
+/* MISC */
+.morcomPagination	{horizontalGap:5;verticalAlign:middle;}
+.morcomFooter		{paddingLeft:10;backgroundColor:#321b0f;}
+.morcomTotals		{backgroundColor:#E3E3D5;borderSides:right, bottom, left;borderStyle:solid;borderColor:#CCC6C3;verticalGap:0;}
+
+
+/* GROUP BOXES */
+.morcomGroupBox{
+	verticalGap:-2;
+	borderStyle:solid;
+	borderColor:#CCC6C3;
+	paddingTop:5;
+	paddingLeft:5;
+	paddingRight:5;
+}
+.morcomGroupBoxBiege{
+	verticalGap:-2;
+	borderStyle:solid;
+	borderColor:#CCC6C3;
+	paddingTop:5;
+	paddingLeft:5;
+	paddingRight:5;
+}
+.morcomGroupLabel{
+	backgroundColor:#E3E3D5;
+	paddingBottom:-2;
+	paddingTop:-2;
+}
+.morcomGroupLabelBiege{
+	backgroundColor:#E3E3D5;
+	paddingBottom:-2;
+	paddingTop:-2;
+}
+/* MESSAGES*/
+.morcomMsgInstructions	{horizontalGap:0;paddingRight:2;paddingLeft:5;paddingTop:2;paddingBottom:1;borderStyle:solid;borderColor:#CCC6C3;}
+.morcomMsgInfo			{horizontalGap:0;paddingRight:2;paddingLeft:5;borderStyle:solid;borderColor:#B8D1ED;backgroundColor:#E5ECEF;}
+.morcomMsgWarning		{horizontalGap:0;paddingRight:2;paddingLeft:5;paddingTop:2;paddingBottom:1;borderStyle:solid;borderColor:#C0B9B5;backgroundColor:#FFFF99;}
+.morcomMsgError			{horizontalGap:0;paddingRight:2;paddingLeft:5;paddingTop:2;paddingBottom:1;borderStyle:solid;borderColor:#CC0000;backgroundColor:#FACDCA;}
+
+/*GENERIC CONTAINERS =================================================*/
+/*EMPTY*/
+.morcomBoxPadded	{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;}
+.morcomBoxAllPadded	{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;paddingTop:3;paddingBottom:3;}
+/*WHITE*/
+.morcomBoxWhiteOutlined					{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#FFFFFF;}
+.morcomBoxWhiteOutlinedFilled			{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#CCC6C3;backgroundColor:#FFFFFF;}
+.morcomBoxWhiteFilled					{verticalGap:0;horizontalGap:0;backgroundColor:#FFFFFF;}
+.morcomBoxPaddedWhiteOutlined			{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#FFFFFF;}
+.morcomBoxPaddedWhiteOutlinedFilled		{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#CCC6C3;backgroundColor:#FFFFFF;}
+.morcomBoxPaddedWhiteFilled				{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;backgroundColor:#FFFFFF;}
+.morcomBoxAllPaddedWhiteFilled			{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;paddingTop:3;paddingBottom:3;backgroundColor:#FFFFFF;}
+.morcomBoxAllPaddedWhiteOutlinedFilled	{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;paddingTop:3;paddingBottom:3;borderStyle:solid;borderColor:#CCC6C3;backgroundColor:#FFFFFF;}
+/*BIEGE*/
+.morcomBoxBiegeOutlined					{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#CCC6C3;}
+.morcomBoxBiegeOutlinedFilled			{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#CCC6C3;backgroundColor:#E3E3D5;}
+.morcomBoxBiegeOutlinedFilledWhite		{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#CCC6C3;backgroundColor:#FFFFFF;}
+.morcomBoxBiegeFilled					{verticalGap:0;horizontalGap:0;backgroundColor:#E3E3D5;}
+.morcomBoxBiegeFilled2					{verticalGap:0;horizontalGap:0;backgroundColor:#CFCABF;borderStyle:solid;borderColor:#CFCABF;}
+.morcomBoxBiegeFilled3					{verticalGap:0;horizontalGap:0;backgroundColor:#9c9890;borderStyle:solid;borderColor:#9c9890;}
+.morcomBoxPaddedBiegeOutlined			{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#CCC6C3;}
+.morcomBoxPaddedBiegeOutlinedFilled		{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#CCC6C3;backgroundColor:#E3E3D5;}
+.morcomBoxPaddedBiegeOutlinedFilledWhite{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#CCC6C3;backgroundColor:#FFFFFF;}
+.morcomBoxPaddedBiegeFilled				{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;backgroundColor:#E3E3D5;}
+.morcomBoxPaddedBiegeFilled2			{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;backgroundColor:#CFCABF;borderStyle:solid;borderColor:#CFCABF;}
+.morcomBoxAllPaddedBiegeFilled			{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;paddingTop:3;paddingBottom:3;backgroundColor:#E3E3D5;}
+.morcomBoxAllPaddedBiegeOutlinedFilled	{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;paddingTop:3;paddingBottom:3;borderStyle:solid;borderColor:#CCC6C3;backgroundColor:#E3E3D5;}
+/*BLUE*/
+.morcomBoxBlueOutlined					{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#B8D1ED;}
+.morcomBoxBlueOutlinedFilled			{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#B8D1ED;backgroundColor:#E5ECEF;}
+.morcomBoxBlueOutlinedFilledWhite		{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#B8D1ED;backgroundColor:#FFFFFF;}
+.morcomBoxBlueFilled					{verticalGap:0;horizontalGap:0;backgroundColor:#B8D1ED;}
+.morcomBoxBlueFilled2					{verticalGap:0;horizontalGap:0;backgroundColor:#E5ECEF;}
+.morcomBoxPaddedBlueOutlined			{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#B8D1ED;}
+.morcomBoxPaddedBlueOutlinedFilled		{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#B8D1ED;backgroundColor:#E5ECEF;}
+.morcomBoxPaddedBlueOutlinedFilledWhite	{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#B8D1ED;backgroundColor:#FFFFFF;}
+.morcomBoxPaddedBlueFilled				{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;backgroundColor:#B8D1ED;}
+.morcomBoxPaddedBlueFilled2				{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;backgroundColor:#E5ECEF;}
+/*RED*/
+.morcomBoxRedOutlined					{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#990000;}
+.morcomBoxRedOutlinedFilled				{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#990000;backgroundColor:#FACDCA;}
+.morcomBoxRedOutlinedFilledWhite		{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#990000;backgroundColor:#FFFFFF;}
+.morcomBoxRedFilled						{verticalGap:0;horizontalGap:0;backgroundColor:#990000;}
+.morcomBoxRedFilled2					{verticalGap:0;horizontalGap:0;backgroundColor:#FACDCA;}
+.morcomBoxPaddedRedOutlined				{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#990000;}
+.morcomBoxPaddedRedOutlinedFilled		{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#990000;backgroundColor:#FACDCA;}
+.morcomBoxPaddedRedOutlinedFilledWhite	{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#990000;backgroundColor:#FFFFFF;}
+.morcomBoxPaddedRedFilled				{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;backgroundColor:#990000;}
+.morcomBoxPaddedRedFilled2				{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;backgroundColor:#FACDCA;}
+/*YELLOW*/
+.morcomBoxYellowOutlined				{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#C0B9B5;}
+.morcomBoxYellowOutlinedFilled			{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#C0B9B5;backgroundColor:#FFFF99;}
+.morcomBoxYellowOutlinedFilledWhite		{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#C0B9B5;backgroundColor:#FFFFFF;}
+.morcomBoxYellowFilled					{verticalGap:0;horizontalGap:0;backgroundColor:#FFFF99;}
+.morcomBoxYellowFilled2					{verticalGap:0;horizontalGap:0;backgroundColor:#FFFCCC;}
+.morcomBoxPaddedYellowOutlined			{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#C0B9B5;}
+.morcomBoxPaddedYellowOutlinedFilled	{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#C0B9B5;backgroundColor:#FFFF99;}
+.morcomBoxPaddedYellowOutlinedFilledWhite	{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#C0B9B5;backgroundColor:#FFFFFF;}
+.morcomBoxPaddedYellowFilled			{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;backgroundColor:#FFFF99;}
+.morcomBoxPaddedYellowFilled2			{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;backgroundColor:#FFFCCC;}
+
+/*GREEN*/
+.morcomBoxGreenOutlined					{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#53840F;}
+.morcomBoxGreenOutlinedFilled			{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#53840F;backgroundColor:#e7fed0;}
+.morcomBoxGreenOutlinedFilledWhite		{verticalGap:0;horizontalGap:0;borderStyle:solid;borderColor:#53840F;backgroundColor:#FFFFFF;}
+.morcomBoxGreenFilled					{verticalGap:0;horizontalGap:0;backgroundColor:#53840F;}
+.morcomBoxGreenFilled2					{verticalGap:0;horizontalGap:0;backgroundColor:#e7fed0;}
+.morcomBoxPaddedGreenOutlined			{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#53840F;}
+.morcomBoxPaddedGreenOutlinedFilled		{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#53840F;backgroundColor:#e7fed0;}
+.morcomBoxPaddedGreenOutlinedFilledWhite{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;borderStyle:solid;borderColor:#53840F;backgroundColor:#FFFFFF;}
+.morcomBoxPaddedGreenFilled				{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;backgroundColor:#53840F;}
+.morcomBoxPaddedGreenFilled2			{verticalGap:0;horizontalGap:0;paddingLeft:3;paddingRight:3;backgroundColor:#e7fed0;}
+
+/* TEXT=================================================*/
+Text{leading:0;}
+.p {verticalGap:-4; paddingBottom:5;}
+/* BLACK */
+	.txt 		{color:#000000; fontSize:11; fontWeight:normal;}
+	.txtbold 	{color:#000000; fontSize:11; fontWeight:bold;}
+	.txtSM 		{color:#000000; fontSize:10; fontWeight:normal;}
+	.txtSMbold	{color:#000000; fontSize:10; fontWeight:bold;} 
+	.txtLGbold	{color:#000000; fontSize:14; fontWeight:bold;} 
+	
+/* BROWN - 0 */
+	.txt0 		{color:#54301A; fontSize:11; fontWeight:normal;}
+	.txt0bold 	{color:#54301A; fontSize:11; fontWeight:bold;}		
+	.txt0SM 	{color:#54301A; fontSize:10; fontWeight:normal;}	
+	.txt0SMbold	{color:#54301A; fontSize:10; fontWeight:bold;} 
+	.txt0LGbold {color:#54301A; fontSize:14; fontWeight:bold;}
+	
+/* BLUE - 1 */
+	.txt1 		{color:#005383; fontSize:11; fontWeight:normal;}
+	.txt1bold 	{color:#005383; fontSize:11; fontWeight:bold;}		
+	.txt1SM 	{color:#005383; fontSize:10; fontWeight:normal;}	
+	.txt1SMbold	{color:#005383; fontSize:10; fontWeight:bold;} 
+	.txt1LGbold {color:#005383; fontSize:14; fontWeight:bold;} 
+
+/* DARK GRAY - 2 */
+	.txt2		{color:#464646; fontSize:11; fontWeight:normal;}
+	.txt2bold	{color:#464646; fontSize:11; fontWeight:bold;}
+	.txt2SM 	{color:#464646; fontSize:10; fontWeight:normal;}
+	.txt2SMbold	{color:#464646; fontSize:10; fontWeight:bold;}
+	.txt2LGbold {color:#464646; fontSize:14; fontWeight:bold;}
+
+/* ORANGE - 3 */
+	.txt3		{color:#9A6600; fontSize:11; fontWeight:normal;}
+	.txt3bold	{color:#9A6600; fontSize:11; fontWeight:bold;}
+	.txt3SM 	{color:#9A6600; fontSize:10; fontWeight:normal;}
+	.txt3SMbold	{color:#9A6600; fontSize:10; fontWeight: bold;}
+	.txt3LGbold	{color:#9A6600; fontSize:14; fontWeight: bold;}
+
+/* GREY - 4 */
+	.txt4		{color:#666666; fontSize:11; fontWeight:normal;}
+	.txt4bold	{color:#666666; fontSize:11; fontWeight: bold;}
+	.txt4SM 	{color:#666666; fontSize:10; fontWeight:normal;}
+	.txt4SMbold {color:#666666; fontSize:10; fontWeight: bold;}
+	.txt4LGbold	{color:#666666; fontSize:14; fontWeight: bold;}
+
+/* WHITE - 5 */
+	.txt5		{color:#FFFFFF; fontSize:11; fontWeight:normal;}
+	.txt5bold	{color:#FFFFFF; fontSize:11; fontWeight: bold;}
+	.txt5SM 	{color:#FFFFFF; fontSize:10; fontWeight:normal;}
+	.txt5SMbold	{color:#FFFFFF; fontSize:10; fontWeight: bold;}
+	.txt5LGbold	{color:#FFFFFF; fontSize:14; fontWeight: bold;}
+
+/* BIEGE - 6 */
+	.txt6 		{color:#CFCABF; fontSize:11; fontWeight:normal;}
+	.txt6bold	{color:#CFCABF; fontSize:11; fontWeight: bold;}
+	.txt6SM 	{color:#CFCABF; fontSize:10; fontWeight:normal;}
+	.txt6SMbold	{color:#CFCABF; fontSize:10; fontWeight: bold;}
+	.txt6LGbold	{color:#CFCABF; fontSize:14; fontWeight: bold;}
+
+/* RED - 7 */
+	.txt7		{color:#990000; fontSize:11; fontWeight:normal;}
+	.txt7bold	{color:#990000; fontSize:11; fontWeight: bold;}
+	.txt7SM 	{color:#990000; fontSize:10; fontWeight:normal;}
+	.txt7SMbold	{color:#990000; fontSize:10; fontWeight:bold;}
+	.txt7LGbold	{color:#990000; fontSize:14; fontWeight:bold;}
+
+/* GREEN - 8 */
+	.txt8		{color:#53840F; fontSize:11; fontWeight:normal;}
+	.txt8bold	{color:#53840F; fontSize:11; fontWeight:bold;}
+	.txt8SM 	{color:#53840F; fontSize:10; fontWeight:normal;}
+	.txt8SMbold	{color:#53840F; fontSize:10; fontWeight:bold;}
+	.txt8LGbold	{color:#53840F; fontSize:14; fontWeight:bold;}
+
+/* LIGHT GRAY - 9 */
+	.txt9		{color:#A6A6A6; fontSize:11; fontWeight:normal;}
+	.txt9bold	{color:#A6A6A6; fontSize:11; fontWeight:bold;}
+	.txt9SM 	{color:#A6A6A6; fontSize:10; fontWeight:normal;}
+	.txt9SMbold	{color:#A6A6A6; fontSize:10; fontWeight:bold;}
+	.txt9LGbold	{color:#A6A6A6; fontSize:14; fontWeight:bold;}
+	
+/* BLUE LINKS */
+	.link 		{color:#0072AF; fontSize:11; fontWeight:normal;}
+	.linkSM 	{color:#0072AF; fontSize:10; fontWeight:normal;}
+	.linkbold 	{color:#0072AF; fontSize:11; fontWeight:bold;}	
+	.linkLGbold	{color:#0072AF; fontSize:14; fontWeight:bold;}
+
+/* BLUE UNDERLINE LINKS */
+	.ulink 		{color:#0072AF; fontSize:11; fontWeight:normal; textDecoration:underline;}
+	.ulinkSM 	{color:#0072AF; fontSize:10; fontWeight:normal; textDecoration:underline;}
+	.ulinkbold 	{color:#0072AF; fontSize:11; fontWeight:bold; textDecoration:underline;}	
+	.ulinkLGbold	{color:#0072AF; fontSize:14; fontWeight:bold; textDecoration:underline;}
+
+/* WHITE LINKS */
+	.link2 		{color:#FFFFFF; fontSize:11; fontWeight:normal;}
+	.link2SM 	{color:#FFFFFF; fontSize:10;}
+	
+/* RED LINKS */
+	.link3 		{color:#990000; fontSize:11; fontWeight:normal;}
+	.link3SM 	{color:#990000; fontSize:10; fontWeight:normal;}
+	.link3bold 	{color:#990000; fontSize:11; fontWeight:bold;}	
+	.link3LGbold	{color:#990000; fontSize:14; fontWeight:bold;}
+	
+/* RED LINKS */
+	.ulink3 		{color:#990000; fontSize:11; fontWeight:normal;textDecoration:underline;}
+	.ulink3SM 		{color:#990000; fontSize:10; fontWeight:normal;textDecoration:underline;}
+	.ulink3bold 	{color:#990000; fontSize:11; fontWeight:bold;textDecoration:underline;}	
+	.ulink3LGbold	{color:#990000; fontSize:14; fontWeight:bold;textDecoration:underline;}
+	
+/* FOOTNOTES */
+	.footnote 	{color:#cc6600; fontSize:8; fontWeight:normal; paddingLeft:-2; paddingTop:-1;}
+	.footnoteLG {color:#cc6600; fontSize:8; fontWeight:normal; paddingLeft:-2; paddingTop:0; }
+
+/* COLORS=================================================*/
+.morcomDKBrown 	{backgroundColor:#321b0f;}
+.morcomLtBeige 	{backgroundColor:#E3E3D5;}
+.morcomLtBlue 	{backgroundColor:#E5ECEF;}
+.morcomLtBrown 	{backgroundColor:#CCC6C3;}
+.morcomBlue 	{backgroundColor:#B8D1ED;}
+.morcomOffWhite	{backgroundColor:#E5E2DA;}
+.morcomBiege 	{backgroundColor:#CFCABF;}
+.morcomBrown 	{backgroundColor:#54301A;}
+.morcomDKOrange	{backgroundColor:#996600;}
+.morcomDKBlue 	{backgroundColor:#235E77;}
+.morcomLinkBlue	{backgroundColor:#336699;}
+.morcomGreen 	{backgroundColor:#53840F;}
+.morcomRed 		{backgroundColor:#990000;}
+
+
+.riCategoryHbox {
+	backgroundColor:#f6f6e2;
+	borderStyle: solid;
+	borderThickness: 0;
+	borderColor: #000000;
+	cornerRadius: 3;
+	paddingLeft: 10; paddingRight: 10;
+	paddingTop: 10; paddingBottom: 10;
+	dropShadowEnabled:true;
+}
+
+.morcomFormItem {
+	labelStyleName: morcomFormLabelAlign;
+}
+
+.morcomFormLabelAlign {
+	textAlign: left;
+	font-size:11;
+	font-weight:bold;
+	
+}
+.riHeaderLabel{color:#f78515;
+	textAlign: left;
+	font-size:11;
+	font-weight:bold;
+}
+.riFormLabel{color:black;
+	textAlign: left;
+	font-size:11;
+	font-weight:normal;
+}
+.leftFormItem{
+	width:250
+}
+.rightFormItem{
+	width:250
+}
+.riForm		{verticalGap:4;paddingTop:0; paddingRight:0; paddingBottom:0; paddingLeft:0;indicatorGap:0;FormItem:morcomFormItem; }
+
+.riRightForm {verticalGap:4;paddingTop:0; paddingRight:0; paddingBottom:0; paddingLeft:15;indicatorGap:0; }
+.widgetHeader{
+	roundedBottomCorners:false;
+	cornerRadius:15;
+	headerHeight:0; 
+	paddingBottom:0;
+	backgroundColor:#CEEAF8; 
+	paddingLeft:0;
+	paddingRight:0;
+	paddingTop:0;
+	borderThicknessLeft: 0;
+	borderThicknessTop: 0;
+	borderThicknessBottom: 0;
+	borderThicknessRight: 0;
+	dropShadowEnabled:false;
+	roundedBottomCorners:false;
+}
+
+.riHeaderCanvas {
+	cornerRadius: 8;
+	borderStyle: solid;
+	borderThickness:0;
+	roundedBottomCorners:false;
+	
+}

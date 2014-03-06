@@ -1,0 +1,257 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+/* MX And Spark Components */
+
+mx|Application,mx|MenuBar,mx|Menu,mx|MenuBarItem{
+	fontFamily:Calibri;
+	fontSize:14;
+}
+mx|ToolTip {
+    cornerRadius: 3;
+    backgroundColor:#FFFFCC;
+    color: #000000;
+    fontFamily:Calibri;
+    fontSize: 14;
+}
+mx|MenuBar{
+	color:#000000; 
+	fontSize:14; fontWeight:normal;fontFamily:Calibri;
+	backgroundColor:#AEC28A;
+	chromeColor:#AEC28A;
+}
+mx|Button{
+	fontSize:14; fontWeight:normal;fontFamily:Calibri;
+	cornerRadius:3;
+	horizontalCenter:0;
+	height:19;
+	chromeColor:#E7E0CB;
+	color:#000000;
+	fontWeight:normal;
+}
+mx|Panel{
+	paddingTop:10;
+	paddingBottom:10;
+	paddingLeft:10;
+	paddingRight:10;	
+	dropShadowVisible:true;
+	borderVisible:true;
+	chromeColor:#AEC28A;
+	borderColor:#A8A172;
+	fontSize:14; 
+	fontWeight:normal;
+	fontFamily:Calibri;
+	horizontalScrollPolicy:off
+}
+mx|VBox,mx|HBox{
+	horizontalScrollPolicy:off
+}
+
+mx|DateField{
+	errorColor:#90837C;
+}
+mx|Form{
+	paddingTop:0;
+	paddingBottom:0;
+	paddingLeft:0;
+	paddingRight:0;
+	backgroundColor:#FFFFFF;
+	borderVisible:false; 
+}
+mx|Label{
+	color:#000000; fontSize:14; fontWeight:normal;fontFamily:Calibri;
+}
+mx|TextInput,s|TextInput{
+	color:#000000; fontSize:14; 
+	fontWeight:normal;fontFamily:Calibri;height:19;
+	errorColor:#90837C;
+}
+mx|CheckBox{
+	color:#000000; fontSize:14; fontWeight:normal;fontFamily:Calibri;
+}
+mx|TextArea{
+	color:#000000; fontSize:14; fontWeight:normal;fontFamily:Calibri;
+}
+mx|ToolTip {
+	cornerRadius:3;
+	backgroundColor:#FFFFCC;
+	color:#000000;
+	textAlign:left;
+	fontFamily:Calibri;
+	fontSize:11;
+}
+s|ToolTip {
+	cornerRadius:3;
+	backgroundColor:#FFFFCC;
+	color:#000000;
+	textAlign:left;
+	fontFamily:Calibri;
+	fontSize:11;
+}
+mx|ComboBox{
+	openDuration:0;
+	closeDuration:0;
+	cornerRadius:0;
+	chromeColor:#E7E0CB;
+	rollOverColor:#E1DCCC;
+	selectionColor:#D4CDB8;
+	color:#000000; 
+	fontFamily:Calibri;
+	fontSize:14;
+	dropDownStyleName:smeComboBoxDropDown;
+}
+
+/* Classes for components */
+
+.smeBackgroud{
+/*	backgroundColor:#D5E3BC;*/
+	backgroundColor:#AEC28A;
+	alpha:0.1;
+}
+
+.smeUserHomePage{
+	backgroundColor:#AEC28A;
+	alpha:0.1;
+}
+
+.smeLabelBold{
+    fontWeight:bold;
+}
+
+.smePageHeading{
+	fontWeight:bold;
+	textDecoration:underline;
+}
+
+.smeDatagrid{
+	textAlign:center;
+	alternatingItemColors:#ffffff,#f1f0ea; 
+	chromeColor:#E7E0CB;
+	color:#000000;
+	fontWeight:normal;
+	fontSize:14;
+	rollOverColor:#E1DCCC;
+	selectionColor:#D4CDB8;
+	headerHeight:21;
+	rowHeight:19; 
+}
+
+.smeLoansBackground{
+	backgroundColor:#EAF2DC;	
+}
+
+.shadowBox{
+	borderStyle: solid;
+	dropShadowVisible: true
+}
+.smeHeaderLabel{
+    color:#54301A;
+    textAlign:left;
+    fontSize:14;
+    fontWeight:bold;
+    textDecoration:underline;
+    fontFamily:Calibri;
+}
+.smeHyperLinkLabel{
+	color:#0000FF;
+	textAlign:left;
+	fontSize:14;
+	textDecoration:underline;
+	fontFamily:Calibri;
+	useHandCursor:true;
+	mouseChildren:false;
+	buttonMode:true;
+	fontStyle:italic;
+}
+.smeFormItem {
+	textAlign: left;
+	font-size:11;
+	font-weight:bold;
+	backgroundColor:#EAF2DC;	
+}
+.smeForm	{
+	verticalGap:4;paddingTop:0; paddingRight:0; paddingBottom:0; paddingLeft:0;backgroundColor:#EAF2DC;indicatorGap:0;FormItem:smeFormItem; 
+}
+.smeLinkLabel{
+	height:19;
+	textDecoration:underline;
+	color:#0000FF;
+	fontWeight:bold;	
+}
+.loanPanelWindow{
+	headerHeight:15;
+	dropShadowVisible:false;
+	borderVisible:true;
+	chromeColor:#A8A172;
+	borderColor:#A8A172;
+}
+.loanGroup{
+	paddingTop:0;
+	paddingBottom:0;
+	paddingLeft:0;
+	paddingRight:0;
+	gap:2;
+}
+
+.smeFooter,.smeHeader {
+	backgroundColor:#999966;
+	borderThickness: 0;
+	borderColor: #000000;
+	cornerRadius: 1;
+}
+
+.SMEAccordion{
+  borderStyle:solid;headerHeight:20;highlightAlphas:1, 0;
+  fillAlphas:1, 0.52, 1, 0;fillColors:#c5d4db, #c5d4db, #c5d4db, #c5d4db;themeColor:#3274a9;borderColor:#CCC6C3;
+  headerStyleName:"accHeader";
+}
+
+.accHeader{color:#005383;}
+
+.containerVBox{
+	backgroundColor: #ffffff;
+	borderThickness: 1;
+	borderColor: black;
+	borderStyle: solid;
+	paddingLeft: 5;
+	paddingRight: 5;
+	paddingTop: 5;
+	paddingBottom: 5;
+}
+.SMELabel{
+	color:#FFFFFF;
+	fontWeight:bold;
+	textDecoration:underline;
+}
+
+.smeComboBoxDropDown{fontWeight:normal;paddingLeft:2;fontFamily:Calibri;}
+
+.smeDropDownList{
+	fontFamily:Calibri;
+	fontSize:14;
+	openDuration:0;
+	closeDuration:0;
+	cornerRadius:0;
+	height:19;
+	chromeColor:#E7E0CB;
+	rollOverColor:#E1DCCC;
+	selectionColor:#D4CDB8;
+	color:#000000; 
+	dropDownStyleName:smeComboBoxDropDown;
+}
+
+.smeDropDownListSkin{
+	paddingLeft:0; 
+	backgroundColor:#FFFFFF;
+	fontWeight:normal;
+	left:1;
+	right:19;
+	top:0; 
+	bottom:0;
+	width:75;
+	verticalCenter:1; 
+	fontFamily:Calibri;
+}
+
+.smeHRuleOrange	{strokeColor:#CBB17E;strokeWidth:2;shadowColor:#ffffff;}

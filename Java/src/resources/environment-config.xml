@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"
+	default-lazy-init="true">
+
+	<bean id="placeholderConfig" class="com.bfp.util.PropertiesFileLoader">
+		<property name="location">
+			<value>classpath:application-details.properties</value>
+		</property>
+		<!--  <property name="encryptionKeys">
+			<list>
+				<value>jmsConnectionConfig.jndiUserPassword
+				</value>
+			</list>
+		</property>	-->
+	</bean>
+
+	<!-- <bean id="oracleDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.ibm.db2.jcc.DB2Driver" />
+		<property name="url" value="jdbc:db2://db2t.is.bear.com:5510/DB2TEST" />
+		<property name="username" value="DSHPUSRT" />
+		<property name="password" value="DSHP01T" />
+	</bean>	-->
+
+	<!--<bean id="oracleDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://172.25.100.68:3306/loan_management_v2" />
+		<property name="username" value="root" />
+		<property name="password" value="admin" />		
+	</bean> -->
+
+		<bean id="oracleDataSource" class="org.apache.commons.dbcp.BasicDataSource"	destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/transaction_management_2" />
+		<property name="username" value="root" />
+		<property name="password" value="" />		
+	</bean>
+</beans>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>update jewel_loan_transaction set active_flag = 'N', release_type_id = ? where jewel_loan_no = ?</sqlquery>		
+		<databaseType>mysql</databaseType>		
+		<inputvo>com.bfp.valueobjects.SearchRequestVO</inputvo>		
+		<inputparams>
+			<inputparam>
+				<paramname>release_type_id</paramname>
+				<paramtype>Int</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.SearchRequestVO
+					</classname>
+					<attribute>ReleaseTypeId</attribute>
+					<votype>int</votype>
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>jewel_loan_no</paramname>
+				<paramtype>Int</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.SearchRequestVO
+					</classname>
+					<attribute>LoanNo</attribute>
+					<votype>int</votype>
+				</function>
+			</inputparam>
+		</inputparams>	
+	</storedprocedure>
+</storedprocedures>

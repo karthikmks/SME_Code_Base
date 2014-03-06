@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" layout="vertical"
+				paddingLeft="10" paddingRight="10" paddingBottom="10" paddingTop="10"  
+				verticalAlign="top" horizontalAlign="center" height="600" width="800" color="#000000" >
+				<!--creationComplete="init()"  xmlns:net="flash.net.*">-->
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<!--<fx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+			import delegate.ApplicationUtil;
+			import delegate.ApplicationDelegate;
+			import valueobject.JewelSchemeVO;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.controls.Alert;
+			import mx.utils.ObjectUtil;
+			
+			protected function init():void {
+				//schemeCreatedByTxt.text = ApplicationUtil.getInstance().retrieveUserProfile().employeeName;
+			}
+			
+			[Bindable]
+			public var schemeGridData:ArrayCollection = new ArrayCollection;
+			
+			
+			private function onAddLoanScheme(event:Event):void {
+				LoadingMask.hide();
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onAddLoanScheme);
+					if ((event as ResultEvent).result != null){
+						Alert.show("Successfully added the new loan scheme");
+						schemeGridData = ArrayCollection((event as ResultEvent).result);
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onAddLoanScheme);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			
+			private function retrieveService(methodName:String,handler:Function,params:Object=null):void {
+				if(params==null){
+					ApplicationDelegate.getInstance().createAMFRequest(methodName,handler).send();
+				}else{
+					ApplicationDelegate.getInstance().createAMFRequest(methodName,handler).send(params);
+				}
+			}
+			
+			private function handleUpdateClick(event:MouseEvent):void{
+				
+			}
+			private function handleDeleteClick(event:MouseEvent):void{
+				
+			}
+			public function closePupup():void{
+				PopUpManager.removePopUp(this);
+			}
+			private function btn_click(evt:MouseEvent):void {
+                var arr:Array = [];
+                arr.push(new FileFilter("Images", ".gif;*.jpeg;*.jpg;*.png"));
+                fileReference.browse(arr);
+            }
+ 
+            private function fileReference_select(evt:Event):void {
+                fileReference.load();
+            }
+ 
+            private function fileReference_complete(evt:Event):void {
+                //img.source = fileReference.data;
+                Alert.show(ObjectUtil.toString(fileReference));
+            }	
+
+		]]>
+	</fx:Script>-->
+	
+	<!--<fx:Declarations>
+        <net:FileReference id="fileReference"
+                select="fileReference_select(event);"
+                complete="fileReference_complete(event);" />
+    </fx:Declarations>-->
+	<mx:HBox width="100%" verticalAlign="middle" horizontalAlign="center">
+		<mx:HBox>
+			<mx:Label text="Uploaded documents : "/>
+			<mx:LinkButton label="Doc1" textDecoration="underline" color="0xFF0000"/>
+			<mx:LinkButton label="Doc2" textDecoration="underline" color="0xFF0000"/>
+			<mx:LinkButton label="Doc3" textDecoration="underline" color="0xFF0000"/>
+		</mx:HBox>
+		<mx:VRule height="25"/>
+		<mx:HBox>
+			<mx:Label text="Pending documents : "/>
+			<mx:LinkButton label="Doc4" textDecoration="underline" color="0xFF0000"/>
+			<mx:LinkButton label="Doc5" textDecoration="underline" color="0xFF0000"/>
+			<mx:LinkButton label="Doc6" textDecoration="underline" color="0xFF0000"/>
+		</mx:HBox>
+		
+	</mx:HBox>
+	<mx:HRule width="100%" height="10" />
+	<mx:VBox width="100%" height="100%">
+		<mx:HBox width="100%" height="10%" verticalAlign="middle" horizontalAlign="center">
+			<mx:Label text="Document Code" />
+			<mx:TextInput height="19" width="100" enabled="false"/>
+			<mx:Label text="Document Name" />
+			<mx:TextInput height="19" width="100" enabled="false"/>
+			<mx:Label text="Uploaded on"/>
+			<mx:TextInput height="19" width="100" enabled="false"/>
+			<mx:ControlBar>
+            <mx:Button id="btn"
+                    label="Browse and preview..."/>
+                    <!--click="btn_click(event);" />-->
+        </mx:ControlBar>
+		</mx:HBox>	
+		<mx:TextArea width="100%" height="90%" />
+	</mx:VBox>	
+	<mx:Spacer height="15"/>
+	<mx:HBox width="100%" verticalAlign="top" horizontalAlign="center"> 
+		<mx:Button label="Save" id="submitBtn" cornerRadius="3" height="19" width="60" 
+				   click="" chromeColor="#E7E0CB" color="#000000" fontWeight="normal"/> 
+		<mx:Button label="Submit" id="updateBtn" cornerRadius="3" height="19" width="60" 
+				   chromeColor="#E7E0CB" color="#000000" fontWeight="normal" enabled="false"/> <!--click="handleUpdateClick(event)" -->
+		<mx:Button label="Reset" id="deleteBtn" cornerRadius="3" height="19" width="60" 
+				   chromeColor="#E7E0CB" color="#000000" fontWeight="normal"/> <!--click="handleDeleteClick(event)"--> 
+	</mx:HBox> 
+	
+</mx:TitleWindow>

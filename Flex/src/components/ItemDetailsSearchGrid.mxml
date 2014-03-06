@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.ListEvent;
+			
+			import util.SMEConstants;
+			import util.SMEModel;
+			import util.SMEUtility;
+			
+			import valueobject.CustomerVO;
+			import valueobject.JewelCategoryVO;
+			import valueobject.JewelQualityVO;
+			import valueobject.JewelSchemeVO;
+			import valueobject.LoanAssestSplitUpVO;
+			
+			[Bindable]
+			public var totalGrossValue:String;
+			[Bindable]
+			public var totalReduceValue:String;
+			[Bindable]
+			public var totalNetWeightValue:String;
+			[Bindable]
+			public var totalCountValue:String;
+			[Bindable]
+			public var totalValue:String;
+			[Bindable]
+			public var loanAssestUpdateVO:LoanAssestSplitUpVO;
+			[Bindable]
+			private var _loanGridDataCol:ArrayCollection = new ArrayCollection;
+			[Bindable]
+			public var isSearchGridFlow:Boolean = false;
+			
+			public function set loanGridDataCol(value:ArrayCollection):void{
+				if(value!=null){
+					_loanGridDataCol = value;
+					calculateTotalValues(_loanGridDataCol);
+				}else{
+					_loanGridDataCol = new ArrayCollection;
+				}
+			}
+			public function get loanGridDataCol():ArrayCollection{
+				return _loanGridDataCol; 
+			}
+			
+			
+			private const grmsTxt:String = "Grams";
+			private const milliGrmsTxt:String = "Milli Grams";
+			private var grossWgt:String;
+			private var reducedWgt:String;
+			private var netWgt:String;
+			
+			private function serialLabelFunction(item:Object, column:DataGridColumn):String{
+				var index:int = loanGridDataCol.getItemIndex(item);
+				if (index > -1)
+					return (index + 1).toString();
+				return "";
+			}
+			
+			//private function ratePerGrmsFunction(item:Object, column:DataGridColumn):String{
+			private function ratePerGrmsFunction(qualityId:Number):Number{
+				var ratePerGram:Number = 0;
+				var selectedJewelScemeVO:JewelSchemeVO = AddNewLoan(this.parentDocument).schemeCmb.selectedItem as JewelSchemeVO;
+				for (var inx:int=0;inx<selectedJewelScemeVO.jewelSchemeQualityRate.length;inx++){
+					var jewelSchemeVO:JewelSchemeVO = selectedJewelScemeVO.jewelSchemeQualityRate[inx] as JewelSchemeVO;
+					if(jewelSchemeVO.jewelQualityId == qualityId){
+						ratePerGram = jewelSchemeVO.ratePerGram;
+						break;
+					}
+				}
+				return ratePerGram;
+			}
+			
+			protected function loanJewelCategoryCmb_changeHandler(event:ListEvent):void{
+				loanJewelTypeCmb.dataProvider = loanJewelCategoryCmb.selectedItem.jewelCategoryTypes;
+			}
+			//add to grid
+			protected function addDepositLoanGridBtn_clickHandler(event:MouseEvent):void{
+				if(checkBusinessValidation()){
+					
+					var loanAssestVO:LoanAssestSplitUpVO = new LoanAssestSplitUpVO;
+					loanAssestVO.jewelCategory = loanJewelCategoryCmb.selectedItem.jewelCategoryName;
+					loanAssestVO.jewel_category_id = Number(loanJewelCategoryCmb.selectedItem.jewelCategoryId);
+					
+					loanAssestVO.jewelType = loanJewelTypeCmb.selectedItem.jewelTypeName;
+					loanAssestVO.jewel_type_id = Number(loanJewelTypeCmb.selectedItem.jewelTypeId);
+					
+					loanAssestVO.quality = loanQualityCmb.selectedItem.jewelQualityName;
+					loanAssestVO.quality_id = Number(loanQualityCmb.selectedItem.jewelQualityId);     
+					
+					loanAssestVO.gross_weight = grossWgt;
+					loanAssestVO.reduced_weight = reducedWgt;
+					//loanAssestVO.net_weight = netWgt;
+					loanAssestVO.total_quantity = Number(loanTotQtyTxt.text);
+					//	loanAssestVO.loan_no = Number(loanNoValue.text);
+					
+					loanAssestVO.ratePerGram = ratePerGrmsFunction(loanAssestVO.quality_id);
+					
+					var net_wgt:Number = Number(loanAssestVO.gross_weight) - Number(loanAssestVO.reduced_weight);
+					loanAssestVO.net_weight = net_wgt.toFixed(2);
+					
+					//loanAssestVO.value = valueFunction(loanAssestVO); use label Function
+					
+					loanGridDataCol.addItem(loanAssestVO);
+					calculateTotalValues(loanGridDataCol);
+					clearloanAssestsValues();
+				}else{
+					Alert.show("Please enter all the fileds","Error");
+				}
+				
+			}
+			
+			protected function UpdateDepositLoanGridBtn_clickHandler(event:MouseEvent):void{
+				if(loanAssestUpdateVO!=null){
+					loanGridDataCol.removeItemAt(loanGridDataCol.getItemIndex(loanAssestUpdateVO));
+					addDepositLoanGridBtn_clickHandler(null);
+				}
+				updateDepositLoanGridBtn.enabled = false;
+				loanAssestUpdateVO=null;
+			}
+			
+			
+			protected function deleteDepositLoanGridBtn_clickHandler(event:MouseEvent):void{
+				loanGridDataCol.removeItemAt(loanGridDataCol.getItemIndex(loanGrid.selectedItem));
+				calculateTotalValues(loanGridDataCol);
+			}
+			
+			public function calculateTotalValues(arrayColl:ArrayCollection):void{
+				var totalGrossValueInt:Number = 0;
+				var totalNetWeightValueInt:Number = 0;
+				var totalReduceValueInt:Number = 0;
+				var totalCountValueInt:Number = 0;
+				var totalValueInt:Number = 0;
+				var ratePerGrms:Number = 0;
+				for (var inx:int=0;inx<arrayColl.length;inx++){
+					var loanSplitVO:LoanAssestSplitUpVO =  arrayColl.getItemAt(inx) as LoanAssestSplitUpVO;
+					totalGrossValueInt += Number(loanSplitVO.gross_weight); 
+					totalReduceValueInt += Number(loanSplitVO.reduced_weight); 
+					totalNetWeightValueInt += Number(loanSplitVO.net_weight); 
+					totalCountValueInt += Number(loanSplitVO.total_quantity); 
+					totalValueInt += valueFunction(loanSplitVO);//Number(loanSplitVO.value)  
+					ratePerGrms += loanSplitVO.ratePerGram;
+				}
+				totalGrossValue = String(totalGrossValueInt.toFixed(3)); 
+				totalNetWeightValue = String(totalNetWeightValueInt.toFixed(3));
+				totalReduceValue = String(totalReduceValueInt.toFixed(3));
+				totalCountValue = String(totalCountValueInt);
+				totalValue = String(totalValueInt.toFixed(2));
+				
+				//var avgRPG:Number = totalValueInt/totalNetWeightValueInt;
+				var avgRPG:Number = ratePerGrms/arrayColl.length;
+				if(this.parentDocument as AddNewLoan){
+					AddNewLoan(this.parentDocument).avgRatePerGram.text  = avgRPG.toFixed(2);
+				}
+			}
+			protected function loanGrid_itemClickHandler(event:ListEvent):void{
+				//trace(""+event.columnIndex)
+				if(event && event.columnIndex==0){
+					var loanAssestVO:LoanAssestSplitUpVO = loanGrid.selectedItem as LoanAssestSplitUpVO;
+					var dataColl:ArrayCollection = loanJewelCategoryCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(dataColl[inx].jewelCategoryId==loanAssestVO.jewel_category_id){
+							loanJewelCategoryCmb.selectedIndex = inx;
+						}
+					}
+					dataColl = loanJewelTypeCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(Number(dataColl[inx].jewelTypeId)==loanAssestVO.jewel_type_id){
+							loanJewelTypeCmb.selectedIndex = inx;
+						}
+					}
+					dataColl = loanQualityCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(Number(dataColl[inx].jewelQualityId)==loanAssestVO.quality_id){
+							loanQualityCmb.selectedIndex = inx;
+						}
+					}
+					
+					grossWgt = loanAssestVO.gross_weight;
+					reducedWgt = loanAssestVO.reduced_weight;
+					netWgt =loanAssestVO.net_weight;
+					
+					var grmsNMilli:Array = grossWgt.split(".");
+					loanGrossWtGrm.text = grmsNMilli[0];
+					loanGrossWtMilli.text = grmsNMilli[1];
+					
+					grmsNMilli = reducedWgt.split(".");
+					loanRedWtGrm.text = grmsNMilli[0];
+					loanRedWtMilli.text = grmsNMilli[1];
+					
+					/* grmsNMilli = netWgt.split(".");
+					loanNetWtGrm.text = grmsNMilli[0];
+					loanNetWtMilli.text = grmsNMilli[1]; */
+					
+					loanTotQtyTxt.text = String(loanAssestVO.total_quantity);
+					//take backup to update
+					loanAssestUpdateVO = loanAssestVO;
+					updateDepositLoanGridBtn.enabled = true;
+				}
+				
+			}
+			
+			private function clearloanAssestsValues():void{
+				loanJewelCategoryCmb.selectedIndex = 0;
+				loanJewelTypeCmb.selectedIndex = 0;
+				loanQualityCmb.selectedIndex = 0;
+				loanGrossWtGrm.text = "";
+				loanGrossWtMilli.text = "";
+				loanRedWtGrm.text = "";
+				loanRedWtMilli.text = "";
+				/* loanNetWtGrm.text = grmsTxt;
+				loanNetWtMilli.text = milliGrmsTxt; */
+				loanTotQtyTxt.text = "";
+				grossWgt = "";
+				reducedWgt = "";
+				netWgt = "";
+				//loanNoValue.text = "";
+			}
+			
+			public function clearAllfields():void{
+				clearloanAssestsValues();
+				totalCountValue = "0";
+				totalGrossValue = "0";
+				totalNetWeightValue = "0";
+				totalReduceValue = "0";
+				loanGridDataCol = new ArrayCollection();
+			}
+			
+			protected function loanGrossWt_changeHandler(event:Event):void{
+				if(loanGrossWtGrm.text!=grmsTxt && loanGrossWtMilli.text!=milliGrmsTxt){
+					grossWgt = loanGrossWtGrm.text + "." + loanGrossWtMilli.text;
+				}
+				
+			}
+			protected function loanRedWt_changeHandler(event:Event):void{
+				if(loanRedWtGrm.text!=grmsTxt && loanRedWtMilli.text!=milliGrmsTxt){
+					reducedWgt = loanRedWtGrm.text + "." + loanRedWtMilli.text;
+				}
+			}
+			/* protected function loanNetWt_changeHandler(event:Event):void{
+			if(loanNetWtGrm.text!=grmsTxt && loanNetWtMilli.text!=milliGrmsTxt){
+			netWgt = loanNetWtGrm.text + "." + loanNetWtMilli.text;
+			}
+			} */
+			
+			public function checkBusinessValidation():Boolean{
+				var validationArray:Array= new Array;
+				var validationMsg:String = "";
+				
+				validationArray.push(loanGrossWtGrmsVlr);
+				validationArray.push(loanGrossWtMilliGrmsVlr);
+				validationArray.push(loanRedWtGrmsVlr);
+				validationArray.push(loanRedWtMilliVlr);
+				validationArray.push(loanQuantityVlr);
+				var valMsg:String = SMEUtility.doValidation(validationArray); 
+				if(valMsg!=null && valMsg!=""){
+					return false;
+				}
+				return true;
+			}
+			
+			private function valueLabelFunction(item:Object, column:DataGridColumn):Number{
+				return valueFunction(LoanAssestSplitUpVO(item));
+			}
+			
+			//private function valueFunction(item:Object, column:DataGridColumn):String{
+			private function valueFunction(splitVo:LoanAssestSplitUpVO):Number{
+				var valueInt:Number = 0;
+				valueInt =  splitVo.ratePerGram * Number(splitVo.net_weight) * splitVo.total_quantity ;
+				return Number(valueInt.toFixed(2));
+			}
+			
+			private function jewelCatLblFunction(item:Object, column:DataGridColumn):String{
+				if(item!=null){
+					var asseetVO:LoanAssestSplitUpVO = LoanAssestSplitUpVO(item);
+					if(asseetVO.jewelCategory==null || asseetVO.jewelCategory==""){
+						var dataColl:ArrayCollection = SMEModel.getinstance().appCompMetaData.jewelCategories;
+						for (var inx:int=0;inx<dataColl.length;inx++){
+							var jewelCat:JewelCategoryVO = dataColl[inx] as JewelCategoryVO;
+							if(int(jewelCat.jewelCategoryId)==asseetVO.jewel_category_id){
+								asseetVO.jewelCategory = jewelCat.jewelCategoryName;
+							}
+						}
+					}
+					return asseetVO.jewelCategory;
+				}
+				return "";
+			}
+			private function jewelTypeLblFunction(item:Object, column:DataGridColumn):String{
+				if(item!=null){
+					var asseetVO:LoanAssestSplitUpVO = LoanAssestSplitUpVO(item);
+					if(asseetVO.jewelType==null || asseetVO.jewelType==""){
+						var dataColl:ArrayCollection = SMEModel.getinstance().appCompMetaData.jewelCategories;
+						for (var inx:int=0;inx<dataColl.length;inx++){
+							var jewelCat:JewelCategoryVO = dataColl[inx] as JewelCategoryVO;
+							if(int(jewelCat.jewelTypeId)==asseetVO.jewel_type_id){
+								asseetVO.jewelType = jewelCat.jewelTypeName;
+							}
+						}
+					}
+					return asseetVO.jewelType;
+				}
+				return "";
+			}
+			
+			private function jewelQualityLblFunction(item:Object, column:DataGridColumn):String{
+				if(item!=null){
+					var asseetVO:LoanAssestSplitUpVO = LoanAssestSplitUpVO(item);
+					if(asseetVO.quality==null || asseetVO.quality==""){
+						var dataColl:ArrayCollection = SMEModel.getinstance().appCompMetaData.jewelQualities;
+						for (var inx:int=0;inx<dataColl.length;inx++){
+							var jewelCQaulityVO:JewelQualityVO = dataColl[inx] as JewelQualityVO;
+							if(int(jewelCQaulityVO.jewelQualityId)==asseetVO.quality_id){
+								asseetVO.quality = jewelCQaulityVO.jewelQualityName;
+							}
+						}
+					}
+					return asseetVO.quality;
+				}
+				return "";
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<mx:NumberValidator id="loanGrossWtGrmsVlr" enabled="true"
+							required="true"
+							minValue="1"							
+							source="{loanGrossWtGrm}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_GROSS_WT}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_GROSS_WT}"
+							invalidCharError="{SMEConstants.ERRR_MSG_GROSS_WT}"
+							/>	
+		<mx:NumberValidator id="loanGrossWtMilliGrmsVlr" enabled="true"
+							required="true"
+							minValue="0"							
+							source="{loanGrossWtMilli}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_GROSS_WT}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_GROSS_WT}"
+							invalidCharError="{SMEConstants.ERRR_MSG_GROSS_WT}"
+							/>	
+		<mx:NumberValidator id="loanRedWtGrmsVlr" enabled="true"
+							required="true"
+							minValue="0"							
+							source="{loanRedWtGrm}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_REDUCED_WT}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_REDUCED_WT}"
+							invalidCharError="{SMEConstants.ERRR_MSG_REDUCED_WT}"
+							/>	
+		<mx:NumberValidator id="loanRedWtMilliVlr" enabled="true"
+							required="true"
+							minValue="0"							
+							source="{loanRedWtMilli}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_REDUCED_WT}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_REDUCED_WT}"
+							invalidCharError="{SMEConstants.ERRR_MSG_REDUCED_WT}"
+							/>	
+		<mx:NumberValidator id="loanQuantityVlr" enabled="true"
+							required="true"
+							minValue="1"							
+							source="{loanTotQtyTxt}"
+							property="text"
+							requiredFieldError="{SMEConstants.ERRR_MSG_QUANTITY}"
+							lowerThanMinError="{SMEConstants.ERRR_MSG_QUANTITY}"
+							/>	
+		
+	</fx:Declarations>
+	
+	<mx:DataGrid id="loanGrid" width="100%" height="100%" styleName="smeDatagrid" dataProvider="{_loanGridDataCol}" 
+				 itemClick="loanGrid_itemClickHandler(event)">
+		<mx:columns>
+			<mx:DataGridColumn headerText="S.No" labelFunction="serialLabelFunction" width="40"
+							   textDecoration="underline" color="#0000FF" />
+			<mx:DataGridColumn headerText="Jewel Category" labelFunction="jewelCatLblFunction" width="150"/>
+			<mx:DataGridColumn headerText="Jewel Type" labelFunction="jewelTypeLblFunction" width="150" />
+			<mx:DataGridColumn headerText="Jewel Quality" labelFunction="jewelQualityLblFunction" width="140" />
+			<mx:DataGridColumn headerText="Gross Wt" dataField="gross_weight" />
+			<mx:DataGridColumn headerText="Reduced Wt" dataField="reduced_weight" />
+			<mx:DataGridColumn headerText="Net Wt" dataField="net_weight"  />
+			<mx:DataGridColumn headerText="Quantity" dataField="total_quantity" />
+			<mx:DataGridColumn headerText="Rate p/g" dataField="ratePerGram" width="90"/>
+			<mx:DataGridColumn headerText="Value" labelFunction="valueLabelFunction" width="100" />
+		</mx:columns> 
+	</mx:DataGrid>
+	<mx:HBox id="totalLoanBox" height="20" width="100%" backgroundColor="#f1f0ea" 
+			 borderColor="#a8a172" horizontalAlign="center" verticalAlign="middle" borderStyle="solid"
+			 paddingBottom="3">
+		<mx:Label text="Total Gross:" color="#000000" fontWeight="bold" /> 
+		<mx:Label id="totalGrossTxt" color="#EE380E" fontSize="15" text="{totalGrossValue}"
+				  fontWeight="bold" /> 
+		<mx:Spacer width="10" />
+		<mx:Label text="Total Reduced:" color="#000000" fontWeight="bold" /> 
+		<mx:Label id="totalReducedTxt"  color="#EE380E" fontSize="15" text="{totalReduceValue}"
+				  fontWeight="bold" />
+		<mx:Spacer width="10" />
+		<mx:Label text="Total Net Weight:" color="#000000" fontWeight="bold" /> 
+		<mx:Label id="totalNetWtdTxt"  color="#EE380E" fontSize="15" text="{totalNetWeightValue}"
+				  fontWeight="bold" />
+		<mx:Spacer width="10" />
+		<mx:Label text="Total Count:" color="#000000" fontWeight="bold" /> 
+		<mx:Label id="totalCountTxt"  color="#EE380E" fontSize="15" text="{totalCountValue}"
+				  fontWeight="bold" />
+		<mx:Spacer width="10" />
+		<mx:Label text="Total Value:" color="#000000" fontWeight="bold" /> 
+		<mx:Label id="totalValueTxt"  color="#EE380E" fontSize="15" text="{totalValue}"
+				  fontWeight="bold" />
+	</mx:HBox>
+	<s:Spacer height="4"/>
+	
+	<s:HGroup width="100%" horizontalAlign="center" verticalAlign="middle" 
+			  includeInLayout="{!isSearchGridFlow}"
+			  visible="{!isSearchGridFlow}">
+		<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle">
+			<mx:Label text="Jewel Category" color="#000000" fontWeight="normal" />
+			<mx:ComboBox id="loanJewelCategoryCmb" labelField="jewelCategoryName" styleName="smeComboBox" width="150"
+						 change="loanJewelCategoryCmb_changeHandler(event)" /> 
+		</mx:VBox>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label text="Jewel Type" color="#000000" fontWeight="normal" />
+			<mx:ComboBox  id="loanJewelTypeCmb" labelField="jewelTypeName" styleName="smeComboBox" width="150"/> 
+		</mx:VBox>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label text="Jewel Quality" color="#000000" fontWeight="normal" />
+			<mx:ComboBox id="loanQualityCmb" labelField="jewelQualityName" styleName="smeComboBox" width="150"/> 
+		</mx:VBox>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label text="Gross Weight" color="#000000" fontWeight="normal" />
+			<s:Group>
+				<mx:HBox>
+					<s:TextInput width="80" id="loanGrossWtGrm" restrict="0-9." prompt="Grams" 
+								 change="loanGrossWt_changeHandler(event)"/>
+					<s:TextInput width="80" id="loanGrossWtMilli" restrict="0-9." prompt="Milli Grams"
+								 maxChars="3" change="loanGrossWt_changeHandler(event)"/>
+				</mx:HBox>				
+			</s:Group>	
+		</mx:VBox>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label text="Reduced Weight" fontWeight="normal" />
+			<s:Group>
+				<mx:HBox>
+					<s:TextInput width="80" id="loanRedWtGrm" restrict="0-9." prompt="Grams" 
+								 change="loanRedWt_changeHandler(event)"/>
+					<s:TextInput width="80" id="loanRedWtMilli" restrict="0-9." prompt="Milli Grams"
+								 maxChars="3" change="loanRedWt_changeHandler(event)"/>
+				</mx:HBox>				
+			</s:Group>	
+		</mx:VBox>
+		
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label text="Quantity" color="#000000" fontWeight="normal" />
+			<mx:TextInput width="100" id="loanTotQtyTxt" restrict="0-9" />
+		</mx:VBox>
+		
+		<mx:Spacer width="7" />
+		
+		<mx:Button id="addDepositLoanGridBtn" label="Add"
+				   click="addDepositLoanGridBtn_clickHandler(event)"
+				   enabled="{!updateDepositLoanGridBtn.enabled}"/>
+		<mx:Button id="updateDepositLoanGridBtn" label="Update" 
+				   click="UpdateDepositLoanGridBtn_clickHandler(event)"
+				   enabled="false"/>			
+		<mx:Button id="deleteDepositLoanGridBtn" label="Delete"
+				   click="deleteDepositLoanGridBtn_clickHandler(event)"
+				   enabled="{loanGrid.selectedItem!=null}"/>
+		
+	</s:HGroup>		
+	
+	
+</mx:VBox>

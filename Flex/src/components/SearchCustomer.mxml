@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:components="components.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.DropdownEvent;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import util.SMEConstants;
+			import util.SMEModel;
+			
+			import valueobject.ApplicationComponentsDataVO;
+			import valueobject.BasicSearchVO;
+			import valueobject.JewelLoanTypeVO;
+			import valueobject.JewelSchemeVO;
+			import valueobject.PaymentTypeVO;
+			import valueobject.ReleaseTypeVO;
+			import valueobject.RequestVO;
+			
+			[Bindable]
+			public var appCompData:ApplicationComponentsDataVO = SMEModel.getinstance().appCompMetaData;
+			
+			var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			
+			public function setSearchResultData(value:ArrayCollection):void{
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<mx:VBox styleName="smeLoansBackground" width="100%" height="100%" verticalGap="0" >
+		<!--<mx:Label text="Basic Search" textDecoration="underline" fontWeight="bold"/>-->
+		<components:CustomHeader headerText="Basic Search" hRuleVisible="false" height="20" width="100%"/>
+		<components:CustomerSearchCriteriaWidget width="100%" height="50" searchFlow="true" displayDateFilter="true" displaySearchDropDown="false"/>
+		<components:CustomerSearchGrid id="customerGrid" width="100%" height="100%"/>
+	</mx:VBox>
+</mx:VBox>

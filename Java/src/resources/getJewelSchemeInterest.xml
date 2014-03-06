@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>select jewel_scheme_id, breakup_id, days_from,
+			days_to, rate_of_interest, interest_amount, order_value
+			from jewel_scheme_interest_breakup order by jewel_scheme_id, breakup_id,
+			order_value</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.JewelSchemeVO
+		</inputvo>
+		<inputparams>
+		</inputparams>
+		<resultsets>
+			<resultset>
+				<resultsetname>JEWEL_QUALITY</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.JewelSchemeVO
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>JewelSchemeId</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>2</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>InterestBreakupId</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>3</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>FromDay</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>4</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>ToDay</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>5</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>RateOfInterest</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>6</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>InterestAmount</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>7</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>OrderValue</voattribute>
+					<votype>int</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

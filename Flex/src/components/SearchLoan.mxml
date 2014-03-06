@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx" >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:RadioButtonGroup id="rbtGroup" />
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import flash.events.Event;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.ListEvent;
+			
+			
+			[Bindable]
+			public var reportsGridData:ArrayCollection = new ArrayCollection;
+			
+			private function serialLabelFunction(item:Object, column:DataGridColumn):String{
+				var index:int = reportsGrid.dataProvider.getItemIndex(item);
+				if (index > -1)
+					return (index + 1).toString();
+				return "";
+			}
+			
+			protected function loanSearchBtn_clickHandler(event:Event):void{
+				reportsGrid.visible=true;
+				updateLedgerBtn.visible=true;
+				updateLoanBtn.visible=true;
+				cancelLoanBtn.visible=true;
+				saveAsPDFBtn.visible=true;
+				printBtn.visible=true;
+			}
+			
+			protected function clearBtn_clickHandler(event:Event):void{
+				loanNoTxt.text="";
+				rangeStartDate.text="";
+				rangeEndDate.text="";
+				reportsGrid.visible=false;
+				updateLedgerBtn.visible=false;
+				updateLoanBtn.visible=false;
+				cancelLoanBtn.visible=false;
+				saveAsPDFBtn.visible=false;
+				printBtn.visible=false;
+			}
+			
+			protected function createdDate_changeHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				if( ComboBox(event.currentTarget).selectedItem.toString() == "Date Range")
+				{
+					rangeStartDate.enabled=true;
+					rangeEndDate.enabled=true;
+				}
+				else
+				{
+					rangeStartDate.enabled=false;
+					rangeEndDate.enabled=false;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<mx:VBox id="loanPanel" width="100%" height="100%"
+				 label="Search Loan" verticalGap="0">
+		<mx:HBox width="100%" height="25" verticalAlign="middle" paddingBottom="0" >
+			<mx:Label id="transactionDateLbl" text="Loan Created Date : " height="19" color="#000000" fontWeight="normal"/>
+			<mx:ComboBox id="createdDateCmb" change="createdDate_changeHandler(event)">
+				<mx:ArrayList>
+					<fx:String>Today</fx:String>
+					<fx:String>Last 3 days</fx:String>
+					<fx:String>Last 7 days</fx:String>
+					<fx:String>Last 14 days</fx:String>
+					<fx:String>Last 30 days</fx:String>
+					<fx:String>Last 1 year</fx:String>
+					<fx:String>Date Range</fx:String>
+				</mx:ArrayList>
+			</mx:ComboBox>
+			<mx:Spacer width="5" />
+			<mx:DateField id="rangeStartDate" enabled="false" />
+			<s:Label text="to" fontWeight="bold" />
+			<mx:DateField id="rangeEndDate" enabled="false" />
+			<mx:Spacer width="35" />
+			<mx:CheckBox id="loanNo" label="Loan No : "/>
+				<mx:TextInput height="19" width="80" id="loanNoTxt" editable="true" 
+							  color="#000000" fontWeight="normal" restrict="0-9"/>
+			<mx:Button height="19" id="loanSearchBtn" label="Search" cornerRadius="3"
+					   chromeColor="#E7E0CB" color="#000000" fontWeight="normal" click="loanSearchBtn_clickHandler(event)"/>
+			<mx:Spacer width="5" />
+			<mx:Button height="19" id="clearBtn" label="Clear" cornerRadius="3"
+					   chromeColor="#E7E0CB" color="#000000" fontWeight="normal" click="clearBtn_clickHandler(event)"/>
+			<mx:Spacer width="100%" />
+			<mx:Button height="19" id="updateLedgerBtn" label="Update Ledger Loan" cornerRadius="3"
+					   chromeColor="#E7E0CB" color="#000000" fontWeight="normal" enabled="false" visible="false"/>
+			<mx:Button height="19" id="updateLoanBtn" label="Update Loan" cornerRadius="3"
+					   chromeColor="#E7E0CB" color="#000000" fontWeight="normal" enabled="false" visible="false"/>
+			<mx:Button height="19" id="cancelLoanBtn" label="Cancel Loan" cornerRadius="3"
+					   chromeColor="#E7E0CB" color="#000000" fontWeight="normal" enabled="false" visible="false"/>
+		</mx:HBox>
+		
+		<mx:HRule width="100%" shadowColor="#a8a172"/>
+		<mx:Spacer height="5"/>
+		<s:HGroup width="100%" horizontalAlign="right" verticalAlign="middle">
+			<mx:LinkButton id="saveAsPDFBtn" toolTip="Export To PDF" visible="false" icon="@Embed(source='/assets/images/Icon_Pdf_small.gif')" />
+			<mx:LinkButton id="printBtn" toolTip="Print" visible="false" icon="@Embed(source='/assets/images/print_small_icon.jpg')" />
+		</s:HGroup>
+		<mx:DataGrid id="reportsGrid" width="100%" height="100%" textAlign="left"
+					 alternatingItemColors="[#ffffff,#f1f0ea]"
+					 chromeColor="#E7E0CB" color="#000000" fontWeight="normal" fontSize="11"
+					 rollOverColor="#E1DCCC" selectionColor="#D4CDB8" headerHeight="21" rowHeight="19"
+					 horizontalScrollPolicy="on" verticalScrollPolicy="auto" visible="false">
+			<mx:dataProvider>
+				<mx:ArrayCollection>
+					<mx:source>
+						<fx:Object jewelLoanNo="1234" customerName="ABC" 
+								   jewel_loan_transaction_date="10/12/2011"  
+								   total_count="2" loan_amount="50,000" />
+					</mx:source>
+				</mx:ArrayCollection>
+			</mx:dataProvider>
+			
+			<mx:columns>
+				<mx:DataGridColumn width="20">
+					<mx:itemRenderer>
+						<fx:Component>
+							<mx:HBox height="100%" horizontalAlign="center" verticalAlign="middle">
+								
+								<fx:Script>
+									<![CDATA[
+										protected function radiobutton1_clickHandler(event:MouseEvent):void
+										{
+											// TODO Auto-generated method stub
+											outerDocument.cancelLoanBtn.enabled=true;
+											outerDocument.updateLoanBtn.enabled=true;
+										}
+									]]>
+								</fx:Script>
+								
+								<mx:RadioButton height="8" click="radiobutton1_clickHandler(event)" group="{outerDocument.rbtGroup}"/>
+							</mx:HBox>
+						</fx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="S.No" labelFunction="serialLabelFunction" width="60"/>
+				<mx:DataGridColumn headerText="Jewel Loan#" dataField="jewelLoanNo" />
+				<mx:DataGridColumn headerText="Transaction Date" dataField="jewel_loan_transaction_date" />
+				<mx:DataGridColumn headerText="Loan Type" dataField="jewelLoanType" />
+				<mx:DataGridColumn headerText="Takeover From" dataField="jewelTakeOverFrom" />
+				<mx:DataGridColumn headerText="Scheme" dataField="jewelScheme" />
+				<mx:DataGridColumn headerText="Jewel" textDecoration="underline">
+					<mx:itemRenderer>
+						<fx:Component>
+							<mx:HBox height="100%" horizontalAlign="center" verticalAlign="middle">
+							<fx:Script>
+								<![CDATA[
+									import mx.core.UIComponent;
+									import mx.managers.PopUpManager;
+									import mx.events.CloseEvent;
+									import mx.containers.TitleWindow;
+									
+									protected function jewelClickText_clickHandler(event:MouseEvent):void
+									{
+										// TODO Auto-generated method stub
+										var jewelDetailsPopUpWindow:JewelDetails = JewelDetails(PopUpManager.createPopUp(UIComponent(this.parentApplication), JewelDetails, true) );
+										jewelDetailsPopUpWindow.title="Jewel Details";
+										jewelDetailsPopUpWindow.setStyle("borderAlpha", 0.9);
+										jewelDetailsPopUpWindow.showCloseButton=true;
+										jewelDetailsPopUpWindow.addEventListener(CloseEvent.CLOSE,closeJewelDetailsPopUp);
+										PopUpManager.centerPopUp(jewelDetailsPopUpWindow);
+									}
+									
+									private function closeJewelDetailsPopUp(event:CloseEvent):void {
+										PopUpManager.removePopUp(TitleWindow(event.target));
+									}
+								]]>
+							</fx:Script>
+							<mx:Label id="jewelClickText" textDecoration="underline" fontWeight="bold" color="#4176ed" text="Click Here" click="jewelClickText_clickHandler(event)"/>
+							</mx:HBox>
+						</fx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>	
+				<mx:DataGridColumn headerText="Interest Rate" dataField="interest_rate" />
+				<mx:DataGridColumn headerText="Rate Per Gram" dataField="interest_rate" />
+				<mx:DataGridColumn headerText="Insta Loan No" dataField="interest_rate" />
+				<mx:DataGridColumn headerText="Insta Loan Amount" dataField="interest_rate" />
+				<mx:DataGridColumn headerText="Payment" dataField="payment" >
+					<mx:itemRenderer>
+						<fx:Component>
+							<mx:HBox height="100%" horizontalAlign="center" verticalAlign="middle">
+							<fx:Script>
+								<![CDATA[
+									import mx.core.UIComponent;
+									import mx.managers.PopUpManager;
+									import mx.events.CloseEvent;
+									import mx.containers.TitleWindow;
+									
+									protected function paymentClickText_clickHandler(event:MouseEvent):void
+									{
+										// TODO Auto-generated method stub
+										var paymentDetailsPopUpWindow:PaymentDetails = PaymentDetails(PopUpManager.createPopUp(UIComponent(this.parentApplication), PaymentDetails, true) );
+										paymentDetailsPopUpWindow.title="Payment Details";
+										paymentDetailsPopUpWindow.setStyle("borderAlpha", 0.9);
+										paymentDetailsPopUpWindow.showCloseButton=true;
+										paymentDetailsPopUpWindow.addEventListener(CloseEvent.CLOSE,closePaymentDetailsPopUp);
+										PopUpManager.centerPopUp(paymentDetailsPopUpWindow);
+									}
+									
+									private function closePaymentDetailsPopUp(event:CloseEvent):void {
+										PopUpManager.removePopUp(TitleWindow(event.target));
+									}
+								]]>
+							</fx:Script>
+							<mx:Label id="paymentClickText" textDecoration="underline" fontWeight="bold" color="#4176ed" text="Click Here" click="paymentClickText_clickHandler(event)"/>
+							</mx:HBox>
+						</fx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="Interest Paid" dataField="interestPaid" />
+				<mx:DataGridColumn headerText="Balance Interest" dataField="BalanceInterest" />
+				<mx:DataGridColumn headerText="Current Interest Slab" dataField="currentInterestSlab" />
+				<mx:DataGridColumn headerText="Principle Paid" dataField="principlePaid" />
+				<mx:DataGridColumn headerText="Balance Principle" dataField="balancePrinciple" />
+				<mx:DataGridColumn headerText="Release Date" dataField="releaseDate" />
+				<mx:DataGridColumn headerText="No. of Outstanding Days" dataField="outstandingDays" />
+				<mx:DataGridColumn headerText="Loan Amount" dataField="loan_amount" />
+				<mx:DataGridColumn headerText="Customer Name" dataField="customerName" />
+				<mx:DataGridColumn headerText="Customer Address" dataField="customerDetails.customerAddress" />
+				<mx:DataGridColumn headerText="Contact#" dataField="customerDetails.customerContactNo" />
+				<mx:DataGridColumn headerText="Doc Charges" dataField="document_charges" />
+				<mx:DataGridColumn headerText="Ledger Loan" dataField="ledgerLoan" />				
+				<mx:DataGridColumn headerText="Service Charges" dataField="service_charges" />
+				<mx:DataGridColumn headerText="Total gross weight" dataField="total_gross_weight" />
+				<mx:DataGridColumn headerText="Total reduced weight" dataField="total_reduced_weight" />
+				<mx:DataGridColumn headerText="Total net weight" dataField="total_net_weight" />
+				<mx:DataGridColumn headerText="Total count" dataField="total_count" />
+				<mx:DataGridColumn headerText="Created by" dataField="created_by" />
+				<mx:DataGridColumn headerText="Created timestamp" dataField="created_timestamp" />
+			</mx:columns>
+		</mx:DataGrid>	
+	</mx:VBox>
+</mx:Panel>

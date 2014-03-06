@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+	<sqlquery>insert into branch_application_login_ids (employee_id, login_id, password, role_id, 
+	created_by, created_timestamp, active_flag)	values (?, ?, ?, ?, ?, now(), 'Y')</sqlquery>		
+		<databaseType>mysql</databaseType>		
+		<inputvo>com.bfp.valueobjects.EmployeeVO</inputvo>		
+		<inputparams>
+			<inputparam>
+				<paramname>employee_id</paramname>
+				<paramtype>Int</paramtype>
+				<function> 
+					<classname>com.bfp.valueobjects.EmployeeVO</classname>
+					<attribute>EmployeeId</attribute>
+					<votype>int</votype>    
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>login_id</paramname>
+				<paramtype>String</paramtype>
+				<function> 
+					<classname>com.bfp.valueobjects.EmployeeVO</classname>
+					<attribute>LoginId</attribute>
+					<votype>String</votype>    
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>password</paramname>
+				<paramtype>String</paramtype>
+				<function> 
+					<classname>com.bfp.valueobjects.EmployeeVO</classname>
+					<attribute>Password</attribute>
+					<votype>String</votype>    
+				</function>                   
+			</inputparam>
+			<inputparam>
+				<paramname>role_id</paramname>
+				<paramtype>Int</paramtype>
+				<function> 
+					<classname>com.bfp.valueobjects.EmployeeVO</classname>
+					<attribute>RoleId</attribute>
+					<votype>int</votype>    
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>created_by</paramname>
+				<paramtype>String</paramtype>
+				<function> 
+					<classname>com.bfp.valueobjects.EmployeeVO</classname>
+					<attribute>CreatedBy</attribute>
+					<votype>String</votype>    
+				</function>
+			</inputparam>
+		</inputparams>	
+	</storedprocedure>
+</storedprocedures>

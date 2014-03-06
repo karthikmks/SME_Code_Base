@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>insert into deposit_loan_account_holders (acct_holder_name, is_authorised, password, 
+			created_by, created_timestamp, modified_by, modified_timestamp,
+			active_flag)
+			values (?, ?, ?, ?, now(), null, null, 'Y')</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.DepositLoanAccountHoldersVO
+		</inputvo>
+		<inputparams>
+			<inputparam>
+				<paramname>acct_holder_name</paramname>
+				<paramtype>VARCHAR</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DepositLoanAccountHoldersVO</classname>
+					<attribute>Acct_holder_name</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>is_authorised</paramname>
+				<paramtype>VARCHAR</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DepositLoanAccountHoldersVO</classname>
+					<attribute>Is_authorised</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>password</paramname>
+				<paramtype>VARCHAR</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DepositLoanAccountHoldersVO</classname>
+					<attribute>AuthenticationPassword</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>created_by</paramname>
+				<paramtype>VARCHAR</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DepositLoanAccountHoldersVO</classname>
+					<attribute>Created_by</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+		</inputparams>
+	</storedprocedure>
+</storedprocedures>

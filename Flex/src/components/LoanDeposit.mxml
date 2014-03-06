@@ -1,0 +1,1021 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<!--<fx:Script>
+		<![CDATA[
+			import delegate.ApplicationDelegate;
+			
+			import mx.collections.ArrayCollection;
+			import mx.containers.TitleWindow;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.FlexMouseEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.core.Application;
+			
+			import valueobject.ApplicationComponentsDataVO;
+			import valueobject.DepositLoanAccountHoldersVO;
+			import valueobject.DepositLoanInterestPeriodVO;
+			import valueobject.DepositLoanTransactionVO;
+			import valueobject.DepositPlaceVO;
+			import valueobject.JewelTypesVO;
+			import valueobject.LoanAssestSplitUpVO;
+			import valueobject.ResponseVO;
+			import valueobject.RequestVO;
+			
+			[Bindable]
+			public var zoomIcon:Class;
+			private var enlargeView:EnlargeView ;
+
+			public var searchResult:Boolean= true;
+			public var addDepositPlacePopUpWindow:AddDepositPlace;
+			public var addAccountHolderNamePopUpWindow:AddAccountHolderName;
+			public var addInterestPeriodPopUpWindow:AddInterestPeriod;
+			[Bindable]
+			public var depositAssestUpdateVO:LoanAssestSplitUpVO;
+			[Bindable]
+			public var depositLoanGridDataCol:ArrayCollection = new ArrayCollection;
+			[Bindable]
+			public var totalGrossValue:String;
+			[Bindable]
+			public var totalReduceValue:String;
+			[Bindable]
+			public var totalNetWeightValue:String;
+			[Bindable]
+			public var totalCountValue:String;
+			
+			[Bindable]
+			public var depositPlaceData:ArrayCollection = new ArrayCollection;
+			[Bindable]
+			public var accountHolderData:ArrayCollection = new ArrayCollection;
+			[Bindable]
+			public var interestPeriodData:ArrayCollection = new ArrayCollection;
+			
+			[Bidable]
+			private var _applicationCompData:ApplicationComponentsDataVO = new  ApplicationComponentsDataVO();
+			public function get applicationCompData():ApplicationComponentsDataVO{
+				return _applicationCompData;
+			}
+			
+			public function set applicationCompData(value:ApplicationComponentsDataVO):void{
+				_applicationCompData = value;
+				setData(_applicationCompData);
+			}
+			
+			public function handleCreateLoanChkClick(event:MouseEvent):void {
+				var requestVO:RequestVO = new RequestVO();
+				requestVO.transactionTypeId = 2;				
+				if(event.target.enabled && ManageLoans(parentDocument).transactionDate == "") {
+					Alert.show("Please select the transaction date before proceeding");
+					createLedgerDepositLoanChk.selected = false;
+					createNewDepositLoanChk.selected = false;
+					clearFormFields.selected = false;
+				} else {
+					loanSection1.enabled = true;
+					loanSection2.enabled = true;
+					if(createLedgerDepositLoanChk.selected && createLedgerDepositLoanChk.enabled) {
+						changeButtonLabel(false);
+						requestVO.ledgerLoanFlag = "Y";
+						createLedgerDepositLoanChk.enabled = false;
+						createNewDepositLoanChk.enabled = false;
+						depositLoanNoValue.enabled = true;
+						//retrieveService("addLoan",onAddLoan, requestVO);
+					} else if(createNewDepositLoanChk.selected && createNewDepositLoanChk.enabled) {
+						changeButtonLabel(false);
+						requestVO.ledgerLoanFlag = "N";
+						createNewDepositLoanChk.enabled = false;
+						createLedgerDepositLoanChk.enabled = false;
+						depositLoanNoValue.enabled = false;
+						retrieveService("addLoan",onAddLoan, requestVO);
+					} else if(clearFormFields.selected && clearFormFields.enabled) {
+						getUserConfirmForNewLoan();
+					}
+				}
+			}	
+			
+			private function onDeleteLoan(event:Event):void {
+				LoadingMask.hide();
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onDeleteLoan);
+					if ((event as ResultEvent).result != null){
+						if((event as ResultEvent).result == null || (event as ResultEvent).result != "success") {
+							Alert.show("Unable to delete the loan entry");
+						} else {
+							clearAllFields();
+						}
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onDeleteLoan);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			
+			public function changeButtonLabel(change:Boolean):void{
+				if(change){
+					pleaseSelectAllDepositLoanLbl.text="* Are you sure you want to update changes?";
+					submitDepositLoanBtn.label="Update";
+				}else{
+					pleaseSelectAllDepositLoanLbl.text="* Please fill all fields before submitting";
+					submitDepositLoanBtn.label="Submit";
+				}
+			}	
+			private function getUserConfirmForNewLoan():void{
+					var submitMsg:String="<font size='11' face='Arial'>Are you sure you want to clear the form fields?<br>Press <b>Yes</b> to continue.</font>";
+					var alert:Alert = Alert.show(submitMsg, "Loan Entry",Alert.YES | Alert.NO, null,
+						confirmAddLoanHandler, null, Alert.NO); 
+					alert.setStyle("color","#000000");
+					TextField(alert.alertForm.textField).htmlText = submitMsg;
+					use namespace mx.core.mx_internal;
+			}
+			
+			private function confirmAddLoanHandler(eventObj:CloseEvent):void {
+				// Check to see if the OK button was pressed.
+				if (eventObj.detail==Alert.YES) {
+					changeButtonLabel(false);
+					clearAllFields();
+					if(depositLoanNoValue.text != "") {
+						var requestVO:RequestVO = new RequestVO();
+						requestVO.transactionTypeId = 2;
+						requestVO.loanNo = Number(depositLoanNoValue.text);					
+						retrieveService("deleteLoan",onDeleteLoan, requestVO);
+					}
+				}else{
+					createLedgerDepositLoanChk.selected=false;
+				}
+			}
+			
+			private function onAddLoan(event:Event):void {
+				LoadingMask.hide();
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onAddLoan);
+					if ((event as ResultEvent).result != null){
+						if((event as ResultEvent).result != 0) {
+							var newLoanNo:String = "" + (event as ResultEvent).result;
+							depositLoanNoValue.text = newLoanNo;
+						} else {
+							Alert.show("No more ledger loans allowed");
+						}
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onAddLoan);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			
+			private function onAddNowDepositLoanNo(event:Event):void {
+				LoadingMask.hide();
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onAddNowDepositLoanNo);
+					if ((event as ResultEvent).result != null){
+						var newLoanNo:String = "" + (event as ResultEvent).result;
+						depositLoanNoValue.text = newLoanNo;
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onAddNowDepositLoanNo);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			
+			private function getUserConfirmForCancelNewLoan():void{
+				var submitMsg:String="<font size='11' face='Arial'>Your changes will be lost.Do you want to continue?</font>";
+				var alert:Alert = Alert.show(submitMsg, "Deposit Loan",Alert.YES | Alert.NO, null,
+					confirmCancelLoanHandler, null, Alert.NO); 
+				alert.setStyle("color","#000000");
+				TextField(alert.alertForm.textField).htmlText = submitMsg;
+				use namespace mx.core.mx_internal;
+			}
+			private function confirmCancelLoanHandler(eventObj:CloseEvent):void {
+				// Check to see if the OK button was pressed.
+				if (eventObj.detail==Alert.YES) {
+					changeDepositButtonLabel(false);
+					clearNewDepositLoanNo();
+				}else{
+					createLedgerDepositLoanChk.selected=true;
+				}
+			}
+			
+			public function clearNewDepositLoanNo():void{
+				depositLoanNoValue.text="";
+			}
+			
+			public function generateNewDepositLoanNo():void{
+				depositLoanNoValue.text="";
+			}
+			
+			public function handleSearchResult():void{
+				searchResult=true;
+			}
+			
+			public function changeDepositButtonLabel(change:Boolean):void{
+				if(change){
+					pleaseSelectAllDepositLoanLbl.text="* Are you sure you want to update changes?";
+					submitDepositLoanBtn.label="Update";
+					
+				}else{
+					pleaseSelectAllDepositLoanLbl.text="* Please fill all fields before submitting";
+					submitDepositLoanBtn.label="Submit";
+				}
+			}
+			private function showAddDepositPlacePopUp(event:MouseEvent):void{
+				
+				addDepositPlacePopUpWindow=AddDepositPlace(PopUpManager.createPopUp(UIComponent(this.parentApplication), AddDepositPlace, true) );
+				addDepositPlacePopUpWindow.depositPlaceGridData=depositPlaceData;
+				addDepositPlacePopUpWindow.title="Add Deposit Place";
+				addDepositPlacePopUpWindow.setStyle("borderAlpha", 0.9);
+				addDepositPlacePopUpWindow.showCloseButton=true;
+				addDepositPlacePopUpWindow.addEventListener(CloseEvent.CLOSE,closeAddDepositPlacePopUp);
+				//addDepositPlacePopUpWindow.submitBtn.addEventListener(MouseEvent.CLICK,addDepositPlaces);
+				addDepositPlacePopUpWindow.depositPlaceGrid.addEventListener(ListEvent.ITEM_CLICK,onDepositPlaceGridItemSelect);
+				PopUpManager.centerPopUp(addDepositPlacePopUpWindow);
+			}
+			private function closeAddDepositPlacePopUp(event:CloseEvent):void {
+				PopUpManager.removePopUp(TitleWindow(event.target));
+				depositPlaceData = addDepositPlacePopUpWindow.depositPlaceGridData;
+			}
+			private function showAddAccountHolderNamePopUp(event:MouseEvent):void{
+				addAccountHolderNamePopUpWindow=AddAccountHolderName(PopUpManager.createPopUp(UIComponent(this.parentApplication), AddAccountHolderName, true) );
+				addAccountHolderNamePopUpWindow.accountHolderGridData=accountHolderData;
+				addAccountHolderNamePopUpWindow.title="Add Account Holder Name";
+				addAccountHolderNamePopUpWindow.setStyle("borderAlpha", 0.9);
+				addAccountHolderNamePopUpWindow.showCloseButton=true;
+				addAccountHolderNamePopUpWindow.addEventListener(CloseEvent.CLOSE,closeAddAccountHolderNamePopUp);
+				//addAccountHolderNamePopUpWindow.submitBtn.addEventListener(MouseEvent.CLICK,addAccountHolderNames);
+				addAccountHolderNamePopUpWindow.accountHolderGrid.addEventListener(ListEvent.ITEM_CLICK,onAccountHolderGridItemSelect);
+				
+				PopUpManager.centerPopUp(addAccountHolderNamePopUpWindow);
+			}
+			private function closeAddAccountHolderNamePopUp(event:CloseEvent):void {
+				PopUpManager.removePopUp(TitleWindow(event.target));
+				accountHolderData = addAccountHolderNamePopUpWindow.accountHolderGridData;
+			}
+			private function showAddInterestPeriodPopUp(event:MouseEvent):void{
+				addInterestPeriodPopUpWindow=AddInterestPeriod(PopUpManager.createPopUp(UIComponent(this.parentApplication), AddInterestPeriod, true) );
+				addInterestPeriodPopUpWindow.interestPeriodGridData=interestPeriodData;
+				addInterestPeriodPopUpWindow.title="Add Interest Period";
+				addInterestPeriodPopUpWindow.setStyle("borderAlpha", 0.9);
+				addInterestPeriodPopUpWindow.showCloseButton=true;
+				addInterestPeriodPopUpWindow.addEventListener(CloseEvent.CLOSE,closeAddInterestPeriodPopUp);
+				//addInterestPeriodPopUpWindow.submitBtn.addEventListener(MouseEvent.CLICK,addInterestPeriods);
+				addInterestPeriodPopUpWindow.interestPeriodGrid.addEventListener(ListEvent.ITEM_CLICK,onInterestPeriodGridItemSelect);
+				PopUpManager.centerPopUp(addInterestPeriodPopUpWindow);
+			}
+			
+			private function onInterestPeriodGridItemSelect(evt:ListEvent):void{
+				if(evt && evt.columnIndex==1){
+					var interestPeriodVO:DepositLoanInterestPeriodVO = DepositLoanInterestPeriodVO(DataGrid(evt.target).selectedItem);
+					addInterestPeriodPopUpWindow.interestPeriodCreatedTimeTxt.text = interestPeriodVO.createDate;
+					addInterestPeriodPopUpWindow.interestPeriodCreatedByTxt.text = interestPeriodVO.createdBy;
+					addInterestPeriodPopUpWindow.interestPeriodTxt.text = interestPeriodVO.interestPeriod;
+				}
+			}
+			
+			private function closeAddInterestPeriodPopUp(event:CloseEvent):void {
+				PopUpManager.removePopUp(TitleWindow(event.target));
+				interestPeriodData = addInterestPeriodPopUpWindow.interestPeriodGridData;
+			}
+			public function setData(appCompData:ApplicationComponentsDataVO):void{
+				depositPlaceData = appCompData.depositPlaces;
+				accountHolderData = appCompData.depositAccountHolders;
+				interestPeriodData = appCompData.depositLoanInterestPeriods;
+				depositLoanJewelCategoryCmb.dataProvider = appCompData.jewelCategories;
+				depositLoanJewelTypeCmb.dataProvider = depositLoanJewelCategoryCmb.selectedItem.jewelCategoryTypes;
+				depositLoanQualityCmb.dataProvider = appCompData.jewelQualities;
+			}
+
+			protected function depositLoanJewelCategoryCmb_changeHandler(event:ListEvent):void{
+				depositLoanJewelTypeCmb.dataProvider = depositLoanJewelCategoryCmb.selectedItem.jewelCategoryTypes;
+			}
+			
+			//Add Interest Periods
+			private function addInterestPeriods(evt:MouseEvent){
+				var depositLoanIntVO:DepositLoanInterestPeriodVO = new DepositLoanInterestPeriodVO;
+				depositLoanIntVO.createDate = addInterestPeriodPopUpWindow.interestPeriodCreatedTimeTxt.text;
+				depositLoanIntVO.activeFlag = "Y";
+				depositLoanIntVO.createdBy  = addInterestPeriodPopUpWindow.interestPeriodCreatedByTxt.text;
+				depositLoanIntVO.interestPeriod  = addInterestPeriodPopUpWindow.interestPeriodTxt.text;
+				depositLoanIntVO.authenticationPassword = addInterestPeriodPopUpWindow.passwordTxt.text;
+				addInterestPeriodPopUpWindow.closePupup();
+				retrieveService("addDepositLoanInterestPeriod",onAddDepositLoanInterestPeriod,depositLoanIntVO);
+				
+			}
+			private function onAddDepositLoanInterestPeriod(event:Event):void {
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onAddDepositLoanInterestPeriod);
+					if ((event as ResultEvent).result != null){
+						interestPeriodCmb.dataProvider = ((event as ResultEvent).result) as ArrayCollection;
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onAddDepositLoanInterestPeriod);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			//Add Deposite  Place
+			private function addDepositPlaces(evt:MouseEvent){
+				var depositPlaceVO:DepositPlaceVO = new DepositPlaceVO;
+				depositPlaceVO.created_timestamp = addDepositPlacePopUpWindow.depositPlaceCreatedTime.text;
+				depositPlaceVO.active_flag = "Y";
+				depositPlaceVO.created_by  = addDepositPlacePopUpWindow.depositPlaceCreatedByTxt.text;
+				depositPlaceVO.deposit_place  = addDepositPlacePopUpWindow.depositPlaceTxt.text;
+				depositPlaceVO.authenticationPassword = addDepositPlacePopUpWindow.passwordTxt.text;
+				addDepositPlacePopUpWindow.closePupup();
+				retrieveService("addDepositPlace",onAddDepositPlace,depositPlaceVO);
+				
+			}
+			private function onAddDepositPlace(event:Event):void {
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onAddDepositPlace);
+					if ((event as ResultEvent).result != null){
+						var responseVO:ResponseVO = new ResponseVO;
+						responseVO=ResponseVO((event as ResultEvent).result);
+						if(responseVO.status=="success"){
+							if(addDepositPlacePopUpWindow.invalidPasswordLbl.includeInLayout==true ||
+								addDepositPlacePopUpWindow.invalidPasswordLbl.visible==true){
+								addDepositPlacePopUpWindow.invalidPasswordLbl.includeInLayout=false;
+								addDepositPlacePopUpWindow.invalidPasswordLbl.visible=false;
+							}
+							depositPlaceData=(responseVO.responseData) as ArrayCollection;
+							
+						}else if(responseVO.status=="failure"){
+							addDepositPlacePopUpWindow.invalidPasswordLbl.text="*"+responseVO.description;
+							addDepositPlacePopUpWindow.invalidPasswordLbl.includeInLayout=true;
+							addDepositPlacePopUpWindow.invalidPasswordLbl.visible=true;
+						}
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onAddDepositPlace);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			
+			private function onDepositPlaceGridItemSelect(evt:ListEvent):void{
+				if(evt && evt.columnIndex==1){
+					var depositPlaceVO:DepositPlaceVO = DepositPlaceVO(DataGrid(evt.target).selectedItem);
+					addDepositPlacePopUpWindow.depositPlaceCreatedTimeTxt.text = depositPlaceVO.created_timestamp;
+					addDepositPlacePopUpWindow.depositPlaceCreatedByTxt.text = depositPlaceVO.created_by;
+					addDepositPlacePopUpWindow.depositPlaceTxt.text = depositPlaceVO.deposit_place;
+				}
+				
+			}
+			
+			//Add Account Holder Name
+			private function addAccountHolderNames(evt:MouseEvent){
+				var accHolderDetails:DepositLoanAccountHoldersVO = new DepositLoanAccountHoldersVO;
+				if(addAccountHolderNamePopUpWindow.accountHolderNameTxt.text!="" && addAccountHolderNamePopUpWindow.accountHolderNameCreatedByTxt.text!=""
+					&& (addAccountHolderNamePopUpWindow.authorisedRadioBtn_Y.selected || addAccountHolderNamePopUpWindow.authorisedRadioBtn_N.selected)){
+						accHolderDetails.created_timestamp = addAccountHolderNamePopUpWindow.accountHolderNameCreatedTimeTxt.text;
+						accHolderDetails.active_flag = "Y";
+						accHolderDetails.created_by  = addAccountHolderNamePopUpWindow.accountHolderNameCreatedByTxt.text;
+						accHolderDetails.acct_holder_name  = addAccountHolderNamePopUpWindow.accountHolderNameTxt.text;
+						if(addAccountHolderNamePopUpWindow.authorisedRadioBtn_Y.selected){
+							accHolderDetails.is_authorised  = addAccountHolderNamePopUpWindow.authorisedRadioBtn_Y.label;
+						}else{
+							accHolderDetails.is_authorised  = addAccountHolderNamePopUpWindow.authorisedRadioBtn_N.label;
+						}
+						accHolderDetails.authenticationPassword=addAccountHolderNamePopUpWindow.passwordTxt.text;
+						retrieveService("addDepositAccountHolderName",onAddDepositAccountHolderName,accHolderDetails);
+				}else{
+					Alert.show("Please enter all the fileds","Error");
+				}
+				
+			}
+			
+			private function onAddDepositAccountHolderName(event:Event):void {
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onAddDepositAccountHolderName);
+					if ((event as ResultEvent).result != null){
+						var responseVO:ResponseVO = new ResponseVO;
+						responseVO=ResponseVO((event as ResultEvent).result);
+						if(responseVO.status=="success"){
+							if(addAccountHolderNamePopUpWindow.invalidPasswordLbl.includeInLayout==true ||
+								addAccountHolderNamePopUpWindow.invalidPasswordLbl.visible==true){
+								addAccountHolderNamePopUpWindow.invalidPasswordLbl.includeInLayout=false;
+								addAccountHolderNamePopUpWindow.invalidPasswordLbl.visible=false;
+							}
+							accountHolderData=(responseVO.responseData) as ArrayCollection;
+							
+						}else if(responseVO.status=="failure"){
+							addAccountHolderNamePopUpWindow.invalidPasswordLbl.text="*"+responseVO.description;
+							addAccountHolderNamePopUpWindow.invalidPasswordLbl.includeInLayout=true;
+							addAccountHolderNamePopUpWindow.invalidPasswordLbl.visible=true;
+						}
+						
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onAddDepositAccountHolderName);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			
+			private function onAccountHolderGridItemSelect(evt:ListEvent):void{
+				if(evt && evt.columnIndex==1){
+					var accHolderVO:DepositLoanAccountHoldersVO = DepositLoanAccountHoldersVO(DataGrid(evt.target).selectedItem);
+					addAccountHolderNamePopUpWindow.accountHolderNameCreatedTimeTxt.text = accHolderVO.created_timestamp;
+					addAccountHolderNamePopUpWindow.accountHolderNameCreatedByTxt.text = accHolderVO.created_by;
+					addAccountHolderNamePopUpWindow.accountHolderNameTxt.text = accHolderVO.acct_holder_name;
+					if(accHolderVO.is_authorised == "Y")
+						addAccountHolderNamePopUpWindow.authorisedRadioBtn_Y.selected = "Y";
+					else if(accHolderVO.is_authorised == "N")
+						addAccountHolderNamePopUpWindow.authorisedRadioBtn_N.selected = "Y";
+				}
+				
+			}
+			
+			//Start: DataAccessLayer
+			private function retrieveService(methodName:String,handler:Function,params:Object=null):void {
+				if(params==null){
+					ApplicationDelegate.getInstance().createAMFRequest(methodName,handler).send();
+				}else{
+					ApplicationDelegate.getInstance().createAMFRequest(methodName,handler).send(params);
+				}
+			}
+			//End: DataAccessLayer
+			
+			
+
+			protected function addDepositLoanGridBtn_clickHandler(event:MouseEvent):void{
+				
+				if(depositLoanGrossWtTxt.text!="" && depositLoanRedWtTxt.text!="" && depositLoanNetWtTxt.text!="" 
+					&& depositLoanTotQtyTxt.text!=""){
+					var loanAssestVO:LoanAssestSplitUpVO = new LoanAssestSplitUpVO;
+					
+					loanAssestVO.jewelCategory = depositLoanJewelCategoryCmb.selectedItem.jewelCategoryName;
+					loanAssestVO.jewel_category_id = depositLoanJewelCategoryCmb.selectedItem.jewelCategoryId;
+					
+					loanAssestVO.jewelType = depositLoanJewelTypeCmb.selectedItem.jewelTypeName;
+					loanAssestVO.jewel_type_id = depositLoanJewelTypeCmb.selectedItem.jewelTypeId;
+					
+					loanAssestVO.quality = depositLoanQualityCmb.selectedItem.jewelQualityName;
+					loanAssestVO.quality_id = depositLoanQualityCmb.selectedItem.jewelQualityId;    
+					
+					loanAssestVO.gross_weight = depositLoanGrossWtTxt.text;
+					loanAssestVO.reduced_weight = depositLoanRedWtTxt.text;
+					loanAssestVO.net_weight = depositLoanNetWtTxt.text;
+					loanAssestVO.total_quantity = Number(depositLoanTotQtyTxt.text);
+					if(jointLoanRadioBtn_Y.selected){
+						loanAssestVO.loan_no = Number(jointJewelLoanNoTxt.text); 
+					}else{
+						loanAssestVO.loan_no = Number(jewelLoanNoTxt.text);
+					}
+					loanAssestVO.acctHolderName = accHolderNameCmb.selectedItem.acct_holder_name;
+					loanAssestVO.acct_holder_id = accHolderNameCmb.selectedItem.acctHolderId;
+					loanAssestVO.depositPlace = depositPlaceCmb.selectedItem.deposit_place;
+					loanAssestVO.deposit_place_id = depositPlaceCmb.selectedItem.depositPlaceId;
+					depositLoanGridDataCol.addItem(loanAssestVO);
+					calculateTotalValues(depositLoanGridDataCol);
+					clearDepositAssestsValues();
+				}else{
+					Alert.show("Please enter all the fileds","Error");
+				}
+			}
+
+
+			protected function updateDepositLoanGridBtn_clickHandler(event:MouseEvent):void{
+				if(depositAssestUpdateVO!=null){
+					depositLoanGridDataCol.removeItemAt(depositLoanGridDataCol.getItemIndex(depositAssestUpdateVO));
+					addDepositLoanGridBtn_clickHandler(null);
+				}
+				depositAssestUpdateVO=null;
+			}
+
+
+			protected function deleteDepositLoanGridBtn_clickHandler(event:MouseEvent):void{
+				depositLoanGridDataCol.removeItemAt(depositLoanGridDataCol.getItemIndex(depositLoanGrid.selectedItem));
+				calculateTotalValues(depositLoanGridDataCol);
+			}
+
+			private function calculateTotalValues(arrayColl:ArrayCollection):void{
+				var totalGrossValueInt:int = 0;
+				var totalNetWeightValueInt:int = 0;
+				var totalReduceValueInt:int = 0;
+				var totalCountValueInt:int = 0;
+				for (var inx:int=0;inx<arrayColl.length;inx++){
+					totalGrossValueInt += Number(arrayColl.getItemAt(inx).gross_weight); 
+					totalReduceValueInt += Number(arrayColl.getItemAt(inx).reduced_weight); 
+					totalNetWeightValueInt += Number(arrayColl.getItemAt(inx).net_weight); 
+					totalCountValueInt += Number(arrayColl.getItemAt(inx).total_quantity); 
+					//arrayColl.getItemAt(inx).acctHolderName = getAccountHolderName(inx);
+					//arrayColl.getItemAt(inx).depositPlace = getDepositPlace(inx);
+				}
+				totalGrossValue = String(totalGrossValueInt); 
+				totalNetWeightValue = String(totalNetWeightValueInt);
+				totalReduceValue = String(totalReduceValueInt);
+				totalCountValue = String(totalCountValueInt);
+			}
+			
+			private function clearDepositAssestsValues():void{
+				depositLoanJewelCategoryCmb.selectedIndex= 0;
+				depositLoanJewelTypeCmb.selectedIndex= 0;
+				depositLoanQualityCmb.selectedIndex= 0;
+				depositLoanGrossWtTxt.text = "";
+				depositLoanRedWtTxt.text = "";
+				depositLoanNetWtTxt.text = "";
+				depositLoanTotQtyTxt.text = "";
+				depositLoanRemarksTxt.text = "";
+			}
+			
+			private function serialLabelFunction(item:Object, column:DataGridColumn):String{
+				var index:int = depositLoanGridDataCol.getItemIndex(item);
+				if (index > -1)
+					return (index + 1).toString();
+				return "";
+			}
+			
+			private function getAccountHolderName(id:int):String {
+				var name:String;
+				var dataColl:ArrayCollection = accHolderNameCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					if(Number(dataColl[inx].acctHolderId)==id){
+						name = dataColl[inx].acct_holder_name;
+						break;
+					}
+				}
+				return name;
+			}
+			
+			private function getDepositPlace(id:int):String {
+				var depositPlace:String;
+				var dataColl:ArrayCollection = depositPlaceCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					if(Number(dataColl[inx].depositPlaceId)==id){
+						depositPlace = dataColl[inx].deposit_place;
+						break;
+					}
+				}
+				return depositPlace;
+			}
+
+			protected function depositLoanGrid_itemClickHandler(event:ListEvent):void{
+				if(event && event.columnIndex==0){
+					var loanAssestVO:LoanAssestSplitUpVO = depositLoanGrid.selectedItem as LoanAssestSplitUpVO;
+					var dataColl:ArrayCollection = depositLoanJewelCategoryCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(Number(dataColl[inx].jewelCategoryId)==loanAssestVO.jewel_category_id){
+							depositLoanJewelCategoryCmb.selectedIndex = inx;
+						}
+					}
+					dataColl = depositLoanJewelTypeCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(Number(dataColl[inx].jewelTypeId)==loanAssestVO.jewel_type_id){
+							depositLoanJewelTypeCmb.selectedIndex = inx;
+						}
+					}
+					dataColl = depositLoanQualityCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(Number(dataColl[inx].jewelQualityId)==loanAssestVO.quality_id){
+							depositLoanQualityCmb.selectedIndex = inx;
+						}
+					}
+					depositLoanNoValue.text = String(loanAssestVO.loan_no);
+					
+					depositLoanGrossWtTxt.text = loanAssestVO.gross_weight;
+					depositLoanRedWtTxt.text = loanAssestVO.reduced_weight;
+					depositLoanNetWtTxt.text = loanAssestVO.net_weight;
+					depositLoanTotQtyTxt.text = String(loanAssestVO.total_quantity);
+					//take backup to update
+					depositAssestUpdateVO = loanAssestVO;
+				}
+			}
+
+
+			protected function submitDepositLoanBtn_clickHandler(event:MouseEvent):void {
+				var depositLoanTxVO:DepositLoanTransactionVO = new DepositLoanTransactionVO;
+				depositLoanTxVO.loanAssetSplitUp = depositLoanGridDataCol;
+				depositLoanTxVO.deposit_loan_no = Number(depositLoanNoValue.text);
+				depositLoanTxVO.jewelLoanNo  = Number(jewelLoanNoTxt.text);
+				depositLoanTxVO.deposit_place_id = depositPlaceCmb.selectedItem.depositPlaceId;
+				if(createLedgerDepositLoanChk.selected){
+					depositLoanTxVO.ledgerLoan = "Y";
+				}else {
+					depositLoanTxVO.ledgerLoan = "N";
+				}
+				if(jointLoanRadioBtn_Y.selected){
+					depositLoanTxVO.isThisJointLoan = "Y";
+				}else {
+					depositLoanTxVO.isThisJointLoan = "N";
+				}
+				depositLoanTxVO.loan_amount = depositLoanAmountTxt.text;
+				depositLoanTxVO.rate_per_gram = depositLoanRatePerGramTxt.text;
+				depositLoanTxVO.penaltyInterest = depositLoanPenaltyTxt.text;
+				depositLoanTxVO.loanTenure = loanTenureTxt.text;
+				depositLoanTxVO.acct_holder_name_id = accHolderNameCmb.selectedItem.acctHolderId;
+				depositLoanTxVO.interest_rate = depositLoanInterestRateTxt.text;
+				depositLoanTxVO.other_fee = otherFeeTxt.text;
+				depositLoanTxVO.interestPeriodId = interestPeriodCmb.selectedItem.interestPeriodId;
+				depositLoanTxVO.total_gross_weight = totalGrossValue;
+				depositLoanTxVO.total_net_weight = totalNetWeightValue;
+				depositLoanTxVO.total_reduced_weight = totalReduceValue;
+				depositLoanTxVO.total_count = Number(totalCountValue);
+				depositLoanTxVO.transactionTypeId = 2;	
+				depositLoanTxVO.authorized = accHolderNameCmb.selectedItem.is_authorised;
+				depositLoanTxVO.deposit_loan_transaction_date = ManageLoans(parentDocument).transactionDate;
+				retrieveService("addNewDepositLoanDetails",onSubmitData,depositLoanTxVO);
+			}
+			
+			private function onSubmitData(event:Event):void {
+				clearAllFields();
+				LoadingMask.hide();
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onSubmitData);
+					if ((event as ResultEvent).result != null){
+						var flag:Boolean = ((event as ResultEvent).result) as Boolean;
+						if(flag){
+							Alert.show("Deposit Loan Entry Added Successfully.","Loan Entry");
+							depositLoanNoValue.text = "";
+						}else{
+							Alert.show("Deposit Loan entry fail due to some error, Please try again.","Loan Entry");
+						}
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onSubmitData);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+
+			public function clearAllFields():void{
+				loanSection1.enabled = false;
+				loanSection2.enabled = false;
+				clearDepositAssestsValues();
+				depositLoanGridDataCol = new  ArrayCollection;
+				depositLoanNoValue.text = "";
+				jewelLoanNoTxt.text = "";
+				depositPlaceCmb.selectedIndex = 0;
+				authorisedRadioBtn_Y.selected = false;
+				authorisedRadioBtn_N.selected = false;
+				depositLoanAmountTxt.text = "";
+				depositLoanRatePerGramTxt.text = "";
+				depositLoanPenaltyTxt.text = "";
+				createLedgerDepositLoanChk.selected = false;
+				loanTenureTxt.text = "";
+				accHolderNameCmb.selectedIndex = 0;
+				depositLoanInterestRateTxt.text = "";
+				jointLoanRadioBtn_Y.selected = false;
+				jointLoanRadioBtn_N.selected = false;
+				otherFeeTxt.text = "";
+				interestPeriodCmb.selectedIndex = 0;
+				totalCountValue = "";
+				totalNetWeightValue = "";
+				totalReduceValue = "";
+				totalGrossValue = "";
+				createLedgerDepositLoanChk.selected = false;
+				createNewDepositLoanChk.selected = false;
+				clearFormFields.selected = false;
+				createLedgerDepositLoanChk.enabled = true;
+				createNewDepositLoanChk.enabled = true;
+				clearFormFields.enabled = true;
+				authorisedRadioBtn_Y.enabled = true;
+				authorisedRadioBtn_N.enabled = true;
+				jointLoanRadioBtn_N.enabled = true;
+				jointLoanRadioBtn_Y.enabled = true;
+				depositLoanNoValue.enabled = false;
+				ManageLoans(parentDocument).transactionDateComp.selectedDate = null;
+				ManageLoans(parentDocument).transactionDate = "";
+			}
+
+			protected function jointLoanRadioBtn_changeHandler(event:Event):void{
+				if(!jointLoanRadioBtn_N.selected){
+					jewelLoanNoTxt.text = "";
+				}
+			}
+			
+			private function getNameFromId(inputColl:ArrayCollection):ArrayCollection{
+				for (var jnx:int=0;jnx<inputColl.length;jnx++){
+					var dataColl:ArrayCollection = depositLoanJewelCategoryCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(Number(dataColl[inx].jewelCategoryId)==inputColl[jnx].jewel_category_id){
+							inputColl[jnx].jewelCategory = dataColl[inx].jewelCategoryName;
+						}
+					}
+					dataColl = depositLoanJewelTypeCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(Number(dataColl[inx].jewelTypeId)==inputColl[jnx].jewel_type_id){
+							inputColl[jnx].jewelType = dataColl[inx].jewelTypeName;
+						}
+					}
+					dataColl = depositLoanQualityCmb.dataProvider as ArrayCollection;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						if(Number(dataColl[inx].jewelQualityId)==inputColl[jnx].quality_id){
+							inputColl[jnx].quality = dataColl[inx].jewelQualityName
+						}
+					}
+				}
+				return inputColl;
+			}
+			
+			public function setSearchResultData(depositLoanTxVO:DepositLoanTransactionVO):void{
+				handleSearchResult();
+			    depositLoanGridDataCol = getNameFromId(depositLoanTxVO.loanAssetSplitUp);
+				calculateTotalValues(depositLoanGridDataCol);
+				depositLoanNoValue.text = String(depositLoanTxVO.deposit_loan_no);
+				jewelLoanNoTxt.text = String(depositLoanTxVO.jewelLoanNo);
+				var dataColl:ArrayCollection = depositPlaceCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					if(Number(dataColl[inx].depositPlaceId)==depositLoanTxVO.deposit_place_id){
+						depositPlaceCmb.selectedIndex = inx;
+					}
+				}
+				dataColl = accHolderNameCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					if(Number(dataColl[inx].acctHolderId)==depositLoanTxVO.acct_holder_name_id){
+						accHolderNameCmb.selectedIndex = inx;
+					}
+				}
+				dataColl = interestPeriodCmb.dataProvider as ArrayCollection;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					if(Number(dataColl[inx].interestPeriodId)==depositLoanTxVO.interestPeriodId){
+						interestPeriodCmb.selectedIndex = inx;
+					}
+				}
+				if(depositLoanTxVO.ledgerLoan == "Y"){
+					createLedgerDepositLoanChk.selected = true;
+				}else if(depositLoanTxVO.ledgerLoan == "N"){
+					createNewDepositLoanChk.selected = true;
+				}
+				createLedgerDepositLoanChk.enabled = false;
+				createNewDepositLoanChk.enabled = false;
+				clearFormFields.enabled = false;
+				if(depositLoanTxVO.isThisJointLoan == "Y"){
+					jointLoanRadioBtn_Y.selected = true;
+				}else{
+					jointLoanRadioBtn_N.selected = true
+				}
+				jointLoanRadioBtn_N.enabled = false;
+				jointLoanRadioBtn_Y.enabled = false;
+				if(depositLoanTxVO.authorized == "Y") {
+					authorisedRadioBtn_Y.selected = true;
+				} else {
+					authorisedRadioBtn_N.selected = false;
+				}
+				authorisedRadioBtn_Y.enabled = false;
+				authorisedRadioBtn_N.enabled = false;
+				depositLoanAmountTxt.text = depositLoanTxVO.loan_amount;
+				depositLoanRatePerGramTxt.text = depositLoanTxVO.rate_per_gram;
+				depositLoanPenaltyTxt.text = depositLoanTxVO.penaltyInterest;
+				loanTenureTxt.text= depositLoanTxVO.loanTenure ;
+				depositLoanInterestRateTxt.text = depositLoanTxVO.interest_rate;
+				otherFeeTxt.text = depositLoanTxVO.other_fee;
+				loanSection1.enabled = true;
+				loanSection2.enabled = true;
+			}
+			
+			
+			protected function zoom_clickHandler(event:MouseEvent):void{
+				enlargeView = EnlargeView(PopUpManager.createPopUp(UIComponent(this.parentApplication), EnlargeView, true) );
+				enlargeView.title = "Loan Entry";
+				enlargeView.addEventListener(CloseEvent.CLOSE,enlargeView_closeHandler);
+				enlargeView.height = Application.application.height -400;
+				enlargeView.width = Application.application.width -200;
+				enlargeView.enlargeContainer.addChild(gridContainer);
+				PopUpManager.centerPopUp(enlargeView);
+			}
+			
+			protected function enlargeView_closeHandler(event:CloseEvent):void{
+				loanSection2.addChild(enlargeView.enlargeContainer.getChildAt(0));
+				PopUpManager.removePopUp(enlargeView);
+			}
+
+		]]>	
+	</fx:Script>-->
+	<s:HGroup>
+		<mx:RadioButton groupName="LoanRadioGrp" 
+			id="createLedgerDepositLoanChk" chromeColor="#E7E0CB"
+			color="#000000" label="Add Previous Ledger Loan"/><!-- click="handleCreateLoanChkClick(event)"  />-->
+		<mx:RadioButton groupName="LoanRadioGrp" 
+			id="createNewDepositLoanChk" chromeColor="#E7E0CB"
+			color="#000000" label="Add New Loan"/><!--  click="handleCreateLoanChkClick(event)"/>-->		
+		<mx:CheckBox chromeColor="#E7E0CB" color="#000000" id="clearFormFields" label="Clear Form Fields"/><!--  click="handleCreateLoanChkClick(event)"/>-->
+	</s:HGroup>	
+	<s:HGroup width="100%" styleName="loanGroup" id="loanSection1" enabled="true">
+		<mx:Form id="depositLoanDetailsForm1" width="50%" >
+			<mx:FormItem id="depositLoanNoFormItem" label="Deposit Loan No" color="#000000" fontWeight="normal"
+						 textAlign="left" >
+				<mx:TextInput height="19" width="100" id="depositLoanNoValue" fontWeight="normal" enabled="false" />
+			</mx:FormItem>
+			<mx:FormItem label="Joint Loan" borderVisible="false" color="#000000" fontWeight="normal"
+						 textAlign="left">
+				<s:HGroup>
+					<mx:RadioButton groupName="jointLoanRadioGrp" 
+									id="jointLoanRadioBtn_Y" chromeColor="#E7E0CB"
+									color="#000000" label="Yes"/><!-- click="jointLoanRadioBtn_changeHandler(event)"  />-->
+					<mx:RadioButton groupName="jointLoanRadioGrp" 
+									id="jointLoanRadioBtn_N" chromeColor="#E7E0CB"
+									color="#000000" label="No" /><!-- click="jointLoanRadioBtn_changeHandler(event)"/>-->
+				</s:HGroup>
+			</mx:FormItem>
+			<mx:FormItem label="Deposit Place" borderVisible="false" color="#000000" fontWeight="normal"
+						  textAlign="left" >
+				<s:HGroup>
+					<mx:ComboBox cornerRadius="0" arrowButtonWidth="16" openDuration="0" closeDuration="0" height="19" id="depositPlaceCmb" chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+								 color="#000000" width="85" labelField="deposit_place" > <!--dataProvider="{depositPlaceData}"-->
+					</mx:ComboBox>
+					<mx:Button width="51" cornerRadius="3" height="19" id="addDepositPlace" chromeColor="#E7E0CB" fontWeight="normal"
+							   color="#000000" label="Add"/><!-- click="showAddDepositPlacePopUp(event)"/>-->
+				</s:HGroup>
+			</mx:FormItem>
+			<mx:FormItem label="Authorised/Not" borderVisible="false" color="#000000" fontWeight="normal"
+						  textAlign="left">
+				<s:HGroup>
+					<mx:RadioButton groupName="authorisedRadioGrp" 
+									id="authorisedRadioBtn_Y" chromeColor="#E7E0CB"
+									color="#000000" label="Yes" />
+					<mx:RadioButton groupName="authorisedRadioGrp" 
+									id="authorisedRadioBtn_N" chromeColor="#E7E0CB"
+									color="#000000" label="No" />
+				</s:HGroup>
+			</mx:FormItem>
+			<mx:FormItem label="Amount" color="#000000" fontWeight="normal"
+						  textAlign="left">
+				<mx:TextInput height="19" width="100" id="depositLoanAmountTxt" fontWeight="normal"/>
+			</mx:FormItem>
+			<mx:FormItem label="Rate Per Gram" borderVisible="false" color="#000000" fontWeight="normal"
+						  textAlign="left">
+				<mx:TextInput height="19" width="100" id="depositLoanRatePerGramTxt" fontWeight="normal" />
+			</mx:FormItem>
+			<mx:FormItem label="Penalty Interest" borderVisible="false" color="#000000" fontWeight="normal"
+						 textAlign="left">
+				<mx:TextInput height="19" width="100" id="depositLoanPenaltyTxt" fontWeight="normal" />
+			</mx:FormItem>
+		</mx:Form>
+		
+		<mx:Form id="depositLoanDetailsForm2" width="50%">
+			<mx:FormItem label="Transaction Date" color="#000000" fontWeight="normal"
+						 textAlign="left" >				
+				<mx:DateField id="transactionDateComp" fontSize="10" text="dd/mm/yyyy" 
+							  height="19" width="100" color="#000000" fontWeight="normal"/><!-- change="formatDate()"/>-->				
+			</mx:FormItem>
+			<mx:FormItem label="Jewel Loan No." color="#000000" fontWeight="normal"
+						 textAlign="left" >
+				<mx:TextInput height="19" width="100" enabled="{jointLoanRadioBtn_N.selected}" id="jewelLoanNoTxt" restrict="0-9" fontWeight="normal" />
+			</mx:FormItem>
+			
+			<mx:FormItem label="Account Holder Name" color="#000000" fontWeight="normal"
+						  textAlign="left" >
+				<s:HGroup>
+					<mx:ComboBox cornerRadius="0" arrowButtonWidth="16" openDuration="0" closeDuration="0" height="19" id="accHolderNameCmb" chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+								 color="#000000" width="85" labelField="acct_holder_name"  > <!--dataProvider="{accountHolderData}" -->
+					</mx:ComboBox>
+					<mx:Button width="51" cornerRadius="3" height="19" id="addAccHolderName" chromeColor="#E7E0CB" fontWeight="normal"
+							   color="#000000" label="Add"/><!-- click="showAddAccountHolderNamePopUp(event)"/>-->
+				</s:HGroup>
+			</mx:FormItem>
+			<mx:FormItem label="Interest Rate" borderVisible="false" color="#000000" fontWeight="normal"
+						  textAlign="left">
+				<mx:TextInput height="19" width="100" id="depositLoanInterestRateTxt" fontWeight="normal" />
+			</mx:FormItem>
+			<mx:FormItem label="Loan Tenure" borderVisible="false" color="#000000" fontWeight="normal"
+						 textAlign="left">
+				<mx:TextInput height="19" width="100" id="loanTenureTxt" fontWeight="normal" />
+			</mx:FormItem>
+			<mx:FormItem label="Other Fee" color="#000000" fontWeight="normal"
+						  textAlign="left">
+				<mx:TextInput height="19" width="100" id="otherFeeTxt" fontWeight="normal"/>
+			</mx:FormItem>
+			<mx:FormItem label="Interest Period" color="#000000" fontWeight="normal"
+						 textAlign="left" >
+				<s:HGroup>
+					<mx:ComboBox cornerRadius="0" arrowButtonWidth="16" openDuration="0" closeDuration="0" height="19" id="interestPeriodCmb" chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+								 color="#000000" width="85" labelField="interestPeriod" > <!--dataProvider="{interestPeriodData}" -->
+					</mx:ComboBox>
+					<mx:Button width="51" cornerRadius="3" height="19" id="addInterestPeriodBtn" chromeColor="#E7E0CB" fontWeight="normal"
+							   color="#000000" label="Add"/><!-- click="showAddInterestPeriodPopUp(event)"/>-->
+				</s:HGroup>
+			</mx:FormItem> 
+		</mx:Form>
+	</s:HGroup>
+	
+	<mx:HBox width="100%" horizontalAlign="right">
+		<!--<mx:Image source="{zoomIcon}" click="zoom_clickHandler(event)"/>-->
+	</mx:HBox>
+	<mx:VBox id="loanSection2" width="100%" height="100%" enabled="true">
+	<mx:VBox id="gridContainer" width="100%" height="100%" borderColor="#a8a172" borderStyle="solid"
+			 paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+		<mx:DataGrid id="depositLoanGrid" width="100%" height="100%" minHeight="70" textAlign="center"
+					 alternatingItemColors="[#ffffff,#f1f0ea]" rollOverColor="#E1DCCC" rowHeight="19" fontSize="11"
+					 selectionColor="#D4CDB8" chromeColor="#E7E0CB" color="#000000" headerHeight="21"
+					 fontWeight="normal" horizontalScrollPolicy="on" verticalScrollPolicy="on">
+					 <!--itemClick="depositLoanGrid_itemClickHandler(event)" dataProvider="{depositLoanGridDataCol}"--> 
+			
+			<mx:columns>
+				<mx:DataGridColumn headerText="S.No" width="40" textDecoration="underline" color="#0000FF" />  <!--labelFunction="serialLabelFunction"-->
+				<mx:DataGridColumn headerText="Jewel Category" dataField="jewelCategory" />
+				<mx:DataGridColumn headerText="Jewel Type" dataField="jewelType"  />
+				<mx:DataGridColumn headerText="Gross Weight" dataField="gross_weight"/>
+				<mx:DataGridColumn headerText="Reduced Weight" dataField="reduced_weight"/>
+				<mx:DataGridColumn headerText="Net Weight" dataField="net_weight" />
+				<mx:DataGridColumn headerText="Quality" dataField="quality" />
+				<!--<mx:DataGridColumn headerText="Status" dataField="status" />
+				<mx:DataGridColumn headerText="Account Holder Name" dataField="acctHolderName" width="150" />
+				<mx:DataGridColumn headerText="Deposit Place" dataField="depositPlace" />-->
+				<mx:DataGridColumn headerText="Count" dataField="total_quantity" />
+				<mx:DataGridColumn headerText="Jewel Loan No" dataField="loan_no" />				
+			</mx:columns> 
+		</mx:DataGrid>
+		<mx:HBox id="totalDepositLoanBox" height="20" backgroundColor="#f1f0ea" width="100%" borderColor="#a8a172" horizontalAlign="center" verticalAlign="middle" borderStyle="solid">
+			<mx:Label id="totalDepositLoanGross" text="Total Gross:" color="#000000" fontWeight="bold" /> 
+			<mx:Label id="totalDepositLoanGrossTxt"  color="#EE380E" fontSize="15" 
+					  fontWeight="bold" /> <!--text="{totalGrossValue}"-->
+			<mx:Spacer width="10" />
+			<mx:Label id="totalDepositLoanReduced" text="Total Reduced:" color="#000000" fontWeight="bold" /> 
+			<mx:Label id="totalDepositLoanReducedTxt"  color="#EE380E" fontSize="15"  
+					  fontWeight="bold" />  <!--text="{totalReduceValue}"-->
+			<mx:Spacer width="10" />
+			<mx:Label id="totalDepositLoanNetWt" text="Total Net Weight:" color="#000000" fontWeight="bold" /> 
+			<mx:Label id="totalDepositLoanNetWtdTxt"  color="#EE380E" fontSize="15" 
+					  fontWeight="bold" /> <!--text="{totalNetWeightValue}"-->
+			<mx:Spacer width="10" />
+			<mx:Label id="totalcount" text="Total Count:" color="#000000" fontWeight="bold" /> 
+			<mx:Label id="totalCountTxt"  color="#EE380E" fontSize="15" 
+					  fontWeight="bold" /> <!--text="{totalCountValue}"-->
+		</mx:HBox>
+		<mx:HBox width="100%">
+		<mx:VBox>
+		<s:HGroup width="100%" >
+			<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle">
+				<mx:Label id="depositLoanJewelCategoryLbl" text="Jewel Category" color="#000000" fontWeight="normal" />
+				<mx:ComboBox cornerRadius="0" arrowButtonWidth="16" openDuration="0" closeDuration="0" height="19" id="depositLoanJewelCategoryCmb" chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+							 color="#000000" width="85" labelField="jewelCategoryName" >
+							 <!--change="depositLoanJewelCategoryCmb_changeHandler(event)">-->
+				</mx:ComboBox> 
+			</mx:VBox> 
+			<mx:Spacer width="10"/>
+			<mx:VBox verticalGap="0" horizontalAlign="center">
+				<mx:Label id="depositLoanJewelTypeLbl" text="Jewel Type" color="#000000" fontWeight="normal" />
+				<mx:ComboBox cornerRadius="0" arrowButtonWidth="16" openDuration="0" closeDuration="0" height="19" id="depositLoanJewelTypeCmb" 
+							 chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+							 color="#000000" width="85" labelField="jewelTypeName">
+				</mx:ComboBox>
+			</mx:VBox>
+			<mx:Spacer width="10"/>
+			<mx:VBox verticalGap="0" horizontalAlign="center">
+				<mx:Label id="depositLoanGrossWtLbl" text="Gross Weight" color="#000000" fontWeight="normal" />
+				<mx:TextInput height="19" width="100" id="depositLoanGrossWtTxt" restrict="0-9." color="#000000" />
+			</mx:VBox>
+			<mx:Spacer width="10"/>
+			<mx:VBox verticalGap="0" horizontalAlign="center">
+				<mx:Label id="depositLoanRedWtLbl" text="Reduced Weight" color="#000000" fontWeight="normal" />
+				<mx:TextInput height="19" width="100" id="depositLoanRedWtTxt" restrict="0-9." color="#000000"  />
+			</mx:VBox>
+			<mx:Spacer width="10"/>
+			<mx:VBox verticalGap="0" horizontalAlign="center">
+				<mx:Label id="depositLoanNetWtLbl" text="Net Weight" color="#000000" fontWeight="normal" />
+				<mx:TextInput height="19" width="100" id="depositLoanNetWtTxt" restrict="0-9." color="#000000"/>
+			</mx:VBox>
+		</s:HGroup>	
+		<s:HGroup width="100%">
+			<mx:VBox verticalGap="0" horizontalAlign="center">
+				<mx:Label id="depositLoanQualityLbl" text="Quality" color="#000000" fontWeight="normal" />
+				<mx:ComboBox cornerRadius="0" arrowButtonWidth="16" openDuration="0" closeDuration="0" height="19" id="depositLoanQualityCmb" chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+							 color="#000000" width="85" labelField="jewelQualityName" >
+				</mx:ComboBox>
+			</mx:VBox>
+			<mx:Spacer width="10"/>
+			<mx:VBox verticalGap="0" horizontalAlign="center">
+				<mx:Label id="depositLoanTotQtyLbl" text="Total Quantity" color="#000000" fontWeight="normal" />
+				<mx:TextInput height="19" width="100" id="depositLoanTotQtyTxt" restrict="0-9." color="#000000" />
+			</mx:VBox>
+			<mx:Spacer width="10"/>
+			<mx:VBox verticalGap="0" horizontalAlign="center"
+					 visible="{jointLoanRadioBtn_Y.selected}" includeInLayout="{jointLoanRadioBtn_Y.selected}" >
+				<mx:Label text="Jewel Loan No." color="#000000" fontWeight="normal" />
+				<mx:TextInput height="19" width="100" id="jointJewelLoanNoTxt" color="#000000" />
+			</mx:VBox>
+			<mx:Spacer width="10"/>
+			<mx:Button width="51" cornerRadius="3" height="19" id="addDepositLoanGridBtn" chromeColor="#E7E0CB"
+						   color="#000000" fontWeight="normal" label="Add"/><!-- click="addDepositLoanGridBtn_clickHandler(event)"/>-->
+			<mx:Spacer width="5"/>
+			<mx:Button width="51" cornerRadius="3" height="19" id="updateDepositLoanGridBtn" chromeColor="#E7E0CB"
+					   color="#000000" fontWeight="normal" label="Update"/><!-- click="updateDepositLoanGridBtn_clickHandler(event)"/>-->			
+			<mx:Spacer width="5"/>
+			<mx:Button width="51" cornerRadius="3" height="19" id="deleteDepositLoanGridBtn" chromeColor="#E7E0CB"
+					   color="#000000" fontWeight="normal" label="Delete"/><!-- click="deleteDepositLoanGridBtn_clickHandler(event)"/>-->
+		</s:HGroup>
+		</mx:VBox>
+		<mx:Spacer width="30"/>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label id="depositLoanRemarksLbl" text="Remarks" color="#000000" fontWeight="normal" />
+			<mx:TextInput height="60" width="300" id="depositLoanRemarksTxt" color="#000000" />
+		</mx:VBox>
+		</mx:HBox>
+	</mx:VBox>
+	</mx:VBox>
+	<s:HGroup verticalAlign="middle" horizontalAlign="left" width="100%">
+		<mx:Label id="pleaseSelectAllDepositLoanLbl" fontStyle="italic" text="* Please fill all fields before submitting" color="#000000"/>
+		<mx:Spacer width="100%" />
+		<mx:Button cornerRadius="3" height="19" id="submitDepositLoanBtn" chromeColor="#E7E0CB"
+				   color="#000000" fontWeight="normal" label="Submit"/><!-- click="submitDepositLoanBtn_clickHandler(event)" />-->
+	</s:HGroup>
+</mx:Panel>	

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:components="components.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<mx:VBox styleName="smeLoansBackground" width="100%" height="45%" verticalGap="1" paddingLeft="5" paddingBottom="0">
+		<!--<mx:Label text="Advance Search" textDecoration="underline" fontWeight="bold"/>-->
+		<components:CustomHeader headerText="Advance Search" width="100%"/>
+		<mx:HBox >
+			<mx:Label text="Disbursal Rate p/g:"/>
+			<s:TextInput width="80" prompt="From"/>
+			<s:TextInput width="80" prompt="To"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:ComboBox styleName="smeComboBox" width="90" />
+		</mx:HBox>
+		<mx:HBox >
+			<mx:Label text="Gross Weight:       "/>
+			<s:TextInput width="80" prompt="From"/>
+			<s:TextInput width="80" prompt="To"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:ComboBox styleName="smeComboBox" width="90" />
+		</mx:HBox>
+		<mx:HBox >
+			<mx:Label text="Insta Rate p/g:     "/>
+			<s:TextInput width="80" prompt="From"/>
+			<s:TextInput width="80" prompt="To"/>
+		</mx:HBox>
+		<mx:HBox  >
+			<mx:ComboBox styleName="smeComboBox" width="90" />
+		</mx:HBox>
+		
+		<mx:HBox styleName="smeLoansBackground" width="100%" horizontalGap="5">
+			<mx:VBox verticalGap="0" verticalAlign="middle" width="34%" >
+				<mx:Label text="Jewel Category" color="#000000" fontWeight="normal" />
+				<mx:ComboBox id="loanJewelCategoryCmb" labelField="jewelCategoryName" styleName="smeComboBox" width="90"  /> 
+				<mx:Label text="Jewel Type" color="#000000" fontWeight="normal" />
+				<mx:ComboBox  id="loanJewelTypeCmb" labelField="jewelTypeName" styleName="smeComboBox" width="90"/> 
+				<mx:Label text="Jewel Quality" color="#000000" fontWeight="normal" />
+				<mx:ComboBox id="loanQualityCmb" labelField="jewelQualityName" styleName="smeComboBox" width="90"/> 
+			</mx:VBox>
+			<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="33%">
+				<mx:Label text="Insta Loan" color="#000000" fontWeight="normal" />
+				<mx:ComboBox id="instaLoanCmb" labelField="jewelQualityName" styleName="smeComboBox" width="90"/> 
+				<mx:Label text="Jewel Photo" color="#000000" fontWeight="normal" />
+				<mx:ComboBox  id="jewelPhotoCmb" labelField="jewelTypeName" styleName="smeComboBox" width="90"/> 
+				<mx:Label text="Customer Photo" color="#000000" fontWeight="normal" />
+				<mx:ComboBox id="customerPhotoCmb" labelField="jewelQualityName" styleName="smeComboBox" width="90"/> 
+			</mx:VBox>
+			<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="33%">
+				<mx:Label text="High Limit Loan" color="#000000" fontWeight="normal" />
+				<mx:ComboBox id="highLimitCmb" labelField="jewelCategoryName" styleName="smeComboBox" width="90" /> 
+				<mx:Label text="Service Charges" color="#000000" fontWeight="normal" />
+				<mx:ComboBox id="serviceChagresCmb" labelField="jewelQualityName" styleName="smeComboBox" width="90"/> 
+				<mx:Label text="Doc Charges" color="#000000" fontWeight="normal" />
+				<mx:ComboBox id="docChagresCmb" labelField="jewelQualityName" styleName="smeComboBox" width="90"/> 
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox horizontalAlign="right" width="100%" paddingTop="10">
+			<s:Spacer height="8"/>
+			<mx:Button label="Advance Search"/>
+		</mx:HBox>
+		
+	</mx:VBox>
+	<mx:VBox styleName="smeLoansBackground" width="100%" height="55%" verticalGap="1" 
+			 paddingLeft="5" paddingBottom="0" paddingTop="0">
+		<!--Advance Filter-->
+		<!--<mx:Label text="Advance Filter" textDecoration="underline" fontWeight="bold"/>-->
+		<components:CustomHeader headerText="Advance Filter" width="100%"/>
+		<mx:HBox styleName="smeLoansBackground" width="100%" horizontalGap="5">
+			<mx:VBox verticalGap="0" verticalAlign="middle" width="33%" >
+				<mx:Label text="Present Int Slab" color="#000000" fontWeight="normal" />
+				<mx:ComboBox id="presentIntSlabCmb" labelField="jewelCategoryName" styleName="smeComboBox" width="90"  /> 
+			</mx:VBox>
+			<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="33%">
+				<mx:Label text="Interest" color="#000000" fontWeight="normal" />
+				<mx:ComboBox id="interestCmb" labelField="jewelQualityName" styleName="smeComboBox" width="90"/>
+			</mx:VBox>
+			<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="bottom"  width="33%">
+				<mx:Label text="Part Principle" color="#000000" fontWeight="normal" />
+				<mx:ComboBox  id="partPrincipleCmb" labelField="jewelTypeName" styleName="smeComboBox" width="90"/> 
+			</mx:VBox>
+		</mx:HBox>
+		<s:Spacer height="5"/>
+		<mx:HBox >
+			<mx:Label text="No.of Days:         "/>
+			<s:TextInput width="80" prompt="From"/>
+			<s:TextInput width="80" prompt="To"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:ComboBox styleName="smeComboBox" width="90" />
+		</mx:HBox>
+		<mx:HBox >
+			<mx:Label text="Present Rate p/g:"/>
+			<s:TextInput width="80" prompt="From"/>
+			<s:TextInput width="80" prompt="To"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:ComboBox styleName="smeComboBox" width="90" />
+		</mx:HBox>
+		<mx:HBox >
+			<mx:Label text="Int Due:            "/>
+			<s:TextInput width="80" prompt="From"/>
+			<s:TextInput width="80" prompt="To"/>
+		</mx:HBox>
+		<mx:HBox  >
+			<mx:ComboBox styleName="smeComboBox" width="90" />
+		</mx:HBox>
+		<mx:HBox >
+			<mx:Label text="Past Principle(%):"/>
+			<s:TextInput width="80" prompt="From"/>
+			<s:TextInput width="80" prompt="To"/>
+		</mx:HBox>
+		<mx:HBox  >
+			<mx:ComboBox styleName="smeComboBox" width="90" />
+		</mx:HBox>
+		<mx:HBox >
+			<mx:Label text="Int Paid Months:  "/>
+			<s:TextInput width="80" prompt="From"/>
+			<s:TextInput width="80" prompt="To"/>
+		</mx:HBox>
+		<mx:HBox  >
+			<mx:ComboBox styleName="smeComboBox" width="90" />
+		</mx:HBox>
+		
+		<mx:HBox styleName="smeLoansBackground" width="100%" horizontalAlign="right">
+			<mx:Button label="Apply Filter"/>
+		</mx:HBox>
+		
+	</mx:VBox>
+	
+</mx:VBox>

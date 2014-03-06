@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+		   creationComplete="{userName.setFocus();userName.setSelection(0,1);}"
+		   >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			import valueobject.UserProfileVO;
+			import util.SMEConstants;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			private var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			
+			private function login_submitHandler(event:Event):void {
+				if(userName.text!="" && password.text!=="" ){
+					//SME(this.parentDocument).homeWindowStack.selectedIndex = 1;
+					var userVO:UserProfileVO = new UserProfileVO;
+                    userVO.userId = userName.text;
+                    userVO.password = password.text;
+                    facade.sendNotification(SMEConstants.VALIDATE_USER_PROFILE,userVO);
+				}
+				else if(userName.text=="" && password.text!=="" ){
+					showEnterUsername(true);
+					userName.text="";
+					password.text="";
+				}else if(userName.text!=="" && password.text=="" ){
+					showEnterPassword(true);
+				}else if(userName.text=="" && password.text=="" ){
+					showEnterUsername(true);
+					showEnterPassword(true); 
+				}
+			}
+			
+			public function showInvalidCredencials(flag:Boolean):void{
+                invalidUsernamePasswordLbl.visible = flag;
+                invalidUsernamePasswordLbl.includeInLayout = flag;
+            }
+			
+			private function showEnterUsername(flag:Boolean) :void{
+				pleaseEnterUsernameLbl.visible=flag;
+				pleaseEnterUsernameLbl.includeInLayout=flag;				
+			}
+			
+			private function hideEnterUsername(event:Event) :void{
+				
+				if(event.type==Event.CHANGE){
+					if(pleaseEnterUsernameLbl.includeInLayout==true && pleaseEnterUsernameLbl.visible==true ){
+						if(TextInput(event.target).length>0){
+							pleaseEnterUsernameLbl.visible=false;
+							pleaseEnterUsernameLbl.includeInLayout=false;
+						}
+					}
+				}
+			}
+			
+			private function showEnterPassword(flag:Boolean) :void{
+				pleaseEntePasswordLbl.visible=flag;
+				pleaseEntePasswordLbl.includeInLayout=flag;
+			}
+			
+			private function hideEnterPassword(event:Event) :void{
+				if(event.type==Event.CHANGE){
+					if(pleaseEntePasswordLbl.includeInLayout==true && pleaseEntePasswordLbl.visible==true ){
+						if(TextInput(event.target).length>0){
+							pleaseEntePasswordLbl.visible=false;
+							pleaseEntePasswordLbl.includeInLayout=false;
+						}
+					}
+				}
+			}
+			
+			protected function resetHandler(event:Event):void {
+				userName.text="";
+				password.text="";
+			}
+			
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				SME(this.parentDocument).homeWindowStack.selectedIndex = 1;
+			}
+
+		]]>
+	</fx:Script>
+	<mx:HBox id="login" width="100%" height="100%" backgroundColor="#FFFFFF"  borderVisible="true" >
+		<mx:VBox width="50%" height="100%" horizontalAlign="center" verticalAlign="middle">
+			<mx:Image source="" width="100%" height="100%" />
+		</mx:VBox>
+		<mx:VRule height="100%"/>
+		<mx:VBox id="loginDetails" width="50%" height="100%" horizontalAlign="center" verticalAlign="middle">
+			<mx:Panel id="loginPanel" borderColor="#999966" verticalGap="2"
+					  horizontalCenter="0" title="System-in-charge User Login" verticalCenter="0" layout="vertical" horizontalAlign="center"  >
+				<mx:Spacer height="5"/>
+				<mx:Label id="invalidUsernamePasswordLbl" fontStyle="italic" includeInLayout="false" visible="false" text="*Invalid username or password" color="#FF0000"/>
+				
+				<mx:Form id="loginForm"  horizontalCenter="0" verticalCenter="0" backgroundColor="#FFFFFF" >
+					<mx:FormItem label="User Name" 
+								 required="true" textAlign="left">
+						<s:VGroup>
+							<mx:TextInput id="userName" fontWeight="normal" enter="login_submitHandler(event)" change="hideEnterUsername(event)"/>
+							<mx:Label id="pleaseEnterUsernameLbl" fontStyle="italic" includeInLayout="false" visible="false" text="*Please enter username" color="#FF0000"/>
+						</s:VGroup>
+					</mx:FormItem>
+					<mx:FormItem label="Password" 
+								 required="true" textAlign="left">
+						<s:VGroup>
+							<mx:TextInput id="password" displayAsPassword="true" fontWeight="normal"  enter="login_submitHandler(event)"  change="hideEnterPassword(event)" />
+							<mx:Label id="pleaseEntePasswordLbl" fontStyle="italic" includeInLayout="false" visible="false" text="*Please enter password" color="#FF0000"/>
+						</s:VGroup>
+						
+					</mx:FormItem>
+					
+					<mx:Spacer height="5"/> 
+					<mx:HBox horizontalAlign="center" >
+						<mx:Button id="btnSubmit" label="Submit" click="login_submitHandler(event)"/>       	
+						<mx:Button id="btnCancel" label="Cancel" />
+						<mx:Button id="btnReset" label="Reset" click="resetHandler(event)" />
+					</mx:HBox>
+				</mx:Form>
+			</mx:Panel>
+		</mx:VBox>	
+	</mx:HBox>
+</mx:Canvas>

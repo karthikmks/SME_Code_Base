@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1">
+		<inputparams>
+		</inputparams>
+		<outputparams>
+			<outputparam>
+				<paramname>employeeId</paramname>
+				<paramtype>INTEGER</paramtype>
+			</outputparam>
+		</outputparams>
+	</storedprocedure>
+</storedprocedures>

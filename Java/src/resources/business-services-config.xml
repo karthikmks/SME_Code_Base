@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	default-lazy-init="true"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="businessController" class="com.bfp.controller.BusinessController">
+		<property name="userProfileManager" ref="userProfileManager"></property>
+		<property name="entitlementService" ref="entitlementService"></property>
+		<property name="authenticationService" ref="authenticationService"></property>
+		<property name="databaseService" ref="databaseService"></property>
+	</bean>
+
+
+	<bean id="userProfileManager" class="com.bfp.services.UserProfileManager">
+	</bean>
+
+	<bean id="entitlementService" class="com.bfp.services.EntitlementService">
+		<property name="databaseService" ref="databaseService"></property>
+	</bean>
+
+	<bean id="authenticationService" class="com.bfp.services.AuthenticationService">
+		<property name="databaseService" ref="databaseService"></property>
+	</bean>
+	
+	<bean id="databaseService" class="com.bfp.services.DatabaseService">
+		<property name="dataLoader" ref="dataLoader"></property>
+		<property name="fileRepositoryLocationMap">
+			<map>
+				<entry key="customer.idproof" value="${customer.idproof.filerepositorylocation}" />
+				<entry key="customer.addressproof" value="${customer.addressproof.filerepositorylocation}" />
+				<entry key="customer.pancard" value="${customer.pancard.filerepositorylocation}" />
+				<entry key="customer.directory" value="${customer.filerepositorylocation}" />
+				<entry key="jewel.loan.directory" value="${jewel.loan.filerepositorylocation}" />
+			</map>
+		</property>
+	</bean>
+
+</beans>

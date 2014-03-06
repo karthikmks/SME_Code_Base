@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1">
+		<inputparams>
+			<inputparam>
+				<paramname>takeOverId</paramname>
+				<paramtype>INTEGER</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.JewelLoanTransactionVO
+					</classname>
+					<attribute>Jewel_take_over_from_id</attribute>
+					<votype>int</votype>
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>place</paramname>
+				<paramtype>VARCHAR</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.JewelLoanTransactionVO
+					</classname>
+					<attribute>JewelTakeOverFromPlace</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>createdBy</paramname>
+				<paramtype>VARCHAR</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.JewelLoanTransactionVO
+					</classname>
+					<attribute>Created_by</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+		</inputparams>
+		<outputparams>
+			<outputparam>
+				<paramname>place_id</paramname>
+				<paramtype>INTEGER</paramtype>
+			</outputparam>
+		</outputparams>
+	</storedprocedure>
+</storedprocedures>

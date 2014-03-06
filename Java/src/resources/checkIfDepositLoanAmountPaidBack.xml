@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>select 'SUCCESS' from (select sum(principal_amount) c4 from payment_transaction where loan_no = ? 
+		and transaction_type_id = 2) d, deposit_loan_transaction e where d.c4 >= e.loan_amount and e.deposit_loan_no = ?</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.SearchRequestVO</inputvo>
+		<inputparams>
+			<inputparam>
+				<paramname>loan_no</paramname>
+				<paramtype>Int</paramtype>
+				<function> 
+					<classname>com.bfp.valueobjects.SearchRequestVO</classname>
+					<attribute>LoanNo</attribute>
+					<votype>int</votype>    
+				</function>                   
+			</inputparam>
+			<inputparam>
+				<paramname>jewel_loan_no</paramname>
+				<paramtype>Int</paramtype>
+				<function> 
+					<classname>com.bfp.valueobjects.SearchRequestVO</classname>
+					<attribute>LoanNo</attribute>
+					<votype>int</votype>    
+				</function>                   
+			</inputparam>
+		</inputparams>
+		<resultsets>
+			<resultset>
+				<resultsetname>DEPOSIT_LOAN_ACCOUNT_HOLDER</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.ResponseVO
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Status</voattribute>
+					<votype>String</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

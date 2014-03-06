@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" layout="vertical" creationComplete="branch_creationCompleteHandler()">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import components.LoadingMask;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueobject.BranchDetailsVO;
+			
+			private function handleUpdateBranchClick(event:MouseEvent):void{
+				if(branchIdTxt.text!="" && branchNameTxt.text!="" && branchAddressTxt.text!="" &&
+					branchAdminIdTxt.text!="" && branchManagerIdTxt.text!="" && contactNumberTxt.text!=""){
+					var branchDetailsVO:BranchDetailsVO= new BranchDetailsVO();
+					branchDetailsVO.branchId=branchIdTxt.text;
+					branchDetailsVO.branchName=branchNameTxt.text;
+					branchDetailsVO.branchAddress=branchAddressTxt.text;
+					branchDetailsVO.totalNoOfEmployees=totalEmployeesTxt.text;
+					branchDetailsVO.branchContactNo=contactNumberTxt.text;
+					branchDetailsVO.createdBy=createdByTxt.text;
+					branchDetailsVO.createdDate=createdTimeTxt.text;
+					branchDetailsVO.jewelLoanNoStartsFrom = jewelLoanNoStartsFrom.text;					
+					branchDetailsVO.depositLoanNoStartsFrom = depositLoanNoStartsFrom.text;
+					branchDetailsVO.administrationPassword = administrationPassword.text;
+				
+					
+				}else{
+					Alert.show("Please fill all fileds","Error");
+				}
+			}
+			
+			private function onConfigureBranchResponse(event:Event):void {
+				LoadingMask.hide();
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onConfigureBranchResponse);
+					if ((event as ResultEvent).result != null){
+						var success:Boolean =Boolean((event as ResultEvent).result) ;
+						if(success){
+							Alert.show("Branch added successfully!","Information");
+						}else{
+							Alert.show("Failed to add.Try again!","Error");
+						}
+						
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onConfigureBranchResponse);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			
+			public function branch_creationCompleteHandler():void {
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<s:HGroup width="100%" >
+		
+		<mx:Form id="branchDetailsForm1" width="100%" verticalGap="20">
+			<mx:FormItem label="Branch ID" color="#000000" fontWeight="normal"
+						 textAlign="left" >
+				<mx:TextInput height="19" width="100" id="branchIdTxt" fontWeight="normal" enabled="false"/>
+			</mx:FormItem>
+			<mx:FormItem label="Branch Name" color="#000000" fontWeight="normal"
+						 textAlign="left" >
+				<mx:TextInput height="19" width="100" id="branchNameTxt" fontWeight="normal"/>
+			</mx:FormItem>
+			<mx:FormItem label="Branch Address" borderVisible="false" color="#000000"
+						 fontWeight="normal"  textAlign="left" >
+				<mx:TextArea id="branchAddressTxt" fontWeight="normal" height="65"/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="Contact Number" borderVisible="false" color="#000000"
+						 fontWeight="normal" textAlign="left" >
+				<s:TextInput height="19" width="100" id="contactNumberTxt" fontWeight="normal"/>
+			</mx:FormItem>
+			<mx:FormItem label="Total No. of Employees" color="#000000" fontWeight="normal"
+						 textAlign="left">
+				<s:TextInput height="19" width="100" id="totalEmployeesTxt" fontWeight="normal"/>
+			</mx:FormItem>
+			<mx:FormItem label="Administration password" color="#000000" fontWeight="normal"
+						 textAlign="left">
+				<mx:TextInput height="19" width="100" displayAsPassword="true" id="administrationPassword" fontWeight="normal"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Form id="branchDetailsForm2" width="100%" verticalGap="20">			
+			<mx:FormItem label="Branch Manager ID" color="#000000" fontWeight="normal"
+						 textAlign="left">
+				<mx:TextInput height="19" width="100" id="branchManagerIdTxt" fontWeight="normal"/>
+			</mx:FormItem>
+			<mx:FormItem label="Branch Admin ID" color="#000000" fontWeight="normal"
+						 textAlign="left">
+				<mx:TextInput height="19" width="100" id="branchAdminIdTxt" fontWeight="normal"/>
+			</mx:FormItem>
+			<mx:FormItem label="Jewel Loan No. starts from" color="#000000" fontWeight="normal"
+						 textAlign="left">
+				<mx:TextInput height="19" width="100" id="jewelLoanNoStartsFrom" fontWeight="normal"/>
+			</mx:FormItem>
+			<mx:FormItem label="Deposit Loan No. starts from" color="#000000" fontWeight="normal"
+						 textAlign="left">
+				<mx:TextInput height="19" width="100" id="depositLoanNoStartsFrom" fontWeight="normal"/>
+			</mx:FormItem>
+			<mx:FormItem label="Created By" color="#000000" fontWeight="normal"
+						 textAlign="left">
+				<mx:TextInput height="19" width="100" id="createdByTxt" fontWeight="normal" enabled="false"
+							  />
+			</mx:FormItem>
+			<mx:FormItem label="Created Time" color="#000000" fontWeight="normal"
+						 textAlign="left">
+				<mx:TextInput height="19" width="100" id="createdTimeTxt" fontWeight="normal" enabled="false"/>
+			</mx:FormItem>
+		</mx:Form>
+		
+	</s:HGroup>
+	<s:Spacer height="10" />
+	<s:HGroup width="100%" verticalAlign="middle" horizontalAlign="center">
+		<mx:Button id="updateBranchBtn" label="Update" cornerRadius="3" height="19" chromeColor="#E7E0CB"
+				   color="#000000" fontWeight="normal" click="handleUpdateBranchClick(event)"/>
+	</s:HGroup>
+</mx:Panel>

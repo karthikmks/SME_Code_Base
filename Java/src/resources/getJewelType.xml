@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>SELECT JEWEL_TYPE_ID, JEWEL_TYPE_NAME FROM JEWEL_TYPE</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.JewelTypes</inputvo>
+		<inputparams>
+		</inputparams>
+		<resultsets>
+			<resultset>
+				<resultsetname>JEWEL_TYPE</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.JewelTypes
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>JewelTypeId</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>2</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>JewelTypeName</voattribute>
+					<votype>String</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

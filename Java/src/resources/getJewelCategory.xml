@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>SELECT A.JEWEL_CATEGORY_ID, A.JEWEL_CATEGORY_NAME, B.JEWEL_TYPE_ID, B.JEWEL_TYPE_NAME FROM JEWEL_CATEGORY A, JEWEL_TYPE B
+		WHERE A.JEWEL_CATEGORY_ID = B.JEWEL_CATEGORY_ID ORDER BY A.JEWEL_CATEGORY_ID, B.JEWEL_TYPE_NAME</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.JewelCategoryVO</inputvo>
+		<inputparams>
+		</inputparams>
+		<resultsets>
+			<resultset>
+				<resultsetname>JEWEL_CATEGORY</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.JewelCategoryVO
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>JewelCategoryId</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>2</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>JewelCategoryName</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>3</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>JewelTypeId</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>4</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>JewelTypeName</voattribute>
+					<votype>String</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

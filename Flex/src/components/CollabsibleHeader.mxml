@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--NOV2013_E698842_C09112013-->
+<mx:HBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" horizontalGap="0" verticalAlign="middle" >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			[Bindable]
+			public var headerTitle:String;
+			[Bindable]
+			public var _openIcon:Boolean = false;//use this variable to hide your container children
+			[Bindable]
+			public var _closeIcon:Boolean = true;
+			
+			public function set openIcon(flag:Boolean):void{
+				img.source = openIcoObj;
+				_openIcon = flag;
+				_closeIcon = !flag;
+			}
+			public function get openIcon():Boolean{
+				return 	_openIcon;
+			}
+			
+			public function set closeIcon(flag:Boolean):void{
+				img.source = closeIcoObj;
+				_closeIcon = flag;
+				_openIcon = !flag;
+			}
+			public function get closeIcon():Boolean{
+				return 	_closeIcon;
+			}
+			
+			[@Embed(source='../assets/images/collapseall.gif')]
+			var openIcoObj:Class;
+			[@Embed(source='../assets/images/expandall.gif')]
+			var closeIcoObj:Class;
+			
+			protected function openClose_clickHandler(event:MouseEvent):void{
+				if(openIcon){
+					closeIcon = true;
+				}else{
+					openIcon = true;
+				}
+			}
+
+		]]>
+	</fx:Script>
+	
+	<mx:HRule styleName="morcomHRuleOrange" width="20" visible="false"/>
+	<mx:Image source="{closeIcoObj}" click="openClose_clickHandler(event)" id="img"/> 
+	<mx:HRule styleName="morcomHRuleOrange" width="10" visible="false"/>
+	<mx:CheckBox id="checkBox" label="{headerTitle}" styleName="riHeaderLabel" />
+	<mx:HRule styleName="morcomHRuleOrange" width="100%" visible="false"/>
+	
+</mx:HBox>

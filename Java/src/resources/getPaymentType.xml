@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>select repayment_type, created_by, created_timestamp, modified_by, 
+		modified_timestamp, active_flag, repayment_type_id from repayment_type</sqlquery>
+		<databaseType>oracle</databaseType>
+		<inputvo>com.bfp.valueobjects.PaymentTypeVO</inputvo>
+		<inputparams>
+		</inputparams>
+		<resultsets>
+			<resultset>
+				<resultsetname>PAYMENT_TYPE</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.PaymentTypeVO
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Payment_type</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>2</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Created_by</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>3</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Created_timestamp</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>4</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Modified_by</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>5</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Modified_timestamp</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>6</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Active_flag</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>7</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>PaymentTypeId</voattribute>
+					<votype>int</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

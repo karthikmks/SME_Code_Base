@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" layout="absolute" width="950" height="400"
+				showCloseButton="true"
+				title="Jewel Details"
+				borderAlpha="0.9">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+		/* 	private function serialLabelFunction(item:Object, column:DataGridColumn):String{
+				var index:int = jewelsGrid.dataProvider.getItemIndex(item);
+				if (index > -1)
+					return (index + 1).toString();
+				return "";
+			} */
+		]]>
+	</fx:Script>
+	<mx:VBox id="itemContainer" width="100%" height="100%" paddingLeft="10" paddingRight="10" paddingBottom="10" paddingTop="10">
+		<!--<mx:DataGrid id="jewelsGrid" width="100%" height="100%" textAlign="left"
+					 alternatingItemColors="[#ffffff,#f1f0ea]"
+					 chromeColor="#E7E0CB" color="#000000" fontWeight="normal" fontSize="11"
+					 rollOverColor="#E1DCCC" selectionColor="#D4CDB8" headerHeight="21" rowHeight="19"
+					 horizontalScrollPolicy="on" verticalScrollPolicy="auto">
+			<mx:dataProvider>
+				<mx:ArrayCollection>
+					<mx:source>
+						<fx:Object jewelCategory="ABC" jewelType="XYZ" 
+								   jewelQuality=""  
+								   jewelCount="2" jewelWeight="5gm" />
+					</mx:source>
+				</mx:ArrayCollection>
+			</mx:dataProvider>
+			
+			<mx:columns>
+				<mx:DataGridColumn headerText="S.No" labelFunction="serialLabelFunction" width="60"/>
+				<mx:DataGridColumn headerText="Category" dataField="jewelCategory" />
+				<mx:DataGridColumn headerText="Type" dataField="jewelType" />
+				<mx:DataGridColumn headerText="Quality" dataField="jewelQuality" />
+				<mx:DataGridColumn headerText="Count" dataField="jewelCount" />
+				<mx:DataGridColumn headerText="Weight" dataField="jewelWeight" />
+			</mx:columns>	
+		</mx:DataGrid>-->
+	</mx:VBox>
+</mx:TitleWindow>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>INSERT INTO employee_details (`created_timestamp`, `active_flag`) 
+		 VALUES (now(), 'Y')</sqlquery>		
+		<databaseType>mysql</databaseType>		
+		<inputvo>com.bfp.valueobjects.EmployeeVO</inputvo>		
+		<inputparams></inputparams>	
+	</storedprocedure>
+</storedprocedures>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" layout="absolute" width="600" height="400">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			private function serialLabelFunction(item:Object, column:DataGridColumn):String{
+				var index:int = paymentsGrid.dataProvider.getItemIndex(item);
+				if (index > -1)
+					return (index + 1).toString();
+				return "";
+			}
+		]]>
+	</fx:Script>
+	<mx:VBox width="100%" height="100%" paddingLeft="10" paddingRight="10" paddingBottom="10" paddingTop="10">
+		<mx:DataGrid id="paymentsGrid" width="100%" height="100%" textAlign="left"
+					 alternatingItemColors="[#ffffff,#f1f0ea]"
+					 chromeColor="#E7E0CB" color="#000000" fontWeight="normal" fontSize="11"
+					 rollOverColor="#E1DCCC" selectionColor="#D4CDB8" headerHeight="21" rowHeight="19"
+					 horizontalScrollPolicy="on" verticalScrollPolicy="auto">
+			<mx:dataProvider>
+				<mx:ArrayCollection>
+					<mx:source>
+						<fx:Object paymentDate="10/12/2013" paymentType="Cash" 
+								   paymentAmount="15,000"  
+								   paymentInterestSlab="1.8%" />
+					</mx:source>
+				</mx:ArrayCollection>
+			</mx:dataProvider>
+			
+			<mx:columns>
+				<mx:DataGridColumn headerText="S.No" labelFunction="serialLabelFunction" width="60"/>
+				<mx:DataGridColumn headerText="Payment Date" dataField="paymentDate" />
+				<mx:DataGridColumn headerText="Payment Type" dataField="paymentType" />
+				<mx:DataGridColumn headerText="Payment Amount" dataField="paymentAmount" />
+				<mx:DataGridColumn headerText="Payment Interest Slab" dataField="paymentInterestSlab" />
+			</mx:columns>	
+		</mx:DataGrid>
+	</mx:VBox>
+</mx:TitleWindow>

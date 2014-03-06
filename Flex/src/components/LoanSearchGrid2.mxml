@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			import util.SMEModel;
+			
+			import valueobject.ApplicationComponentsDataVO;
+			import valueobject.JewelLoanTransactionVO;
+			import valueobject.JewelLoanTypeVO;
+			import valueobject.JewelSchemeVO;
+			import valueobject.JewelTakeOverFromVO;
+			import valueobject.LoanAssestSplitUpVO;
+			[Bindable]
+			public var searchLoanGridData:ArrayCollection = new ArrayCollection;
+			public var appCompMetaData:ApplicationComponentsDataVO = SMEModel.getinstance().appCompMetaData;
+			
+			private function serialLabelFunction(item:Object, column:DataGridColumn):String{
+				var index:int = searchLoanGridData.getItemIndex(item);
+				if (index > -1)
+					return (index + 1).toString();
+				return "";
+			}
+			
+			private function txDatelLabelFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					var strArr:Array = JewelLoanTransactionVO(item).jewel_loan_transaction_date.split(" ");
+					return strArr[0];
+				}
+				return "";
+			}
+			
+			private function createDatelLabelFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					var strArr:Array = JewelLoanTransactionVO(item).created_timestamp.split(" ");
+					return strArr[0];
+				}
+				return "";
+			}
+			
+			public function setSearchResultData(arrColl:ArrayCollection):void{
+				searchLoanGridData = arrColl;
+			}
+			
+			private function loanTypeLblFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					var dataColl:ArrayCollection = appCompMetaData.jewelLoanTypes;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						var loanType:JewelLoanTypeVO = JewelLoanTypeVO(dataColl[inx]);
+						if(int(loanType.jewelLoanTypeId)==JewelLoanTransactionVO(item).jewelLoanType){
+							return loanType.jewel_loan_type;
+						}
+					}
+				}
+				return "";
+			}
+			
+			private function takeOvrLblFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					var dataColl:ArrayCollection = appCompMetaData.jewelTakeOverFrom;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						var voObject:JewelTakeOverFromVO = JewelTakeOverFromVO(dataColl[inx]);
+						if(voObject.jewelTakeOverFromId==JewelLoanTransactionVO(item).jewelTakeOverFromPlaceId){
+							return voObject.jewel_take_over_from;
+						}
+					}
+				}
+				return "";
+			}
+			
+			private function jewelSchemeLblFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					var dataColl:ArrayCollection = appCompMetaData.jewelSchemes;
+					for (var inx:int=0;inx<dataColl.length;inx++){
+						var voObject:JewelSchemeVO = JewelSchemeVO(dataColl[inx]);
+						if(voObject.jewelSchemeId==JewelLoanTransactionVO(item).jewel_scheme_id){
+							return voObject.jewel_scheme_name;
+						}
+					}
+				}
+				return "";
+			}
+			
+			private function totGrossLblFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					var totalGrossValueInt:Number = 0;
+					var jewelTxVO:JewelLoanTransactionVO = JewelLoanTransactionVO(item);
+					for (var inx:int=0;inx<jewelTxVO.loanAssetSplitUp.length;inx++){
+						var loanSplitVO:LoanAssestSplitUpVO =  jewelTxVO.loanAssetSplitUp.getItemAt(inx) as LoanAssestSplitUpVO;
+						totalGrossValueInt += Number(loanSplitVO.gross_weight); 
+					}
+					return totalGrossValueInt.toFixed(3); 
+				}
+				return "";
+			}
+			
+			private function totReducedLblFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					var totalReduceValueInt:Number = 0;
+					var jewelTxVO:JewelLoanTransactionVO = JewelLoanTransactionVO(item);
+					for (var inx:int=0;inx<jewelTxVO.loanAssetSplitUp.length;inx++){
+						var loanSplitVO:LoanAssestSplitUpVO =  jewelTxVO.loanAssetSplitUp.getItemAt(inx) as LoanAssestSplitUpVO;
+						totalReduceValueInt += Number(loanSplitVO.reduced_weight); 
+					}
+					return totalReduceValueInt.toFixed(3); 
+				}
+				return "";
+			}
+			
+			private function totNetWtLblFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					var totalNetWeightValueInt:Number = 0;
+					var jewelTxVO:JewelLoanTransactionVO = JewelLoanTransactionVO(item);
+					for (var inx:int=0;inx<jewelTxVO.loanAssetSplitUp.length;inx++){
+						var loanSplitVO:LoanAssestSplitUpVO =  jewelTxVO.loanAssetSplitUp.getItemAt(inx) as LoanAssestSplitUpVO;
+						totalNetWeightValueInt += Number(loanSplitVO.net_weight); 
+					}
+					return totalNetWeightValueInt.toFixed(3); 
+				}
+				return "";
+			}
+			
+			private function totCountLblFunction(item:Object, column:DataGridColumn):int{
+				if (item != null){
+					var totalCountValueInt:int = 0;
+					var jewelTxVO:JewelLoanTransactionVO = JewelLoanTransactionVO(item);
+					for (var inx:int=0;inx<jewelTxVO.loanAssetSplitUp.length;inx++){
+						var loanSplitVO:LoanAssestSplitUpVO =  jewelTxVO.loanAssetSplitUp.getItemAt(inx) as LoanAssestSplitUpVO;
+						totalCountValueInt += int(loanSplitVO.total_quantity); 
+					}
+					return totalCountValueInt; 
+				}
+				return 0;
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<mx:DataGrid id="reportsGrid" width="100%" height="100%" styleName="smeDatagrid" dataProvider="{searchLoanGridData}"
+				 horizontalScrollPolicy="on">
+						
+			<mx:columns>
+				<mx:DataGridColumn headerText="S.No" width="40" labelFunction="serialLabelFunction"/>
+				<mx:DataGridColumn headerText="Jewel Loan#" dataField="jewelLoanNo" width="80"/>
+				<mx:DataGridColumn headerText="Transaction Date" width="90" labelFunction="txDatelLabelFunction"/>
+				<mx:DataGridColumn headerText="Loan Type" labelFunction="loanTypeLblFunction" width="90"/>				
+				<mx:DataGridColumn headerText="Scheme" labelFunction="jewelSchemeLblFunction" width="90"/>
+				<mx:DataGridColumn headerText="Loan Amount" dataField="loan_amount" width="90" />
+				<mx:DataGridColumn headerText="Interest Rate" dataField="interest_rate" width="90"/>
+				<mx:DataGridColumn headerText="Avg Rate(p/g)" dataField="averageRatePerGram" width="90"/>				
+				<mx:DataGridColumn headerText="Doc Charges" dataField="document_charges" width="90" />				
+				<mx:DataGridColumn headerText="Service Charges" dataField="service_charges" width="90" />
+				<mx:DataGridColumn headerText="Total gross weight" labelFunction="totGrossLblFunction" width="90" />
+				<mx:DataGridColumn headerText="Total reduced weight" labelFunction="totReducedLblFunction" width="90" />
+				<mx:DataGridColumn headerText="Total net weight" labelFunction="totNetWtLblFunction" width="90" />
+				<mx:DataGridColumn headerText="Total count" labelFunction="totCountLblFunction" width="90" />
+				<mx:DataGridColumn headerText="Jewel Details" textDecoration="underline" width="80">
+					<mx:itemRenderer>
+						<fx:Component>
+							<mx:HBox height="100%" horizontalAlign="center" verticalAlign="middle">
+								<fx:Script>
+									<![CDATA[
+										import mx.containers.TitleWindow;
+										import mx.core.FlexGlobals;
+										import mx.core.UIComponent;
+										import mx.events.CloseEvent;
+										import mx.managers.PopUpManager;
+										
+										import valueobject.JewelLoanTransactionVO;
+										
+										protected function jewelClickText_clickHandler(event:MouseEvent):void
+										{
+											// TODO Auto-generated method stub
+											var jewelDetailsPopUpWindow:JewelDetails = JewelDetails(PopUpManager.createPopUp(UIComponent(FlexGlobals.topLevelApplication), JewelDetails, true) );
+											var itemDetails:ItemDetailsSearchGrid = new ItemDetailsSearchGrid;
+											var txVo:JewelLoanTransactionVO = LoanSearchGrid2(outerDocument).reportsGrid.selectedItem as JewelLoanTransactionVO;
+											itemDetails.isSearchGridFlow = true;
+											itemDetails.loanGridDataCol = txVo.loanAssetSplitUp;
+											jewelDetailsPopUpWindow.itemContainer.addChild(itemDetails);
+											jewelDetailsPopUpWindow.addEventListener(CloseEvent.CLOSE,closeJewelDetailsPopUp);
+											PopUpManager.centerPopUp(jewelDetailsPopUpWindow);
+										}
+										
+										private function closeJewelDetailsPopUp(event:CloseEvent):void {
+											PopUpManager.removePopUp(TitleWindow(event.target));
+										}
+									]]>
+								</fx:Script>
+								<mx:Label id="jewelClickText" textDecoration="underline" fontWeight="bold" color="#4176ed" text="Click Here" click="jewelClickText_clickHandler(event)"/>
+							</mx:HBox>
+						</fx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>					
+				<mx:DataGridColumn headerText="Insta Loan No" dataField="instaLoanNo" width="90"/>
+				<mx:DataGridColumn headerText="Insta Loan Amount" dataField="instaLoanAmount" width="90"/>
+				<mx:DataGridColumn headerText="Takeover From" labelFunction="takeOvrLblFunction" width="90"/>
+				<mx:DataGridColumn headerText="Payment" dataField="payment" width="80">
+					<mx:itemRenderer>
+						<fx:Component>
+							<mx:HBox height="100%" horizontalAlign="center" verticalAlign="middle">
+								<fx:Script>
+									<![CDATA[
+										import mx.core.UIComponent;
+										import mx.managers.PopUpManager;
+										import mx.events.CloseEvent;
+										import mx.containers.TitleWindow;
+										
+										protected function paymentClickText_clickHandler(event:MouseEvent):void
+										{
+											// TODO Auto-generated method stub
+											var paymentDetailsPopUpWindow:PaymentDetails = PaymentDetails(PopUpManager.createPopUp(UIComponent(this.parentApplication), PaymentDetails, true) );
+											paymentDetailsPopUpWindow.title="Payment Details";
+											paymentDetailsPopUpWindow.setStyle("borderAlpha", 0.9);
+											paymentDetailsPopUpWindow.showCloseButton=true;
+											paymentDetailsPopUpWindow.addEventListener(CloseEvent.CLOSE,closePaymentDetailsPopUp);
+											PopUpManager.centerPopUp(paymentDetailsPopUpWindow);
+										}
+										
+										private function closePaymentDetailsPopUp(event:CloseEvent):void {
+											PopUpManager.removePopUp(TitleWindow(event.target));
+										}
+									]]>
+								</fx:Script>
+								<mx:Label id="paymentClickText" textDecoration="underline" fontWeight="bold" color="#4176ed" text="Click Here" click="paymentClickText_clickHandler(event)"/>
+							</mx:HBox>
+						</fx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>
+				<mx:DataGridColumn headerText="Customer Name" dataField="customerDetails.customerName" width="90" />
+				<mx:DataGridColumn headerText="Customer Address" dataField="customerDetails.address" width="90" />
+				<mx:DataGridColumn headerText="Contact#" dataField="customerDetails.mobileNo" width="90" />
+				<mx:DataGridColumn headerText="Interest Paid" dataField="interestPaid" width="90" />
+				<mx:DataGridColumn headerText="Balance Interest" dataField="BalanceInterest" width="90" />
+				<mx:DataGridColumn headerText="Current Interest Slab" dataField="currentInterestSlab" width="90" />
+				<mx:DataGridColumn headerText="Principle Paid" dataField="principlePaid" width="90" />
+				<mx:DataGridColumn headerText="Balance Principle" dataField="balancePrinciple" width="90" />
+				<mx:DataGridColumn headerText="Release Date" dataField="releaseDate" width="90" />
+				<mx:DataGridColumn headerText="No. of Outstanding Days" dataField="outstandingDays" width="90" />		
+				<!--<mx:DataGridColumn headerText="Ledger Loan" dataField="ledgerLoan" width="90" />-->
+				<mx:DataGridColumn headerText="Created by" dataField="created_by" width="90" />
+				<mx:DataGridColumn headerText="Created timestamp" width="90" labelFunction="createDatelLabelFunction" />
+			</mx:columns>
+		</mx:DataGrid>	
+</mx:VBox>

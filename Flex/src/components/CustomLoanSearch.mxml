@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox styleName="smeLoansBackground" xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:components="components.*" 
+		 creationComplete="vbox1_creationCompleteHandler(event)"
+		 horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalGap="0">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			import util.SMEConstants;
+			private var _dividerInfo:Object = new Object;
+			
+			protected function vdividedbox1_doubleClickHandler(event:MouseEvent):void
+			{
+				event.stopImmediatePropagation();
+				if(event.target.name.toString().indexOf("BoxDivider")>0){
+					trace(); 
+					if(event.currentTarget is HDividedBox){
+						if(_dividerInfo.advanceSearchStatus == SMEConstants.SERCH_WINDOW_CLOSE){
+							advanceSearchDividedBox.getDividerAt(0).x = Number(_dividerInfo.advanceSearchPosition);
+							_dividerInfo.advanceSearchStatus = SMEConstants.SERCH_WINDOW_OPEN;
+						}else{
+							advanceSearchDividedBox.getDividerAt(0).x = 0;
+							_dividerInfo.advanceSearchStatus = SMEConstants.SERCH_WINDOW_CLOSE;
+						}
+					}else if(event.currentTarget is VDividedBox){
+						if(_dividerInfo.basicSearchStatus == SMEConstants.SERCH_WINDOW_CLOSE){
+							basicSearchDividedBox.getDividerAt(0).y = Number(_dividerInfo.basicSearchPosition);
+							_dividerInfo.basicSearchStatus = SMEConstants.SERCH_WINDOW_OPEN;
+						}else{
+							basicSearchDividedBox.getDividerAt(0).y = 0;
+							_dividerInfo.basicSearchStatus = SMEConstants.SERCH_WINDOW_CLOSE;
+						}
+					}
+				}
+			}
+
+
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				_dividerInfo['advanceSearchPosition'] = advanceSearchDividedBox.getDividerAt(0).x;
+				_dividerInfo['basicSearchPosition'] = basicSearchDividedBox.getDividerAt(0).y;
+				advanceSearchDividedBox.getDividerAt(0).x = 0;
+				_dividerInfo['basicSearchStatus'] = SMEConstants.SERCH_WINDOW_OPEN;
+				_dividerInfo['advanceSearchStatus'] = SMEConstants.SERCH_WINDOW_CLOSE;
+			}
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	
+	<mx:HDividedBox id="advanceSearchDividedBox" name="hdividedBox" width="100%" height="100%"
+					liveDragging="true" doubleClickEnabled="true" doubleClick="vdividedbox1_doubleClickHandler(event)"
+					horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<!--Advance Search-->
+		<components:AdvanceLoanSearch id="advanceSearch" width="304" height="100%" verticalGap="0"/>
+		
+		<!--Basic Search-->
+		<mx:VDividedBox id="basicSearchDividedBox" name="vdividedBox" width="75%" height="100%" 
+						liveDragging="true" doubleClickEnabled="true" doubleClick="vdividedbox1_doubleClickHandler(event)"
+						horizontalScrollPolicy="off" verticalScrollPolicy="off">
+			<components:BasicLoanSearch id="basuicSearch" width="100%" height="138"/>
+			<components:LoanSearchGrid2 id="loanSearchGrid" width="100%" height="90%"/>
+		</mx:VDividedBox>
+	</mx:HDividedBox>
+	
+</mx:VBox>

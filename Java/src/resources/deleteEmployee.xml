@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1">
+		<inputparams>
+			<inputparam>
+				<paramname>employee_id</paramname>
+				<paramtype>INTEGER</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.RequestVO
+					</classname>
+					<attribute>EmployeeId</attribute>
+					<votype>int</votype>
+				</function>
+			</inputparam>
+		</inputparams>
+		<outputparams>
+			<outputparam>
+				<paramname>delete_status</paramname>
+				<paramtype>VARCHAR</paramtype>
+			</outputparam>
+		</outputparams>
+	</storedprocedure>
+</storedprocedures>

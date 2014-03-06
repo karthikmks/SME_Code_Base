@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<!--<fx:Script>
+		<![CDATA[
+			import delegate.ApplicationDelegate;
+			
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import valueobject.ApplicationComponentsDataVO;
+			import valueobject.JewelLoanTransactionVO;
+			import valueobject.PaymentTransactionVO;
+			import valueobject.ResponseVO;
+			import valueobject.SearchRequestVO;
+			
+			[Bindable]
+			public var totalPrincipleAmount:String;
+			[Bindable]
+			public var totalInterestAmount:String;
+			
+			[Bindable]
+			public var loanIntrGridDataCol:ArrayCollection = new ArrayCollection;
+			
+			[Bidable]
+			private var _applicationCompData:ApplicationComponentsDataVO = new  ApplicationComponentsDataVO();
+			public function get applicationCompData():ApplicationComponentsDataVO{
+				return _applicationCompData;
+			}
+			
+			public function set applicationCompData(value:ApplicationComponentsDataVO):void{
+				_applicationCompData = value;
+				setData(_applicationCompData);
+			}
+			
+			public function setSearchResultData(input:JewelLoanTransactionVO):void{
+				if(input != null) {
+					loanIntrGridDataCol = input.paymentTransactions;
+					if(loanIntrGridDataCol != null)
+						calculateTotalValues(loanIntrGridDataCol);
+				}
+			}
+			
+			public function setData(appCompData:ApplicationComponentsDataVO):void{
+				paymentTypeCmb.dataProvider = appCompData.paymentTypes;
+				releaseTypeCmb.dataProvider = appCompData.releaseTypes;
+			}
+
+			private function serialLabelFunction(item:Object, column:DataGridColumn):String{
+				var index:int = loanIntrGridDataCol.getItemIndex(item);
+				if (index > -1)
+					return (index + 1).toString();
+				return "";
+			}
+			private function paymentTypeFunction(item:Object, column:DataGridColumn):String{
+				var paymentTypeColl:ArrayCollection = ArrayCollection(paymentTypeCmb.dataProvider);
+				for(var inx:int=0;inx<paymentTypeColl.length;inx++){
+					if(item.paymentTypeId == paymentTypeColl[inx].paymentTypeId){
+						return paymentTypeColl[inx].payment_type;
+					}
+				}
+				return "";
+			}
+			public function clearAllFields():void{
+				paymentTypeCmb.selectedIndex = 0;
+				actualInterestTxt.text = "";
+				numDaysTxt.text = "";
+				interestOrPrincipleAmt.text = "";
+				customerInterestTxt.text = "";
+				releaseTypeCmb.selectedIndex = 0;
+				loanIntrGridDataCol = new ArrayCollection;
+				releaseLoanInterestGridBtn.enabled = true;
+				totalPrincipleAmount = "";
+				totalInterestAmount = "";
+			}
+			
+			protected function calculateTotalValues(arrayColl:ArrayCollection):void{
+				var totalPrincipleAmt:int = 0;
+				var totalInterestAmt:int = 0;
+				for (var inx:int=0;inx<arrayColl.length;inx++){
+					if(arrayColl.getItemAt(inx).paymentTypeId == 1)
+						totalInterestAmt += Number(arrayColl.getItemAt(inx).interest_amount); 
+					else if(arrayColl.getItemAt(inx).paymentTypeId == 2)
+						totalPrincipleAmt += Number(arrayColl.getItemAt(inx).principal_amount); 
+				}
+				totalPrincipleAmount = String(totalPrincipleAmt); 
+				totalInterestAmount = String(totalInterestAmt);
+			}
+			
+			protected function releaseLoanInt_clickHandler(event:MouseEvent):void{
+				var serchReqVo:SearchRequestVO = new SearchRequestVO;
+				serchReqVo.loanNo = Number((this.parentDocument as ManageLoans).loanDetailsPanel.loanNoValue.text);
+				serchReqVo.transactionDate = (this.parentDocument as ManageLoans).transactionDateComp.text;
+				serchReqVo.transactionTypeId = 1;
+				serchReqVo.releaseTypeId = releaseTypeCmb.selectedItem.releaseTypeId;
+				retrieveService("releaseLoan",onReleaseLoan,serchReqVo); 
+			}
+			
+			private function onReleaseLoan(event:Event):void {
+				LoadingMask.hide();
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onReleaseLoan);
+					if ((event as ResultEvent).result != null){
+						var response:ResponseVO = ((event as ResultEvent).result) as ResponseVO;
+						if(response!=null){
+							if(response.status == "SUCCESS"){
+								Alert.show(response.description,"Release Success");
+								releaseLoanInterestGridBtn.enabled = false;
+							}else if(response.status == "FAILURE"){
+								Alert.show(response.description,"Release Failure");
+							}
+						}else{
+							Alert.show("Release fail, Please try again","Release Failure");
+						}
+					}
+				} else if (event is FaultEvent){
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onReleaseLoan);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+
+			
+			protected function insertLoanInterestGridBtn_clickHandler(event:MouseEvent):void{
+				if(ManageLoans(parentDocument).transactionDateComp.selectedDate != null && ManageLoans(parentDocument).transactionDate != "") {
+					var paymentTxVO:PaymentTransactionVO = new PaymentTransactionVO;
+					paymentTxVO.transactionTypeId = 1;
+					paymentTxVO.paymentTypeId = paymentTypeCmb.selectedItem.paymentTypeId;
+					paymentTxVO.actualInterestRate = actualInterestTxt.text;
+					paymentTxVO.noOfDays = Number(numDaysTxt.text);
+					paymentTxVO.interest_amount = interestOrPrincipleAmt.text;
+					paymentTxVO.customerInterestRate = customerInterestTxt.text;
+					paymentTxVO.releaseTypeId = releaseTypeCmb.selectedItem.releaseTypeId;
+					paymentTxVO.loanNo = int(ManageLoans(this.parentDocument).loanNoTxt.text);				
+					paymentTxVO.payment_date = ManageLoans(parentDocument).transactionDate;
+					retrieveService("addLoanInterestPayment",onAddLoanInterestPayment,paymentTxVO);
+				} else {
+					Alert.show("Please select the transaction date before proceeding");
+				}
+			}
+			
+			private function onAddLoanInterestPayment(event:Event):void {
+				clearAllFields();
+				LoadingMask.hide();
+				if (event is ResultEvent){
+					event.target.removeEventListener("fault", onAddLoanInterestPayment);
+					if ((event as ResultEvent).result != null){
+						Alert.show("Payment added successfully","Loan Interest Payment");
+						loanIntrGridDataCol = ((event as ResultEvent).result) as ArrayCollection;
+						if(loanIntrGridDataCol != null)
+							calculateTotalValues(loanIntrGridDataCol);
+					}
+				} else if (event is FaultEvent){
+					Alert.show("Payment has been failed, Please try again","Loan Interest Payment");
+					var fault:FaultEvent = FaultEvent(event);
+					event.target.removeEventListener("result", onAddLoanInterestPayment);
+					Alert.show(fault.fault.faultCode + " : " + fault.fault.faultString + " : " + fault.fault.faultDetail);
+				}
+			}
+			
+			private function retrieveService(methodName:String,handler:Function,params:Object=null):void {
+				if(params==null){
+					ApplicationDelegate.getInstance().createAMFRequest(methodName,handler).send();
+				}else{
+					ApplicationDelegate.getInstance().createAMFRequest(methodName,handler).send(params);
+				}
+			}
+
+			
+		]]>	
+	</fx:Script>-->
+	
+	<fx:Script>
+		<![CDATA[
+			
+			
+			protected function loanSearchBtn_clickHandler(event:Event):void{
+				payment.visible=true;
+			}
+			protected function loanClearBtn_clickHandler(event:Event):void{
+				payment.visible=false;
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:VBox width="100%" height="100%" borderColor="#a8a172" borderStyle="solid"
+			 paddingLeft="5" paddingRight="5">
+			<mx:VBox width="100%" height="8%">
+			<mx:Label text="Search Loan:" textDecoration="underline" fontWeight="bold" paddingTop="5"/>	
+		<mx:HBox width="100%"  verticalAlign="middle" paddingBottom="5" >
+			<mx:Label id="loanNoRB" color="#000000" fontWeight="normal" 
+							text="Loan No:" /> <!--chromeColor="#E7E0CB"/ click="depositLoanNoRB_changeHandler(event)"/>-->
+			<mx:TextInput height="19" width="80" id="loanNoTxt" editable="true" 
+						  color="#000000" fontWeight="normal" restrict="0-9"/> <!--enter="loanSearchBtn_clickHandler(event)"
+			click="loanNoTxt_clickHandler(event)"/>-->
+			<mx:Spacer width="5" />
+			<mx:Button height="19" id="loanSearchBtn" label="Search" cornerRadius="3"
+					   chromeColor="#E7E0CB" color="#000000" fontWeight="normal" click="loanSearchBtn_clickHandler(event)"/>
+			<mx:Spacer width="5" />
+			<mx:Button height="19" id="clearSearchBtn" label="Clear" cornerRadius="3"
+					   chromeColor="#E7E0CB" color="#000000" fontWeight="normal" click="loanClearBtn_clickHandler(event)"/>
+		</mx:HBox>
+		</mx:VBox>
+		<mx:HRule width="100%" />
+		<s:VGroup id="payment" visible="false" width="100%" height="100%">
+		<mx:VBox width="100%" height="12%">
+		<mx:Label text="Loan Summary:" textDecoration="underline" fontWeight="bold" paddingTop="5"/>		
+		<s:HGroup width="100%"  styleName="loanGroup" >
+		<mx:Form paddingLeft="0" paddingRight="0" width="50%" height="100%">
+			<mx:FormItem label="Customer Id : ">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+			<mx:FormItem label="Customer Name :">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Spacer width="20" />
+		<mx:Form width="50%" height="100%">
+			<mx:FormItem label="Loan Amount :">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+			<mx:FormItem label="Loan Tenure : ">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+		</mx:Form>			
+		<mx:Spacer width="20" />
+		<mx:Form width="50%" height="100%">
+			<mx:FormItem label="Rate of Interest / RPG :">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+			<mx:FormItem label="Release Date : ">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Spacer width="20" />
+		<mx:Form width="50%" height="100%">
+			<mx:FormItem label="Current Interest Slab :">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+			<mx:FormItem label="No. Of Outstanding Days : ">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Form paddingLeft="0" paddingRight="0" width="50%" height="100%">
+			<mx:FormItem label="Principle Amount Received : ">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+			<mx:FormItem label="Principle Amount Received in %:">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Spacer width="20" />
+		<mx:Form width="50%" height="100%">
+			<mx:FormItem label="Interest Amount Received : ">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+			<mx:FormItem label="Interest Amount Received in %:">
+				<mx:Label text="N/A" textAlign="center"/>
+			</mx:FormItem>
+		</mx:Form>
+		</s:HGroup>
+		</mx:VBox>
+		<mx:HRule width="100%" />
+		<mx:VBox width="100%" height="20%">
+		<mx:Label text="New Payment Details :" textDecoration="underline" fontWeight="bold" paddingTop="5"/> 		
+		<s:HGroup width="100%"  styleName="loanGroup" >
+		<mx:Form paddingLeft="0" paddingRight="0" width="50%" height="100%">
+			<mx:FormItem label="Payment Date :">
+				<mx:DateField />
+			</mx:FormItem>
+			<mx:FormItem label="Payment Type :">
+				<mx:ComboBox>
+				<mx:ArrayList>
+					<fx:String>Interest</fx:String>
+					<fx:String>Advance Interest</fx:String>
+					<fx:String>Principle</fx:String>
+				</mx:ArrayList>
+			</mx:ComboBox>
+			</mx:FormItem>
+		</mx:Form>
+		<!--<mx:Spacer width="10" />-->
+		<mx:Form width="50%" height="100%">
+			<mx:FormItem label="Payment Mode :">
+				<mx:ComboBox>
+				<mx:ArrayList>
+					<fx:String>Cash</fx:String>
+					<fx:String>ECS/Cheque</fx:String>
+				</mx:ArrayList>
+			</mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="No of Days :">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+		</mx:Form>			
+		<mx:Form paddingLeft="0" paddingRight="0" width="50%" height="100%">
+			<mx:FormItem label="Actual Payment Amount :">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+			<mx:FormItem label="Actual Payment Interest Slab :">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+		</mx:Form>
+		<!--<mx:Spacer width="20" />-->
+		<mx:Form width="50%" height="100%">
+			<mx:FormItem label="Customer Paid Amount :">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+			<mx:FormItem label="Discount Key:">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:Form width="50%" height="100%">
+			<mx:FormItem label="Customer Paid Interest Slab :">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+			<mx:FormItem label="Other Charges: ">
+				<mx:TextInput width="100"/>
+			</mx:FormItem>
+		</mx:Form>
+		</s:HGroup>
+		<mx:HBox horizontalAlign="center" verticalAlign="middle" width="100%" paddingTop="5">
+			<mx:Button label="Add" />
+			<mx:Spacer width="25" />
+			<mx:Button label="Clear" />
+		</mx:HBox>
+		</mx:VBox>
+		
+		<mx:HRule width="100%" />
+		<mx:VBox width="100%" height="40%">
+		<mx:Label text="Loan Payment History:" textDecoration="underline" fontWeight="bold" paddingTop="5"/>
+		
+		<mx:DataGrid id="loanInterestPaymentGrid" width="100%" height="100%" headerHeight="21" fontSize="11"
+					 alternatingItemColors="[#ffffff,#f1f0ea]" rollOverColor="#E1DCCC" rowHeight="19"  textAlign="center"
+					 selectionColor="#D4CDB8" chromeColor="#E7E0CB" color="#000000" fontWeight="normal" 
+					 horizontalScrollPolicy="on" verticalScrollPolicy="on"> <!--dataProvider="{loanIntrGridDataCol}"-->
+			<mx:columns>
+				<mx:DataGridColumn headerText="S.No" /><!-- labelFunction="serialLabelFunction" />-->
+				<mx:DataGridColumn headerText="Pay Date" dataField="payment_date" />
+				<mx:DataGridColumn headerText="Payment Type" /><!-- labelFunction="paymentTypeFunction" />-->
+				<mx:DataGridColumn headerText="Payment Mode" /><!-- labelFunction="paymentTypeFunction" />-->
+				<mx:DataGridColumn headerText="No.Of Days" dataField="noOfDays" />
+				<mx:DataGridColumn headerText="Jewel Loan No" dataField="loanNo" />
+				<mx:DataGridColumn headerText="Principle Amount" dataField="principal_amount"  />
+				<mx:DataGridColumn headerText="Interest Amount" dataField="interest_amount"/>
+				<mx:DataGridColumn headerText="Actual Interest Slab" dataField="actualInterestRate"  />
+				<mx:DataGridColumn headerText="Customer Paid Amount" dataField="customerInterestRate"/>
+				<mx:DataGridColumn headerText="Customer Interest Slab" dataField="customerInterestRate"/>
+				<mx:DataGridColumn headerText="Other Charges" dataField="noOfDays" />
+				<!--<mx:DataGridColumn headerText="Status" dataField="status" />-->
+			</mx:columns> 
+		</mx:DataGrid>		
+		<mx:HBox id="totalLoanInterestBox" width="100%" height="20" backgroundColor="#f1f0ea" borderColor="#a8a172" horizontalAlign="center" verticalAlign="middle" borderStyle="solid">
+			<mx:Label id="totalPrincipleAmnt" text="Total Principle Amount :" color="#000000" fontWeight="bold" /> 
+			<mx:Label id="totalPrincipleAmntTxt"  color="#EE380E" fontSize="15" 
+					  fontWeight="bold"/> <!--text="{totalPrincipleAmount}"-->
+			<mx:Spacer width="50" />
+			<mx:Label id="totalInterestAmnt" text="Total Interest Amount :" color="#000000" fontWeight="bold" /> 
+			<mx:Label id="totalInterestAmntTxt"  color="#EE380E" fontSize="15" 
+					  fontWeight="bold" /><!--text="{totalInterestAmount}"-->
+		</mx:HBox>
+		</mx:VBox>
+		<mx:HRule width="100%" />
+		<mx:VBox width="100%" height="20%">
+		<mx:Label text="Release Details:" textDecoration="underline" fontWeight="bold" paddingTop="5"/>
+		<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+			<mx:CheckBox label="Loan ready for release" />
+			<mx:Spacer width="10"/>
+			<mx:Label text="Release Type" color="#000000" fontWeight="normal"
+					  textAlign="left" />
+			<mx:ComboBox cornerRadius="0" arrowButtonWidth="16" openDuration="0" closeDuration="0" height="19" id="releaseTypeCmb" chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+						 color="#000000" labelField="releaseType" >
+			</mx:ComboBox>
+			<mx:Spacer width="30"/>
+			<mx:Label text="Remarks: " />
+			<mx:TextArea width="30%" height="90%" />
+			<mx:Spacer width="30"/>
+			<mx:Button cornerRadius="3" height="19" id="releaseLoanInterestGridBtn" chromeColor="#E7E0CB"
+					   color="#000000" fontWeight="normal" label="Release"/><!-- click="releaseLoanInt_clickHandler(event)"/>-->
+		</mx:HBox>
+		</mx:VBox>
+		</s:VGroup>
+	</mx:VBox>
+</mx:VBox>	

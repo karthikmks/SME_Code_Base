@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<mx:HBox horizontalGap="0" paddingLeft="2" paddingRight="2">
+		<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle">
+			<mx:Label id="loanJewelCategoryLbl" text="Jewel Category" color="#000000" fontWeight="normal" />
+			<mx:ComboBox arrowButtonWidth="16" openDuration="0" closeDuration="0" cornerRadius="0" height="19" id="loanJewelCategoryCmb" chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+						 color="#000000" width="85" labelField="jewelCategoryName">
+				<!--change="loanJewelCategoryCmb_changeHandler(event)">-->
+			</mx:ComboBox>
+		</mx:VBox>
+		<mx:Spacer width="30"/>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label id="loanJewelTypeLbl" text="Jewel Type" color="#000000" fontWeight="normal" />
+			<mx:ComboBox arrowButtonWidth="16" openDuration="0" closeDuration="0" cornerRadius="0" height="19" id="loanJewelTypeCmb" chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+						 color="#000000" width="85" labelField="jewelTypeName" > 
+			</mx:ComboBox>
+		</mx:VBox>
+		<mx:Spacer width="30"/>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label id="loanQualityLbl" text="Jewel Quality" color="#000000" fontWeight="normal" />
+			<mx:ComboBox arrowButtonWidth="16" openDuration="0" closeDuration="0" cornerRadius="0" height="19" id="loanQualityCmb" chromeColor="#E7E0CB" rollOverColor="#E1DCCC" selectionColor="#D4CDB8"
+						 color="#000000" width="85" labelField="jewelQualityName" >
+			</mx:ComboBox>
+		</mx:VBox>
+		<mx:Spacer width="30"/>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label id="loanGrossWtLbl" text="Gross Weight" color="#000000" fontWeight="normal" />
+			<s:Group>
+				<mx:HBox>
+					<mx:TextInput height="19" width="80" id="loanGross1WtTxt" color="#000000" restrict="0-9." text="grams" />
+					<mx:TextInput height="19" width="80" id="loanGross2WtTxt" color="#000000" restrict="0-9." text="milli grams"/>
+				</mx:HBox>				
+			</s:Group>			
+		</mx:VBox>
+		<mx:Spacer width="30"/>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label id="loanRedLbl" text="Reduced Weight" color="#000000" fontWeight="normal" />
+			<s:Group>
+				<mx:HBox>
+					<mx:TextInput height="19" width="80" id="loanRed1WtTxt" color="#000000" restrict="0-9." text="grams"/>
+					<mx:TextInput height="19" width="80" id="loanRed2WtTxt" color="#000000" restrict="0-9." text="milli grams"/>
+				</mx:HBox>				
+			</s:Group>
+		</mx:VBox>
+		<mx:Spacer width="30"/>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label id="loanNetWtLbl" text="Net Weight" color="#000000" fontWeight="normal" />
+			<s:Group>
+				<mx:HBox>
+					<mx:TextInput height="19" width="80" id="loanNet1WtTxt" color="#000000" restrict="0-9." text="grams"/>
+					<mx:TextInput height="19" width="80" id="loanNet2WtTxt" color="#000000" restrict="0-9." text="milli grams"/>
+				</mx:HBox>				
+			</s:Group>
+		</mx:VBox>
+		<mx:Spacer width="30"/>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label id="loanTotQtyLbl" text="Total Quantity" color="#000000" fontWeight="normal" />
+			<mx:TextInput height="19" width="100" id="loanTotQtyTxt" color="#000000" restrict="0-9." />
+		</mx:VBox>
+		<mx:Spacer width="30"/>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label id="loan1TotQtyLbl" text="" color="#000000" fontWeight="normal" />
+			<mx:Button cornerRadius="3" horizontalCenter="0" height="19" width="51" id="addDepositLoanGridBtn" chromeColor="#E7E0CB"
+					   color="#000000" fontWeight="normal" label="Add" verticalCenter="0" />
+		</mx:VBox>
+		<mx:Spacer width="20"/>
+		<mx:VBox verticalGap="0" horizontalAlign="center">
+			<mx:Label id="loan2TotQtyLbl" text="" color="#000000" fontWeight="normal" />
+			<mx:Button cornerRadius="3" horizontalCenter="0" height="19" id="addDepositLoan1GridBtn" chromeColor="#E7E0CB"
+					   color="#000000" fontWeight="normal" label="Delete" verticalCenter="0" />
+		</mx:VBox>
+	</mx:HBox>
+</mx:VBox>

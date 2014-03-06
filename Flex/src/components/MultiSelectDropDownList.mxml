@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				width="100%" height="100%" verticalGap="0"
+				>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			private var _getterXML:XML=null;//"<ROWSET><ROW>AA</ROW><ROW>AAA</ROW><ROW>R1</ROW><ROW>BBB</ROW></ROWSET>";
+			[Bindable]
+			private var _xmlDataProvider:ArrayCollection;
+			[Bindable]
+			private var _customLabelField:String;
+			
+			public function set customLabelField(value:String):void{
+				_customLabelField = value;
+			}
+			
+			public function get customLabelField():String{
+				return _customLabelField;
+			}
+			
+			public function set xmlDataProvider(value:ArrayCollection):void{
+				if(value!=null && value.length>0){
+					var selectAll:Object = new  Object;
+					selectAll[customLabelField] = "All";
+					selectAll.multiSelectChecked = true;
+					value.addItemAt(selectAll,0);
+					_xmlDataProvider = value;
+					ddlMultiSelection_creationCompleteHandler(null);
+				}else{
+					_xmlDataProvider = value;
+				}
+			}
+			public function get xmlDataProvider():ArrayCollection{
+				return _xmlDataProvider;
+			}
+			
+			override public function get data():Object{
+				 var rootTag:String="<ROWSET>";
+				for (var inx:int=0;inx<xmlDataProvider.length;inx++){
+					if(xmlDataProvider[inx].multiSelectChecked==true && xmlDataProvider[inx][customLabelField] != "All"){
+						rootTag += "<ROW>";
+						rootTag += xmlDataProvider[inx][customLabelField];
+						rootTag += "</ROW>";
+					}
+				}
+				rootTag += "</ROWSET>";
+				return rootTag; 
+			}
+		
+
+			public function ddlMultiSelection_focusOutHandler(event:Event):void{
+				if(data!=""){
+					for (var inx:int=0;inx<xmlDataProvider.length;inx++){
+						if(xmlDataProvider[inx].multiSelectChecked==true){
+							ddlMultiSelection.selectedItem = xmlDataProvider[inx];
+							break;
+						}
+					} 
+				}else{
+					ddlMultiSelection.selectedItem = xmlDataProvider[0];
+				}
+				
+			}
+			
+			protected function ddlMultiSelection_creationCompleteHandler(event:FlexEvent):void{
+				ddlMultiSelection.selectedItem = xmlDataProvider.getItemAt(0);
+				for (var inx:int=0;inx<xmlDataProvider.length;inx++){
+					xmlDataProvider[inx].multiSelectChecked = true;
+				}
+			} 
+//skinClass="components.DropDownListSkin"
+		]]>
+	</fx:Script>
+	
+	<s:DropDownList id="ddlMultiSelection" width="100%" height="19" 
+					styleName="smeDropDownList" 
+					labelField="{customLabelField}"
+					itemRenderer="components.MultiSelectItemRenderer" 
+					dataProvider="{_xmlDataProvider}" 
+					close="ddlMultiSelection_focusOutHandler(event)"
+					skinClass="components.DropDownListSkin"
+					
+					/>
+	
+</mx:VBox>

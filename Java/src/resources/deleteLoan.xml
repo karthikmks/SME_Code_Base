@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1">
+		<inputparams>
+			<inputparam>
+				<paramname>txTypeId</paramname>
+				<paramtype>INTEGER</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.RequestVO
+					</classname>
+					<attribute>TransactionTypeId</attribute>
+					<votype>int</votype>
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>loan_no</paramname>
+				<paramtype>INTEGER</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.RequestVO
+					</classname>
+					<attribute>LoanNo</attribute>
+					<votype>int</votype>
+				</function>
+			</inputparam>
+		</inputparams>
+		<outputparams>
+			<outputparam>
+				<paramname>delete_status</paramname>
+				<paramtype>VARCHAR</paramtype>
+			</outputparam>
+		</outputparams>
+	</storedprocedure>
+</storedprocedures>
