@@ -7,6 +7,7 @@ public class ApplicationConstants {
 	public static String JEWEL_LOAN_PHOTO_DIRECTORY = "C:\\Karthik\\SME\\SME_Gallary\\Loan\\";*/
 	public static String SUFFIX_CUSTOMER_DOCS = "_CUSTOMER_DOCS";
 	public static String SUFFIX_LOAN_DOCS = "_LOAN_DOCS";
+	public static String PREFIX_LOAN_TYPE = "LOAN_TYPE_";
 	
 	public static String CUSTOMER_PHOTO = "_CUSTOMER_PHOTO.jpg";
 	public static String CUSTOMER_ID_PHOTO = "_ID_PROOF.jpg";

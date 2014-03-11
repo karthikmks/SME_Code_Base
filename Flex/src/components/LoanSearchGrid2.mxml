@@ -141,6 +141,13 @@
 			}
 			
 			
+			private function addrLblFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					return JewelLoanTransactionVO(item).customerDetails.address.replace("\n",",");
+				}
+				return "";
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -235,7 +242,7 @@
 					</mx:itemRenderer>
 				</mx:DataGridColumn>
 				<mx:DataGridColumn headerText="Customer Name" dataField="customerDetails.customerName" width="90" />
-				<mx:DataGridColumn headerText="Customer Address" dataField="customerDetails.address" width="90" />
+				<mx:DataGridColumn headerText="Customer Address" width="90" itemRenderer="mx.controls.Label" labelFunction="addrLblFunction"/>
 				<mx:DataGridColumn headerText="Contact#" dataField="customerDetails.mobileNo" width="90" />
 				<mx:DataGridColumn headerText="Interest Paid" dataField="interestPaid" width="90" />
 				<mx:DataGridColumn headerText="Balance Interest" dataField="BalanceInterest" width="90" />

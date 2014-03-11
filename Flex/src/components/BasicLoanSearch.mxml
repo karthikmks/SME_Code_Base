@@ -4,25 +4,25 @@
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:components="components.*">
 	<fx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
 			import mx.events.DropdownEvent;
 			import mx.utils.ObjectUtil;
-			import mx.controls.Alert;
+			
 			import org.puremvc.as3.multicore.patterns.facade.Facade;
 			
+			import util.FileIOUtil;
 			import util.SMEConstants;
 			import util.SMEModel;
+			import util.SMEUtility;
 			
 			import valueobject.ApplicationComponentsDataVO;
 			import valueobject.BasicSearchVO;
-			import valueobject.JewelLoanTypeVO;
-			import valueobject.JewelSchemeVO;
-			import valueobject.PaymentTypeVO;
-			import valueobject.ReleaseTypeVO;
 			import valueobject.RequestVO;
 			
 			[Bindable]
 			public var appCompData:ApplicationComponentsDataVO = ObjectUtil.copy(SMEModel.getinstance().appCompMetaData) as ApplicationComponentsDataVO;
+			[Bindable]
+			[Embed(source="../assets/images/Icon_Pdf_small.gif")]
+			private var pdfImg:Class;
 			
 			var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
 			
@@ -131,6 +131,15 @@
 				
 				return basicSearchVO;
 			}
+			
+			private function exportToPdfButtonClicked(e:MouseEvent):void {
+				var title:String = "Branch: "+SMEModel.getinstance().userProfileVO.branchId+" - Loan Details";
+				var pdfDataArray:ByteArray = SMEUtility.exportToPdf(title,CustomLoanSearch(this.parentDocument).loanSearchGrid.searchLoanGridData,
+					CustomLoanSearch(this.parentDocument).loanSearchGrid.reportsGrid.columns);
+				if(pdfDataArray!=null){
+					FileIOUtil.saveFile(pdfDataArray, "Loan_Details");
+				}
+			}
 
 		]]>
 	</fx:Script>
@@ -208,10 +217,21 @@
 				<mx:VRule height="100%"/>
 				<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="112">
 					<mx:Label name="hidden" visible="false"/>
+					<mx:Button label="Search" id="search" click="search_clickHandler(event)"/>
+					<mx:Label name="hidden" visible="false"/>
+					<!--<mx:Button visible="false"/>-->
+					<mx:Image id="exportToPdfImg" source="{pdfImg}" click="exportToPdfButtonClicked(event)" useHandCursor="true" mouseChildren="false" buttonMode="true"
+							  toolTip="Export to PDF"/>
+				</mx:VBox>
+				
+				<!--<mx:VBox verticalGap="0" horizontalAlign="center" verticalAlign="middle"  width="112">
+					<mx:Label name="hidden" visible="false"/>
 					<mx:Button visible="false"/>
 					<mx:Label name="hidden" visible="false"/>
-					<mx:Button label="Search" id="search" click="search_clickHandler(event)"/>
-				</mx:VBox>
+					<mx:Image id="exportToPdfImg" source="{pdfImg}" click="exportToPdfButtonClicked(event)" useHandCursor="true" mouseChildren="false" buttonMode="true"
+							  toolTip="Export to PDF"/>
+				</mx:VBox>-->
+				
 			</mx:HBox>
 			
 		</mx:HBox>

@@ -1149,7 +1149,9 @@ public class DatabaseService {
 				log.info("Saving Customer Photo");
 
 				String filePath = fileRepositoryLocationMap.get(ApplicationConstants.JEWEL_LOAN_DIRECTORY_KEY) + 
-				jewelLoanTransactionVO.getJewelLoanNo() + ApplicationConstants.SUFFIX_LOAN_DOCS;		
+						ApplicationConstants.PREFIX_LOAN_TYPE + jewelLoanTransactionVO.getJewelLoanType() + "\\" +
+						jewelLoanTransactionVO.getJewelLoanNo() + ApplicationConstants.SUFFIX_LOAN_DOCS;		
+				
 				String fileName = jewelLoanTransactionVO.getCustomerDetails().getCustomerId() + ApplicationConstants.CUSTOMER_PHOTO;
 				if(saveToFile(filePath,fileName,jewelLoanTransactionVO.getCustomerPhoto()))
 					jewelLoanTransactionVO.setCustomerPhotoPath(filePath+"\\"+fileName);
@@ -1599,16 +1601,23 @@ public class DatabaseService {
 		try {
 			List<JewelLoanTransactionVO> retrunList = new ArrayList<JewelLoanTransactionVO>();
 			String dateStr = requestVO.getBasicSearchVO().getLoanDateFrom();
-			if(dateStr!=null && !"".equalsIgnoreCase(dateStr)){
-				dateStr = formatDate(dateStr);
+			try{
+				if(dateStr!=null && !"".equalsIgnoreCase(dateStr)){
+					dateStr = formatDate(dateStr);
+				}
+				requestVO.getBasicSearchVO().setLoanDateFrom(dateStr);
+	
+				dateStr = requestVO.getBasicSearchVO().getLoanDateTo();
+				if(dateStr!=null && !"".equalsIgnoreCase(dateStr)){
+					dateStr = formatDate(dateStr);
+				}
+				requestVO.getBasicSearchVO().setLoanDateTo(dateStr);
+			}catch(Exception ex){
+				log.error("Error in formatDate: ", ex);
+				log.error("\nSetting FROM and TO date value as NULL");
+				requestVO.getBasicSearchVO().setLoanDateFrom("");
+				requestVO.getBasicSearchVO().setLoanDateTo("");
 			}
-			requestVO.getBasicSearchVO().setLoanDateFrom(dateStr);
-
-			dateStr = requestVO.getBasicSearchVO().getLoanDateTo();
-			if(dateStr!=null && !"".equalsIgnoreCase(dateStr)){
-				dateStr = formatDate(dateStr);
-			}
-			requestVO.getBasicSearchVO().setLoanDateTo(dateStr);
 
 			List obj = (List)XMLParser.parseXML(ApplicationConstants.CUSTOM_LOAN_SEARCH);
 
@@ -1662,7 +1671,7 @@ public class DatabaseService {
 
 				ref.setSqlQuery(ref.getSqlQuery() + whereClause); 
 				retrunList = dataLoader.executeSelect(obj, null);
-
+				log.error("Start fetching customer details and loan assest breakup details");
 				for(JewelLoanTransactionVO jewelVO : retrunList){
 					//Fetching Customer Detail 
 					try {

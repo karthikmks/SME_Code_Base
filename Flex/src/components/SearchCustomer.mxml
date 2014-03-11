@@ -5,12 +5,17 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.DropdownEvent;
 			
 			import org.puremvc.as3.multicore.patterns.facade.Facade;
 			
+			import util.FileIOUtil;
+			import util.PdfConstants;
 			import util.SMEConstants;
 			import util.SMEModel;
+			import util.SMEUtility;
 			
 			import valueobject.ApplicationComponentsDataVO;
 			import valueobject.BasicSearchVO;
@@ -22,13 +27,28 @@
 			
 			[Bindable]
 			public var appCompData:ApplicationComponentsDataVO = SMEModel.getinstance().appCompMetaData;
+			[Bindable]
+			[Embed(source="../assets/images/Icon_Pdf_small.gif")]
+			private var pdfImg:Class;
+			[Bindable]
+			[Embed(source="../assets/images/muthalagu_logo2.jpg")]
+			private var logoImg:Class;
 			
-			var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			
+			private var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
 			
 			public function setSearchResultData(value:ArrayCollection):void{
 				
 			}
 			
+			private function exportToPdfButtonClicked(e:MouseEvent):void {
+				var title:String = "Branch: "+SMEModel.getinstance().userProfileVO.branchId+" - Loan Details";
+				var pdfDataArray:ByteArray = SMEUtility.exportToPdf(title,customerGrid.searchLoanGridData,customerGrid.reportsGrid.columns);
+				if(pdfDataArray!=null){
+					FileIOUtil.saveFile(pdfDataArray, "Customer_Details");
+				}
+			}
+		
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -37,7 +57,11 @@
 	<mx:VBox styleName="smeLoansBackground" width="100%" height="100%" verticalGap="0" >
 		<!--<mx:Label text="Basic Search" textDecoration="underline" fontWeight="bold"/>-->
 		<components:CustomHeader headerText="Basic Search" hRuleVisible="false" height="20" width="100%"/>
-		<components:CustomerSearchCriteriaWidget width="100%" height="50" searchFlow="true" displayDateFilter="true" displaySearchDropDown="false"/>
+		<mx:HBox width="100%" horizontalAlign="right" paddingRight="10">
+			<components:CustomerSearchCriteriaWidget width="100%" height="50" searchFlow="true" displayDateFilter="true" displaySearchDropDown="false"/>
+			<mx:Image id="exportToPdfImg" source="{pdfImg}" click="exportToPdfButtonClicked(event)" useHandCursor="true" mouseChildren="false" buttonMode="true"
+					 toolTip="Export to PDF"/>
+		</mx:HBox>
 		<components:CustomerSearchGrid id="customerGrid" width="100%" height="100%"/>
 	</mx:VBox>
 </mx:VBox>

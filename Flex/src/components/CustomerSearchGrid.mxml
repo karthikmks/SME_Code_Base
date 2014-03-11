@@ -10,7 +10,6 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
-			
 			import valueobject.CustomerVO;
 			[Bindable]
 			public var searchLoanGridData:ArrayCollection = new ArrayCollection;
@@ -31,6 +30,20 @@
 			private function fatherNameFunction(item:Object, column:DataGridColumn):String{
 				if (item != null){
 					return CustomerVO(item).fatherNameInit+"."+CustomerVO(item).fatherName ;
+				}
+				return "";
+			}
+			
+			private function officeAddrFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					return CustomerVO(item).officeAddress.replace("\n",",");
+				}
+				return "";
+			}
+			
+			private function addrFunction(item:Object, column:DataGridColumn):String{
+				if (item != null){
+					return CustomerVO(item).address.replace("\n",",");
 				}
 				return "";
 			}
@@ -62,8 +75,8 @@
 			<mx:DataGridColumn headerText="Remarks" dataField="remarks" width="80"/>
 			<mx:DataGridColumn headerText="Created By" dataField="createdBy" width="90"/>
 			<mx:DataGridColumn headerText="Branch ID" dataField="branchId" width="40"/>
-			<mx:DataGridColumn headerText="Address" dataField="address" width="100"/>
-			<mx:DataGridColumn headerText="Office Address" dataField="officeAddress" width="100"/>
+			<mx:DataGridColumn headerText="Address" labelFunction="addrFunction" width="100" itemRenderer="mx.controls.Label"/><!-- dataField="address" -->
+			<mx:DataGridColumn headerText="Office Address" labelFunction="officeAddrFunction" width="100" itemRenderer="mx.controls.Label"/> <!--dataField="officeAddress"-->
 		</mx:columns>
 		
 	</mx:DataGrid>
