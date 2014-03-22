@@ -32,6 +32,8 @@
 				<entry key="customer.pancard" value="${customer.pancard.filerepositorylocation}" />
 				<entry key="customer.directory" value="${customer.filerepositorylocation}" />
 				<entry key="jewel.loan.directory" value="${jewel.loan.filerepositorylocation}" />
+				<entry key="day.book.sheet.names" value="${day.book.sheet.names}" />
+				<entry key="day.book.html.file" value="${day.book.html.file}" />
 			</map>
 		</property>
 	</bean>

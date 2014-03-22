@@ -6,13 +6,16 @@
 		   creationComplete="creationCompleteHandler(event)">
 	<fx:Script>
 		<![CDATA[
-			import mx.controls.Image;
 			import mx.controls.Alert;
-			import mx.events.FlexEvent;
+			import mx.controls.Image;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
 			
 			import util.SMEConstants;
-
+			
+			private var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
 			private var fileReference:FileReference = new FileReference();
 			
 			[Bindable]
@@ -20,7 +23,12 @@
 			public var defaultImg:Object = null;
 			public var getUserConfirmation:Boolean = false;
 			public var overwrite:String = null;
-           
+			[Bindable]
+			public var fileUrl:String = "";
+			[Bindable]
+			public var sendNotification:Boolean = false;
+			public var isDocUpload:Boolean = false;
+			
             protected function upload_clickHandler(event:MouseEvent):void{
                
                 if(getUserConfirmation && imgReference && imgReference.hasOwnProperty("source") && imgReference.source != defaultImg){
@@ -38,8 +46,12 @@
             }
             private function uploadImg():void{
                 var arr:Array = [];
-                arr.push(new FileFilter("Images", SMEConstants.IMAGE_UPLOAD_TYPES));
-                fileReference.browse(arr);
+				if(isDocUpload){
+					arr.push(new FileFilter("Excel (.xls)", "*.xls"));
+				}else{
+                	arr.push(new FileFilter("Images", SMEConstants.IMAGE_UPLOAD_TYPES));
+				}
+				fileReference.browse(arr);
 				overwrite = "Y";
             }
 
@@ -56,6 +68,10 @@
 					imgReference.source = fileReference.data; 
 				}else{
 					imgReference = fileReference.data; 
+				}
+				fileUrl = fileReference.name;
+				if(sendNotification){
+					facade.sendNotification(SMEConstants.GET_HTML_FROM_EXCEL,imgReference);
 				}
 			}
 			

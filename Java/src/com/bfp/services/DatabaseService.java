@@ -5,7 +5,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +20,12 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import net.sf.jxls.reader.ReaderBuilder;
+import net.sf.jxls.reader.XLSReadStatus;
+import net.sf.jxls.reader.XLSReader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,12 +34,14 @@ import com.bear.gcs.bpm.of.activities.db.spring.valueobject.SQLObjects;
 import com.bear.gcs.bpm.of.utility.XMLParser;
 import com.bfp.dataaccess.IDataLoader;
 import com.bfp.util.ApplicationConstants;
+import com.bfp.util.ExcelToHtml;
 import com.bfp.valueobjects.AppComponentVO;
 import com.bfp.valueobjects.AppConfigurationVO;
 import com.bfp.valueobjects.ApplicationComponentsDataVO;
 import com.bfp.valueobjects.BankAccountTypeVO;
 import com.bfp.valueobjects.BranchDetailsVO;
 import com.bfp.valueobjects.CustomerVO;
+import com.bfp.valueobjects.DayBookVO;
 import com.bfp.valueobjects.DepositLoanAccountHoldersVO;
 import com.bfp.valueobjects.DepositLoanInterestPeriodVO;
 import com.bfp.valueobjects.DepositLoanTransactionVO;
@@ -56,6 +66,7 @@ import com.bfp.valueobjects.NationalityVO;
 import com.bfp.valueobjects.OccupationVO;
 import com.bfp.valueobjects.PaymentTransactionVO;
 import com.bfp.valueobjects.PaymentTypeVO;
+import com.bfp.valueobjects.PaymentsNReceivedVO;
 import com.bfp.valueobjects.ReleaseTypeVO;
 import com.bfp.valueobjects.ReportInputParamsVO;
 import com.bfp.valueobjects.ReportMetadata;
@@ -65,6 +76,8 @@ import com.bfp.valueobjects.SearchRequestVO;
 import com.bfp.valueobjects.SearchResponseVO;
 import com.bfp.valueobjects.TempVO;
 import com.bfp.valueobjects.UserProfileVO;
+
+import flex.messaging.FlexContext;
 
 /**
  * @author tiruppathir
@@ -1811,7 +1824,7 @@ public class DatabaseService {
 	}
 
 	public boolean saveBranchEntitlements(AppConfigurationVO appConfigVO) throws Exception {
-		log.info("Method entry : BusinessController.saveBranchEntitlments");
+		log.info("Method entry : DatabaseService.saveBranchEntitlments");
 		try{
 			log.info("Branch Ids: "+appConfigVO.getSelectedBranchIds());
 
@@ -1819,20 +1832,20 @@ public class DatabaseService {
 			for(String branchId : branchIdArr){
 				for(AppComponentVO appCompVO : appConfigVO.getComponentList()){
 					appCompVO.setBranchId(branchId);
-					dataLoader.insertBranchEntitlements(ApplicationConstants.INSERT_BRANCH_ENTITLES,appCompVO);
+					dataLoader.executeInsert(ApplicationConstants.INSERT_BRANCH_ENTITLES,appCompVO);
 				}
 
 			}
 			return true;
 		}catch (Exception e) {
-			log.error("Exception in BusinessController.saveBranchEntitlments\n",e);
+			log.error("Exception in DatabaseService.saveBranchEntitlments\n",e);
 			return false;
 		}
 
 	}
 
 	public AppConfigurationVO getBranchConfigData(BranchDetailsVO branchDetailVO){
-		log.info("Method entry : BusinessController.getBranchConfigData");
+		log.info("Method entry : DatabaseService.getBranchConfigData");
 		try {
 			AppConfigurationVO appConfigData = new AppConfigurationVO();
 			appConfigData.setBranchId(branchDetailVO.getBranchId());
@@ -1840,20 +1853,111 @@ public class DatabaseService {
 			appConfigData.setComponentList(retrunList);
 			return appConfigData; 
 		} catch (Exception e) {
-			log.error("Exception in BusinessController.getBranchConfigData\n",e);
+			log.error("Exception in DatabaseService.getBranchConfigData\n",e);
 			return null;
 		}
 	}
 
 	public List<BranchDetailsVO> getAllBranchDetails(){
-		log.info("Method entry : BusinessController.getAllBranchDetails");
+		log.info("Method entry : DatabaseService.getAllBranchDetails");
 		try {
 			List<BranchDetailsVO> retrunList = dataLoader.executeSelect(ApplicationConstants.GET_ALL_BRANCH_DETAILS);
 			return retrunList; 
 		} catch (Exception e) {
-			log.error("Exception in BusinessController.getAllBranchDetails\n",e);
+			log.error("Exception in DatabaseService.getAllBranchDetails\n",e);
 			return null;
 		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public String getHTMLFromExcel(byte[] excelFile){
+		log.info("Method entry : DatabaseService.getHTMLFromExcel");
+		try {
+			long elapsedTime = System.currentTimeMillis();
+			log.info("Writing into file==>> START");
+			InputStream inputXLS = new ByteArrayInputStream(excelFile);
+			String[] sheetsNames = fileRepositoryLocationMap.get(ApplicationConstants.DAY_BOOK_SHEET_NAMES).split(",");
+			String htmlFile = fileRepositoryLocationMap.get(ApplicationConstants.DAY_BOOK_SHEET_HTML_FILE);
+			String content = new ExcelToHtml(inputXLS,sheetsNames).getHTML();
+			HttpServletRequest hhtpReq = FlexContext.getHttpRequest();
+			String htmlFilePath = hhtpReq.getRealPath(htmlFile);
+			
+			log.info("File location==> "+htmlFilePath);
+			File fileOrdir = new File(htmlFilePath);
+			FileWriter tempFileWriter = new FileWriter(fileOrdir);
+			tempFileWriter.write("");
+			tempFileWriter.write(content);
+			tempFileWriter.close();
+			log.info("Writing into file==>> COMPLETED");
+			
+			elapsedTime = (System.currentTimeMillis() - elapsedTime);
+			log.info("Elapsed time to convert excel into html is: "+elapsedTime+" Milli Sec");
+			log.info("Method Exit : DatabaseService.getHTMLFromExcel");	
+			
+			return htmlFile;
+		
+		} catch (Exception e) {
+			log.error("Exception in DatabaseService.getHTMLFromExcel");
+			log.error("Exception Message",e);
+		}
+		log.info("Method Exit : DatabaseService.getHTMLFromExcel");
+		return null;
+		 
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean updateDayBook(DayBookVO dayBook) throws Exception {
+		log.info("Method entry : DatabaseService.updateDayBook");
+		
+		try {
+			
+			InputStream inputXML = Thread.currentThread().getContextClassLoader().getResourceAsStream(ApplicationConstants.DAY_BOOK_MAPPING_XML);
+	        XLSReader mainReader = ReaderBuilder.buildFromXML( inputXML );
+	        InputStream inputXLS = new ByteArrayInputStream(dayBook.getDayBookWorkSheet());
+	       
+			@SuppressWarnings("rawtypes")
+			Map beans = new HashMap();
+	        beans.put("dayBook", dayBook);        
+	        log.info("Reading xls ==> Start");
+	        mainReader.read(inputXLS, beans);
+	        log.info("Reading xls ==> End");
+
+	        log.info("insert day book and denominations");
+	        dataLoader.executeInsert(ApplicationConstants.ADD_DAY_BOOK, dayBook);
+	        
+	        log.info("insert payments");
+	        for(PaymentsNReceivedVO payments : dayBook.getPaymentsList()){
+	        	try{
+	        		Integer.parseInt(payments.getSerialNum());
+		        	payments.setDayBookType(ApplicationConstants.DAY_BOOK_TYPE_PAYMENTS);
+		        	payments.setBranchId(dayBook.getBranchId());
+		        	payments.setCreatedBy(dayBook.getCreatedBy());
+		        	dataLoader.executeInsert(ApplicationConstants.ADD_DAY_BOOK_PAY_N_RCD, payments);
+	        	}catch(Exception e){
+	        		log.error("Not able to process this record"+payments.getSerialNum());
+	        	}
+	        }
+	        
+	        log.info("insert received");
+	        for(PaymentsNReceivedVO received : dayBook.getReceivedList()){
+	        	try{
+	        		Integer.parseInt(received.getSerialNum());
+		        	received.setBranchId(dayBook.getBranchId());
+		        	received.setCreatedBy(dayBook.getCreatedBy());
+		        	received.setDayBookType(ApplicationConstants.DAY_BOOK_TYPE_RECEIVED);
+		        	dataLoader.executeInsert(ApplicationConstants.ADD_DAY_BOOK_PAY_N_RCD, received);
+	        	}catch(Exception e){
+	        		log.error("Not able to process this record"+received.getSerialNum());
+	        	}
+	        }
+	        
+	        return true;
+		} catch (Exception e) {
+			log.error("Exception in DatabaseService.updateDayBook");
+			log.error("Exception Message: ",e);
+		}
+		
+		return false;
 	}
 
 }

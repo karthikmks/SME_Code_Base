@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  layout="absolute" headerHeight="0" width="100%" height="100%"
+		  xmlns:components="components.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mediator.ManageDocumentsMediator;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import proxy.ManageDocumentsProxy;
+			
+			import util.SMEConstants;
+			
+			[Bindable]
+			[Embed(source="../assets/images/noimage.jpg")]
+			private var noImageFound:Class;
+			[Bindable]
+			[Embed(source="../assets/images/correct.gif")] 
+			private var correctSign:Class;
+			[Bindable]
+			public var historyGridData:ArrayCollection = new ArrayCollection;
+			[Bindable]
+			public var isUpdateFlow:Boolean = false;
+			
+			private var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			
+			protected function authorizationKey_changeHandler(event:Event):void{
+				if(authorizationKey.text.length==4){
+					validInvalidKeyImg.source = correctSign;
+				}else{
+					validInvalidKeyImg.source = null;
+				}
+			}
+			
+			protected function save_clickHandler(event:MouseEvent):void{
+				if(checkBusinessValidation()){
+					facade.sendNotification(SMEConstants.SAVE_NEW_CUSTOMER_INFO,getFormData());
+				}
+			}
+			
+			protected function reset_clickHandler(event:MouseEvent):void
+			{
+				Alert.show(SMEConstants.MSG_RESET_CONFIRM, "Reset",Alert.YES | Alert.NO, null,
+					resetConfirmHandler, null, Alert.NO); 
+			}
+			
+			private function resetConfirmHandler(event:CloseEvent):void {
+				// Check to see if the OK button was pressed.
+				if (event.detail==Alert.YES) {
+					clearAllfields();		
+				}
+			}
+			
+			public function getFormData():Object{
+				return null;
+			}
+			
+			public function clearAllfields():void{
+				validInvalidKeyImg.source=null; 
+				authorizationKey.text = "";
+				historyGridData = new ArrayCollection;
+				docViewPanel.source = noImageFound;
+				docDbField3.imgReference = null;
+				dbField3.text = ""; 
+				docDbField2.imgReference = null;
+				dbField2.text = ""; 
+				docDbField1.imgReference = null;
+				dbField1.text = ""; 
+				docServiceForm.imgReference = null;
+				serviceForm.text = ""; 
+				docDeclaration.imgReference = null;
+				declaration.text = ""; 
+				docSchedule.imgReference = null;
+				schedule.text = ""; 
+				docInstaLoanAgreement.imgReference = null;
+				instaLoanAgreemant.text = ""; 
+				docInstaLoanAppln.imgReference = null;
+				instaLoanAppln.text = ""; 
+				docLoanAgreement.imgReference = null;
+				loanAgreemant.text = ""; 
+				docLoanAppln.imgReference = null;
+				loanAppln.text = ""; 
+				jewelTypeLbl.text = "Not Available";
+				instaLoanLbl.text = "Not Available";
+				grossWeightLbl.text = "Not Available";
+				loanAmountLbl.text = "Not Available";
+				loanDateLbl.text = "Not Available";
+				customerIdLbl.text = "Not Available";
+				customerNameLbl.text = "Not Available";
+				
+				customerId.text = ""; 
+				loanNo.text = ""; 
+				
+			}
+			
+			public function checkBusinessValidation():Boolean{
+				
+				/* var valMsg:String = SMEUtility.doValidation(validatorArray); 
+				if(valMsg!=null && valMsg!=""){
+				Alert.show(SMEConstants.ERRR_MSG_ALL_FILEDS,"Error");
+				return false;
+				}else if(customerImg.source==noImageFound){
+				Alert.show(SMEConstants.ERRR_MSG_CUST_IMAGE,"Error");
+				return false;
+				}else if(idProofAttach.imgReference==null){
+				Alert.show(SMEConstants.ERRR_MSG_UPLOAD_ID_PROOF,"Error");
+				return false;
+				}else if(addrProofAttach.imgReference==null){
+				Alert.show(SMEConstants.ERRR_MSG_UPLOAD_ADDR_PROOF,"Error");
+				return false;
+				}else if(panCardAttach.imgReference==null){
+				Alert.show(SMEConstants.ERRR_MSG_UPLOAD_PANCARD,"Error");
+				return false;
+				}  */
+				return true;
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<mx:VBox styleName="smeLoansBackground" width="100%"  paddingLeft="5" paddingBottom="5" paddingRight="5" paddingTop="5">
+		
+		<components:CustomHeader headerText="Manage Documents" width="100%"/>
+		<mx:HBox styleName="smeLoansBackground" width="100%" >
+			<mx:FormItem styleName="smeFormItem" label="Loan No:" direction="horizontal" >
+				<mx:TextInput id="loanNo" />
+				<mx:Button label="Go" width="35"/>
+			</mx:FormItem>
+			<s:Spacer width="10"/>
+			<mx:FormItem styleName="smeFormItem" label="Customer ID:" direction="horizontal" >
+				<mx:TextInput id="customerId" /> 
+				<mx:Button label="Search" />
+			</mx:FormItem>
+		</mx:HBox>
+		<mx:HBox styleName="smeLoansBackground" width="100%" >
+			<mx:Form styleName="smeForm" >
+				<mx:FormItem styleName="smeFormItem" label="Customer Name:" >
+					<mx:Label styleName="smeLabelBold" id="customerNameLbl" text="Not Available" />
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Customer ID:" >
+					<mx:Label styleName="smeLabelBold" id="customerIdLbl" text="Not Available" />
+				</mx:FormItem>
+			</mx:Form>
+			<mx:Form styleName="smeForm" >
+				<mx:FormItem styleName="smeFormItem" label="Loan Date:" >
+					<mx:Label styleName="smeLabelBold" id="loanDateLbl" text="Not Available" />
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Loan Amount:" >
+					<mx:Label styleName="smeLabelBold" id="loanAmountLbl" text="Not Available" />
+				</mx:FormItem>
+			</mx:Form>
+			
+			<mx:Form styleName="smeForm" >
+				<mx:FormItem styleName="smeFormItem" label="Gross Weight:" >
+					<mx:Label styleName="smeLabelBold" id="grossWeightLbl" text="Not Available" />
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Insta Loan:" >
+					<mx:Label styleName="smeLabelBold" id="instaLoanLbl" text="Not Available" />
+				</mx:FormItem>
+			</mx:Form>
+			
+			<mx:Form styleName="smeForm" >
+				<mx:FormItem styleName="smeFormItem" label="Loan Type:" >
+					<mx:Label styleName="smeLabelBold" id="jewelTypeLbl" text="Not Available" />
+				</mx:FormItem>
+			</mx:Form>
+		</mx:HBox>
+		
+		<!--Document Upload Section-->
+		<components:CustomHeader headerText="Document Upload" width="100%"/>
+		<mx:HBox styleName="smeLoansBackground" width="100%" >
+			<mx:Form styleName="smeForm" width="50%">
+				<mx:FormItem styleName="smeFormItem" label="Loan Application:" direction="horizontal" >
+					<mx:TextInput id="loanAppln" />
+					<components:ImageUploadButton id="docLoanAppln" label="Browse"/>
+					<mx:Label id="viewLoanAppln" text="View Document" styleName="smeHyperLinkLabel" 
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewLoanAppln.enabled){
+							  viewLoanAppln.setStyle('fontWeight','bold');
+							  viewLoanAgmnt.setStyle('fontWeight','normal');
+							  viewInstLoanAppln.setStyle('fontWeight','normal');
+							  viewInstLoanAgmnt.setStyle('fontWeight','normal');
+							  viewSchedule.setStyle('fontWeight','normal');
+							  viewDeclaration.setStyle('fontWeight','normal');
+							  viewServiceForm.setStyle('fontWeight','normal');
+							  viewDbField1.setStyle('fontWeight','normal');
+							  viewDbField3.setStyle('fontWeight','normal');
+							  viewDbField2.setStyle('fontWeight','normal');
+							  docViewPanel.source = docLoanAppln.imgReference;}}"
+							  enabled="{docLoanAppln.imgReference!=null}" 
+							  />
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Loan Agreement:" direction="horizontal" >
+					<mx:TextInput id="loanAgreemant" /> 
+					<components:ImageUploadButton id="docLoanAgreement" label="Browse"/>
+					<mx:Label id="viewLoanAgmnt" text="View Document" styleName="smeHyperLinkLabel" 
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewLoanAgmnt.enabled){
+							  viewLoanAgmnt.setStyle('fontWeight','bold');
+							  viewInstLoanAppln.setStyle('fontWeight','normal');
+							  viewInstLoanAgmnt.setStyle('fontWeight','normal');
+							  viewSchedule.setStyle('fontWeight','normal');
+							  viewDeclaration.setStyle('fontWeight','normal');
+							  viewServiceForm.setStyle('fontWeight','normal');
+							  viewLoanAppln.setStyle('fontWeight','normal');
+							  viewDbField1.setStyle('fontWeight','normal');
+							  viewDbField3.setStyle('fontWeight','normal');
+							  viewDbField2.setStyle('fontWeight','normal');
+							  docViewPanel.source = docLoanAgreement.imgReference;}}"
+							  enabled="{docLoanAgreement.imgReference!=null}" 
+							  />
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Insta Loan Application:" direction="horizontal" >
+					<mx:TextInput id="instaLoanAppln" />
+					<components:ImageUploadButton id="docInstaLoanAppln" label="Browse"/>
+					<mx:Label id="viewInstLoanAppln" text="View Document" styleName="smeHyperLinkLabel" 
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewInstLoanAppln.enabled){
+							  viewInstLoanAppln.setStyle('fontWeight','bold');
+							  viewInstLoanAgmnt.setStyle('fontWeight','normal');
+							  viewSchedule.setStyle('fontWeight','normal');
+							  viewDeclaration.setStyle('fontWeight','normal');
+							  viewServiceForm.setStyle('fontWeight','normal');
+							  viewLoanAgmnt.setStyle('fontWeight','normal');
+							  viewLoanAppln.setStyle('fontWeight','normal');
+							  viewDbField1.setStyle('fontWeight','normal');
+							  viewDbField3.setStyle('fontWeight','normal');
+							  viewDbField2.setStyle('fontWeight','normal');
+							  docViewPanel.source = docInstaLoanAppln.imgReference;}}"
+							  enabled="{docInstaLoanAppln.imgReference!=null}" 
+							  /> 
+				</mx:FormItem>   
+				<mx:FormItem styleName="smeFormItem" label="Insta Loan Agreement:" direction="horizontal" >
+					<mx:TextInput id="instaLoanAgreemant" /> 
+					<components:ImageUploadButton id="docInstaLoanAgreement" label="Browse"/>
+					<mx:Label id="viewInstLoanAgmnt" text="View Document" styleName="smeHyperLinkLabel" 
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewInstLoanAgmnt.enabled){
+							  viewInstLoanAgmnt.setStyle('fontWeight','bold');
+							  viewSchedule.setStyle('fontWeight','normal');
+							  viewDeclaration.setStyle('fontWeight','normal');
+							  viewServiceForm.setStyle('fontWeight','normal');
+							  viewInstLoanAppln.setStyle('fontWeight','normal');
+							  viewLoanAgmnt.setStyle('fontWeight','normal');
+							  viewLoanAppln.setStyle('fontWeight','normal');
+							  viewDbField1.setStyle('fontWeight','normal');
+							  viewDbField3.setStyle('fontWeight','normal');
+							  viewDbField2.setStyle('fontWeight','normal');
+							  docViewPanel.source = docInstaLoanAgreement.imgReference;}}"
+							  enabled="{docInstaLoanAgreement.imgReference!=null}" 
+							  />
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Schedule:" direction="horizontal" >
+					<mx:TextInput id="schedule" /> 
+					<components:ImageUploadButton id="docSchedule" label="Browse"/>
+					<mx:Label id="viewSchedule" text="View Document" styleName="smeHyperLinkLabel" 
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewSchedule.enabled){
+							  viewSchedule.setStyle('fontWeight','bold');
+							  viewDeclaration.setStyle('fontWeight','normal');
+							  viewServiceForm.setStyle('fontWeight','normal');
+							  viewInstLoanAgmnt.setStyle('fontWeight','normal');
+							  viewInstLoanAppln.setStyle('fontWeight','normal');
+							  viewLoanAgmnt.setStyle('fontWeight','normal');
+							  viewLoanAppln.setStyle('fontWeight','normal');
+							  viewDbField1.setStyle('fontWeight','normal');
+							  viewDbField3.setStyle('fontWeight','normal');
+							  viewDbField2.setStyle('fontWeight','normal');
+							  docViewPanel.source = docSchedule.imgReference;}}"
+							  enabled="{docSchedule.imgReference!=null}" 
+							  />
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Declaration:" direction="horizontal" >
+					<mx:TextInput id="declaration" /> 
+					<components:ImageUploadButton id="docDeclaration" label="Browse"/>
+					<mx:Label id="viewDeclaration" text="View Document" styleName="smeHyperLinkLabel" 
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewDeclaration.enabled){
+							  viewDeclaration.setStyle('fontWeight','bold');
+							  viewServiceForm.setStyle('fontWeight','normal');
+							  viewSchedule.setStyle('fontWeight','normal');
+							  viewInstLoanAgmnt.setStyle('fontWeight','normal');
+							  viewInstLoanAppln.setStyle('fontWeight','normal');
+							  viewLoanAgmnt.setStyle('fontWeight','normal');
+							  viewLoanAppln.setStyle('fontWeight','normal');
+							  viewDbField1.setStyle('fontWeight','normal');
+							  viewDbField3.setStyle('fontWeight','normal');
+							  viewDbField2.setStyle('fontWeight','normal');
+							  docViewPanel.source = docDeclaration.imgReference;}}"
+							  enabled="{docDeclaration.imgReference!=null}" 
+							  />
+				</mx:FormItem> 
+				<mx:FormItem styleName="smeFormItem" label="Service Form:" direction="horizontal" >
+					<mx:TextInput id="serviceForm" /> 
+					<components:ImageUploadButton id="docServiceForm" label="Browse"/>
+					<mx:Label id="viewServiceForm" text="View Document" styleName="smeHyperLinkLabel" 
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewServiceForm.enabled){
+							  viewServiceForm.setStyle('fontWeight','bold');
+							  viewDeclaration.setStyle('fontWeight','normal');
+							  viewSchedule.setStyle('fontWeight','normal');
+							  viewInstLoanAgmnt.setStyle('fontWeight','normal');
+							  viewInstLoanAppln.setStyle('fontWeight','normal');
+							  viewLoanAgmnt.setStyle('fontWeight','normal');
+							  viewLoanAppln.setStyle('fontWeight','normal');
+							  viewDbField1.setStyle('fontWeight','normal');
+							  viewDbField3.setStyle('fontWeight','normal');
+							  viewDbField2.setStyle('fontWeight','normal');
+							  docViewPanel.source = docServiceForm.imgReference;}}"
+							  enabled="{docServiceForm.imgReference!=null}" 
+							  />
+				</mx:FormItem>
+				
+				<mx:FormItem styleName="smeFormItem" label="DB Field 1:" direction="horizontal" >
+					<mx:TextInput id="dbField1" /> 
+					<components:ImageUploadButton id="docDbField1" label="Browse"/>
+					<mx:Label id="viewDbField1" text="View Document" styleName="smeHyperLinkLabel" 
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewDbField1.enabled){
+							  viewDbField1.setStyle('fontWeight','bold');
+							  viewDbField3.setStyle('fontWeight','normal');
+							  viewDbField2.setStyle('fontWeight','normal');
+							  viewServiceForm.setStyle('fontWeight','normal');
+							  viewDeclaration.setStyle('fontWeight','normal');
+							  viewSchedule.setStyle('fontWeight','normal');
+							  viewInstLoanAgmnt.setStyle('fontWeight','normal');
+							  viewInstLoanAppln.setStyle('fontWeight','normal');
+							  viewLoanAgmnt.setStyle('fontWeight','normal');
+							  viewLoanAppln.setStyle('fontWeight','normal');
+							  docViewPanel.source = docDbField1.imgReference;}}"
+							  enabled="{docDbField1.imgReference!=null}" 
+							  />
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="DB Field 2:" direction="horizontal" >
+					<mx:TextInput id="dbField2" /> 
+					<components:ImageUploadButton id="docDbField2" label="Browse"/>
+					<mx:Label id="viewDbField2" text="View Document" styleName="smeHyperLinkLabel" 
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewDbField2.enabled){
+							  viewDbField2.setStyle('fontWeight','bold');
+							  viewDbField3.setStyle('fontWeight','normal');
+							  viewDbField1.setStyle('fontWeight','normal');
+							  viewServiceForm.setStyle('fontWeight','normal');
+							  viewDeclaration.setStyle('fontWeight','normal');
+							  viewSchedule.setStyle('fontWeight','normal');
+							  viewInstLoanAgmnt.setStyle('fontWeight','normal');
+							  viewInstLoanAppln.setStyle('fontWeight','normal');
+							  viewLoanAgmnt.setStyle('fontWeight','normal');
+							  viewLoanAppln.setStyle('fontWeight','normal');
+							  docViewPanel.source = docDbField2.imgReference;}}"
+							  enabled="{docDbField2.imgReference!=null}" 
+							  />
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="DB Field 3:" direction="horizontal" >
+					<mx:TextInput id="dbField3"/> 
+					<components:ImageUploadButton id="docDbField3" label="Browse"/>
+					<mx:Label id="viewDbField3" text="View Document" styleName="smeHyperLinkLabel" 
+							  mouseChildren="false" useHandCursor="true" buttonMode="true"
+							  click="{if(viewDbField3.enabled){
+							  viewDbField3.setStyle('fontWeight','bold');
+							  viewDbField2.setStyle('fontWeight','normal');
+							  viewDbField1.setStyle('fontWeight','normal');
+							  viewServiceForm.setStyle('fontWeight','normal');
+							  viewDeclaration.setStyle('fontWeight','normal');
+							  viewSchedule.setStyle('fontWeight','normal');
+							  viewInstLoanAgmnt.setStyle('fontWeight','normal');
+							  viewInstLoanAppln.setStyle('fontWeight','normal');
+							  viewLoanAgmnt.setStyle('fontWeight','normal');
+							  viewLoanAppln.setStyle('fontWeight','normal');
+							  docViewPanel.source = docDbField3.imgReference;}}"
+							  enabled="{docDbField3.imgReference!=null}" 
+							  />
+				</mx:FormItem> 
+			</mx:Form>
+			<s:Spacer width="5" />
+			<mx:VRule height="100%" />
+			<s:Spacer width="5" />
+			<mx:VBox maxHeight="300" maxWidth="300" height="300" width="300">
+				<mx:Image id="docViewPanel" source="{noImageFound}" maintainAspectRatio="false" 
+						  width="100%" height="100%" />
+			</mx:VBox>
+			<s:Spacer width="5" />
+			<mx:VRule height="100%" />
+			<s:Spacer width="5" />
+			<mx:VBox width="40%" visible="{historyGridData &amp;&amp; historyGridData.length>0}">
+				<mx:Label text="Audit Histoty" styleName="smeHeaderLabel"/>
+				<components:AuditHistryGrid historyGridData="{historyGridData}" width="50%" />
+			</mx:VBox>
+			
+		</mx:HBox>
+		
+		<components:CustomHeader width="100%"/>
+		<mx:HBox styleName="smeLoansBackground" width="100%" >
+			<mx:Form styleName="smeForm" width="50%">
+				<mx:FormItem styleName="smeFormItem" label="Authorization Key:" direction="horizontal" >
+					<mx:TextInput id="authorizationKey" change="authorizationKey_changeHandler(event)" />
+					<mx:Image id="validInvalidKeyImg" visible="{validInvalidKeyImg.source!=null}"/>
+				</mx:FormItem>
+			</mx:Form>
+			<s:Spacer width="30%"/>
+			<mx:Button label="Reset" click="reset_clickHandler(event)"/>
+			<mx:Button label="Save" click="save_clickHandler(event)" 
+					   enabled="{validInvalidKeyImg.source!=null}"
+					   visible="{!isUpdateFlow}"
+					   includeInLayout="{!isUpdateFlow}"/>
+			<mx:Button label="Update" click="save_clickHandler(event)"
+					   enabled="{validInvalidKeyImg.source!=null}"
+					   visible="{isUpdateFlow}"
+					   includeInLayout="{isUpdateFlow}"/>
+		</mx:HBox>
+		
+	</mx:VBox>
+	
+	
+</mx:Panel>

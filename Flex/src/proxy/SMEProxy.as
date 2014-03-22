@@ -3,6 +3,7 @@ package proxy
 	import components.LoadingMask;
 	
 	import flash.events.Event;
+	import flash.utils.ByteArray;
 	
 	import mx.controls.Alert;
 	import mx.rpc.events.FaultEvent;
@@ -14,8 +15,9 @@ package proxy
 	import util.SMEConstants;
 	
 	import valueobject.AppConfigurationVO;
-	import valueobject.CustomerVO;
 	import valueobject.BranchDetailsVO;
+	import valueobject.CustomerVO;
+	import valueobject.DayBookVO;
 	import valueobject.UserProfileVO;
 	
 	public class SMEProxy extends BaseProxy
@@ -175,7 +177,6 @@ package proxy
             }           
         }
 		
-		
 		public function searchFlowCustomerSearch(prams:CustomerVO):void{
 			showLoadingMask();
 			createRPCRequest("searchCustomer", onSearchFlowCustomerSearch).send(prams);
@@ -191,5 +192,6 @@ package proxy
 				Alert.show("Error Message: "+(e as FaultEvent).message);
 			}			
 		}
+		
 	}
 }

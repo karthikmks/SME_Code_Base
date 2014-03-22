@@ -2,22 +2,30 @@
 <mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" 
-		 xmlns:components="components.*" styleName="smeLoansBackground" paddingLeft="10">
+		 xmlns:components="components.*" styleName="smeLoansBackground" paddingLeft="10"
+		 creationComplete="creationCompleteHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.utils.ObjectUtil;
 			
 			import org.puremvc.as3.multicore.patterns.facade.Facade;
 			
 			import util.SMEConstants;
+			import util.SMEModel;
 			
 			import valueobject.AppComponentVO;
 			import valueobject.AppConfigurationVO;
 			
 			[Bindable]
 			public var isUpdateFlow:Boolean = false;
+			[Bindable]
+			public var allBranchDetails:ArrayCollection = new ArrayCollection();
+			
 			private var facade:Facade=ApplicationFacade.getInstance(SME.MAIN_APPLN);
 			
 			protected function reset_clickHandler(event:MouseEvent):void
@@ -35,11 +43,11 @@
 			
 			protected function save_clickHandler(event:MouseEvent):void{
 				
-				var slectedBranches:Array = branchList.selectedItems;
+				var slectedBranches:Array = [].concat(branchList.selectedItems);
 				var selectedBranchId:String  = "";
 				var appCongigVO:AppConfigurationVO;
-				for(var ind:int=0;ind<slectedBranches.length;ind++){
-					selectedBranchId += slectedBranches[ind].branchId + ",";
+				for(var ind:int=0;ind<slectedBranches[0].length;ind++){
+					selectedBranchId += slectedBranches[0][ind].hasOwnProperty('branchId')?slectedBranches[0][ind].branchId + ",":"";
 				}
 				selectedBranchId = selectedBranchId.substring(0,selectedBranchId.length-1);
 				appCongigVO = new AppConfigurationVO;
@@ -54,6 +62,35 @@
 			public function clearAllfields():void{
 				
 			}
+			
+			/**
+			 * Return a different item renderer based on if its a heading or not 
+			 */
+			public function myRendererFunction(item:Object):IFactory
+			{
+				if (item.hasOwnProperty('isHeading') && item.isHeading)
+					return new ClassFactory(HeadingItemRenderer);
+				else
+					return new ClassFactory(DetailItemRenderer);
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				allBranchDetails = ObjectUtil.copy(SMEModel.getinstance().appCompMetaData.allBranchDetails) as ArrayCollection;
+				var selectAllObj:Object = new Object;
+				selectAllObj.all = "All";
+				allBranchDetails.addItemAt(selectAllObj,0);
+			}
+			
+			protected function branchList_clickHandler(event:MouseEvent):void
+			{
+				if(branchList.selectedItem && Object(branchList.selectedItem).hasOwnProperty('all')){
+					 var branchArr:Array = SMEModel.getinstance().appCompMetaData.allBranchDetails.toArray();
+					 branchList.selectedItems = Vector.<Object>(branchArr);
+				}
+				
+			}
+			
 		]]>
 	</fx:Script>
 
@@ -66,40 +103,36 @@
 	<mx:HBox width="100%" height="90%">
 		<mx:VBox width="20%">
 			<mx:Label text="Select Branch:" fontWeight="bold"/>
-			<mx:List id="branchList" width="100%" rowCount="10" dataProvider="{SMEConstants.BRANCH_LIST}" labelField="branchName"
-					styleName="smeList" >
-				<mx:itemRenderer>
-					<fx:Component>
-						<mx:CheckBox selected="{data.isSelected=='true'}" change="checkbox1_changeHandler(event)">
-							<fx:Script>
-								<![CDATA[
-									import mx.collections.ArrayCollection;
-									protected function checkbox1_changeHandler(event:Event):void
-									{
-										if(CheckBox(event.currentTarget).selected){
-											data.isSelected = 'true';	
-										}else{
-											data.isSelected = 'false';
-										}
-										if(data.branchName=='All' && data.isSelected=='true'){
-											var arrColl:ArrayCollection = outerDocument.branchList.dataProvider as ArrayCollection;
-											for(var ind:int=0;ind<arrColl.length;ind++){
-												arrColl[ind].isSelected = 'true';
-											}
-										}else if(data.branchName=='All' && data.isSelected=='false'){
-											var arrColl:ArrayCollection = outerDocument.branchList.dataProvider as ArrayCollection;
-											for(var ind:int=0;ind<arrColl.length;ind++){
-												arrColl[ind].isSelected = 'false';
-											}
-										}
-										outerDocument.invalidateProperties();
-									}
-								]]>
-							</fx:Script>
-						</mx:CheckBox>
-					</fx:Component>
-				</mx:itemRenderer>
-			</mx:List>	
+			
+			<components:CheckList id="branchList" itemRendererFunction="myRendererFunction" width="300" height="300" y="30"
+								  dataProvider="{allBranchDetails}" click="branchList_clickHandler(event)">
+				<components:layout>
+					<s:VerticalLayout gap="1" horizontalAlign="contentJustify" />
+				</components:layout>
+				<!--<components:dataProvider>
+					<s:ArrayList>
+						<components:Task text="Monday" isHeading="true" />
+						<components:Task text="Learn about Group and DataGroup" />
+						<components:Task text="Write a custom layout" />
+						<components:Task text="Learn how to write custom skins in spark" />
+						<components:Task text="Tuesday" isHeading="true" />
+						<components:Task text="Experiment with the new effects" />
+						<components:Task text="Write custom item renderers" />
+						<components:Task text="Have fun with data binding" />
+						<components:Task text="Wednesday" isHeading="true" />
+						<components:Task text="Build custom components" />
+						<components:Task text="Try out the new states syntax" />
+						<components:Task text="Thursday" isHeading="true" />
+						<components:Task text="Connect to a ColdFusion backend" />
+						<components:Task text="Connect to a PHP backend" />
+						<components:Task text="Check out the new features in Flash Builder" />
+						<components:Task text="Next Week" isHeading="true" />
+						<components:Task text="Play around with Flash Catalyst" />
+						<components:Task text="Start blogging about Flex 4" />
+					</s:ArrayList>
+				</components:dataProvider>-->
+			</components:CheckList>
+			
 		</mx:VBox>
 		<mx:VRule height="100%"/>
 		<mx:VBox styleName="smeLoansBackground" width="80%" height="100%">

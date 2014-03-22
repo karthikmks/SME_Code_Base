@@ -1,9 +1,14 @@
 package mediator
 {
+	import components.AddOrUpdateCustomer;
+	
+	import flash.utils.ByteArray;
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.core.IUITextField;
 	import mx.events.CloseEvent;
+	
 	import org.puremvc.as3.multicore.interfaces.IMediator;
 	import org.puremvc.as3.multicore.interfaces.INotification;
 	import org.puremvc.as3.multicore.patterns.mediator.Mediator;
@@ -12,12 +17,13 @@ package mediator
 	
 	import util.SMEConstants;
 	import util.SMEModel;
+	
 	import valueobject.AppConfigurationVO;
 	import valueobject.ApplicationComponentsDataVO;
-	import valueobject.CustomerVO;
 	import valueobject.BranchDetailsVO;
+	import valueobject.CustomerVO;
+	import valueobject.DayBookVO;
 	import valueobject.UserProfileVO;
-	import components.AddOrUpdateCustomer;
 	
 	public class SMEMediaor extends Mediator implements IMediator
 	{
@@ -68,7 +74,7 @@ package mediator
 				SMEConstants.VALIDATE_USER_PROFILE,
 				SMEConstants.SEARCH_FLOW_CUSTOMER_SEARCH,
 				SMEConstants.ON_SEARCH_FLOW_CUSTOMER_SEARCH,
-				SMEConstants.SAVE_NEW_CUSTOMER_INFO	
+				SMEConstants.SAVE_NEW_CUSTOMER_INFO
 			]
 		}
 		
@@ -232,6 +238,7 @@ package mediator
 						Alert.show("No Customer Found","Search Customer");
 					}
 					break;
+				
 			}
 		}
 

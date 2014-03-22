@@ -19,6 +19,10 @@
 			<endpoint
 				url="http://{server.name}:{server.port}/{context.root}/spring/messagebroker/amf"
 				class="flex.messaging.endpoints.AMFEndpoint" />
+			 <properties>
+        			<invalidate-session-on-disconnect>true</invalidate-session-on-disconnect>
+    		</properties>
+			
 		</channel-definition>
 
 		<channel-definition id="my-secure-amf"
@@ -29,6 +33,9 @@
 			<properties>
 				<add-no-cache-headers>false</add-no-cache-headers>
 			</properties>
+			 <properties>
+        			<invalidate-session-on-disconnect>true</invalidate-session-on-disconnect>
+    		</properties>
 		</channel-definition>
 
 		<channel-definition id="my-polling-amf"
@@ -40,6 +47,9 @@
 				<polling-enabled>true</polling-enabled>
 				<polling-interval-seconds>4</polling-interval-seconds>
 			</properties>
+			 <properties>
+        			<invalidate-session-on-disconnect>true</invalidate-session-on-disconnect>
+    		</properties>
 		</channel-definition>
 
 	</channels>

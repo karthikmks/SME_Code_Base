@@ -37,6 +37,14 @@ public class ApplicationConstants {
 	public static String CUSTOMER_ADDR_PHOTO_KEY = "customer.addressproof.filerepositorylocation";
 	public static String CUSTOMER_PANCARD_PHOTO_KEY = "customer.pancard.filerepositorylocation";
 	
+	public static String DAY_BOOK_SHEET_NAMES = "day.book.sheet.names";
+	public static String DAY_BOOK_SHEET_HTML_FILE = "day.book.html.file";
+	public static String ADD_DAY_BOOK = "ADD_DAY_BOOK";
+	public static String ADD_DAY_BOOK_PAY_N_RCD = "ADD_DAY_BOOK_PAY_N_RCD";
+	public static String DAY_BOOK_MAPPING_XML = "DAY_BOOK_MAPPING.xml";
+	
+	public static String DAY_BOOK_TYPE_RECEIVED = "R";
+	public static String DAY_BOOK_TYPE_PAYMENTS = "P"; 
 	
 	public static String TEST_TEMP = "TEST_TEMP";
 	

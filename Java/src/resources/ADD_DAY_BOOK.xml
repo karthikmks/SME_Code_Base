@@ -1,0 +1,321 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+	<sqlquery>
+	
+		INSERT INTO day_book(
+			branch_id ,
+			noOf_1000 , 
+			noOf_500 , 
+			noOf_100 , 
+			noOf_50 , 
+			noOf_20 , 
+			noOf_10 , 
+			noOf_5 , 
+			noOf_1 , 
+			total_amt , 
+			shortage_amt , 
+			lockerGoldGrams ,
+			lockerGoldNoOfPoc ,
+			lockerSilverGrams ,
+			lockerSilverNoOfPoc ,
+			salesGoldGrams ,  
+			salesGoldNoOfPoc ,
+			salesSilverGrams ,
+			salesSilverNoOfPoc ,
+			auctionGoldGrams ,
+			auctionGoldNoOfPoc ,
+			auctionSilverGrams ,
+			auctionSilverNoOfPoc ,
+			day_book_file,
+			created_by ,
+			created_timestamp ,
+			modified_by ,
+			modified_timestamp ,
+			active_flag )
+		VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,now(),null,null,'Y');
+
+
+	</sqlquery>	
+	
+	<databaseType>mysql</databaseType>		
+		<inputvo>com.bfp.valueobjects.DayBookVO</inputvo>	
+		<inputparams>
+			<inputparam>
+				<paramname>branchId</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>BranchId</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>noOf_1000</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>NoOf_1000</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>noOf_500</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>NoOf_500</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>noOf_100</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>NoOf_100</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>noOf_50</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>NoOf_50</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>noOf_20</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>NoOf_20</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>noOf_10</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>NoOf_10</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>noOf_5</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>NoOf_5</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>noOf_1</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>NoOf_1</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>totalAmt</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>TotalAmt</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>shortageAmt</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>ShortageAmt</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>lockerGoldGrams</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>LockerGoldGrams</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>lockerGoldNoOfPoc</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>LockerGoldNoOfPoc</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>lockerSilverGrams</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>LockerSilverGrams</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>lockerSilverNoOfPoc</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>LockerSilverNoOfPoc</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>salesGoldGrams</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>SalesGoldGrams</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>salesGoldNoOfPoc</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>SalesGoldNoOfPoc</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>salesSilverGrams</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>SalesSilverGrams</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>salesSilverNoOfPoc</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>SalesSilverNoOfPoc</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			
+			<inputparam>
+				<paramname>auctionGoldGrams</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>AuctionGoldGrams</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>auctionGoldNoOfPoc</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>AuctionGoldNoOfPoc</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>auctionSilverGrams</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>AuctionSilverGrams</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>auctionSilverNoOfPoc</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>AuctionSilverNoOfPoc</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+
+			<inputparam>
+				<paramname>dayBookWorkSheet</paramname>
+				<paramtype>blob</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>DayBookWorkSheet</attribute>
+					<votype>byte[]</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>createdBy</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.DayBookVO
+					</classname>
+					<attribute>CreatedBy</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+		</inputparams>
+	</storedprocedure>
+</storedprocedures>

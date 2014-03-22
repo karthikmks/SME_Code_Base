@@ -415,7 +415,7 @@ public interface IDataLoader {
 	@SuppressWarnings("unchecked")
 	public List executeSelect(Object xmlFileName,Object inputVO) throws Exception;
 	
-	public void	insertBranchEntitlements(String xmlFileName,AppComponentVO tempVO) throws Exception;
+	public void	executeInsert(String xmlFileName,Object inputVO) throws Exception;
 	
 	public int addNewCustomerSP(String xmlFileName, CustomerVO requestVO) throws Exception ;
 }

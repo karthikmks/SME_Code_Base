@@ -54,16 +54,16 @@
 			protected function vbox1_creationCompleteHandler(event:FlexEvent):void{
 				facade.sendNotification(SMEConstants.LOAD_NEW_LOAN_META_DATA,true);
 				loanNumberStr = SMEConstants.LABEL_NOT_AVAILABLE;
-				/*if(SMEModel.getinstance().appCompMetaData.branchConfigData!=null){
+				if(SMEModel.getinstance().appCompMetaData.branchConfigData!=null){
 					for each(var appCompVO:AppComponentVO in SMEModel.getinstance().appCompMetaData.branchConfigData.componentList){
 						if(appCompVO.componentId == SMEConstants.DOC_SERVICE_TAX_CHARGES_ID){
-							this[SMEConstants.DOC_SERVICE_TAX_CHARGES_ID].visible = false;
+							this[SMEConstants.DOC_SERVICE_TAX_CHARGES_ID].visible = appCompVO.visibleFlag;
 						}
 						if(appCompVO.componentId == SMEConstants.ADD_LOAN_TYPE_COMP_ID){
-						
+							this[SMEConstants.ADD_LOAN_TYPE_COMP_ID].visible = appCompVO.visibleFlag;
 						}
 					}
-				}*/
+				}
 			}
 			
 			public function launchSelectCustomerPopUp(customerList:ArrayCollection):void

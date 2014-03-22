@@ -1,4 +1,4 @@
-package com.bfp.test;
+package com.junit.com.bfp.test;
 
 import java.io.File;
 import java.io.FileInputStream;

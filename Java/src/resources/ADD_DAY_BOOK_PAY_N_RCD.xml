@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+	<sqlquery>
+	
+		INSERT INTO day_book_pr(
+			 branch_id ,
+			 category ,
+			 header ,
+			 loanNum ,
+			 scheme ,
+			 days ,
+			 roi ,  
+			 depositNum ,
+			 nameOrParticulars ,
+			 contactNum ,
+			 grams ,
+			 noOfPoc ,
+			 amount ,
+			 day_book_type ,
+			 created_by ,
+			 created_timestamp ,
+			 modified_by ,
+			 modified_timestamp ,
+			 active_flag  )
+		VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,now(),null,null,'Y');
+
+
+	</sqlquery>	
+	
+	<databaseType>mysql</databaseType>		
+		<inputvo>com.bfp.valueobjects.PaymentsNReceivedVO</inputvo>	
+		<inputparams>
+			<inputparam>
+				<paramname>branchId</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>BranchId</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>category</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>Category</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>header</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>Header</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>loanNum</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>LoanNum</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>scheme</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>Scheme</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>days</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>Days</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>roi</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>Roi</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>depositNum</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>DepositNum</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>nameOrParticulars</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>NameOrParticulars</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>contactNum</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>ContactNum</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>grams</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>Grams</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>noOfPoc</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>NoOfPoc</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>amount</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>Amount</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>dayBookType</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>DayBookType</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>createdBy</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.PaymentsNReceivedVO
+					</classname>
+					<attribute>CreatedBy</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+		</inputparams>
+	</storedprocedure>
+</storedprocedures>

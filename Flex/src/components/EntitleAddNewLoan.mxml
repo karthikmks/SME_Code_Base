@@ -33,8 +33,10 @@
 							appCompVO.componentId = loanTypeCmb.name;
 							appCompVO.visibleFlag = SMEConstants.FLAG_Y;
 							var listOfId:String = "";
-							for each(var loanTypeVO:JewelLoanTypeVO in loanTypeCmb.selectedItems){
-								listOfId += loanTypeVO.jewelLoanTypeId + ",";
+							for(var ind:int=0;ind<loanTypeCmb.selectedItems.length;ind++){
+								if(loanTypeCmb.selectedItems[0] as JewelLoanTypeVO){
+									listOfId += loanTypeCmb.selectedItems[ind].jewelLoanTypeId + ",";
+								}
 							}
 							listOfId = listOfId.substring(0,listOfId.length-1);
 							appCompVO.possibleValues = listOfId;

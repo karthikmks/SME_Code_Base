@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  layout="absolute" headerHeight="0" width="100%" height="100%"
+		  xmlns:components="components.*"
+		  backgroundColor="#EAF2DC" xmlns:ns="http://code.google.com/p/flex-iframe/">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import util.SMEConstants;
+			
+			[Bindable]
+			[Embed(source="../assets/images/day_book_xls.jpg")]
+			private var bayBookXlsTemp:Class;
+			
+			private var correctSign:Class;
+			[Bindable]
+			public var historyGridData:ArrayCollection = new ArrayCollection;
+			[Bindable]
+			public var isUpdateFlow:Boolean = false;
+			[Bindable]
+			public var fileFormat:String="<font color='red'>*</font> File format must be .xls";
+			[Bindable]
+			public var saveAs:String="<font color='red'>*</font> Use 'Save As' option to convert file into .xls format";
+			[Bindable]
+			public var containSheet:String="<font color='red'>*</font> File must contain below sheets";
+			[Bindable]
+			public var denomination:String="<font color='red'>*</font> DENOMINATION";
+			[Bindable]
+			public var received:String="<font color='red'>*</font> RECEIVED";
+			[Bindable]
+			public var payment:String="<font color='red'>*</font> PAYMENTS";
+			
+			
+			private var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			
+			
+			protected function update_clickHandler(event:MouseEvent):void
+			{
+				facade.sendNotification(SMEConstants.UPDATE_DAY_BOOK,uploadedDocBtn.imgReference);
+			} 
+			
+			public function clearAllFields():void{
+				iFrameStack.selectedIndex = 0;
+				uploadedDocBtn.imgReference = null;
+				iFrameDoc.source = null;
+				iFrameDoc.visible = false;
+			}
+			
+			public function showIFrame(url:String):void{
+				iFrameDoc.source = url;//xls_html.htm
+				iFrameDoc.visible = true;
+				iFrameStack.selectedIndex = 1;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:VBox styleName="smeLoansBackground" width="100%" height="100%" paddingLeft="5" paddingBottom="5" paddingRight="5" paddingTop="5"
+			 verticalGap="2">
+		
+		<components:CustomHeader width="100%" height="30" headerText="Manage Day Book"/>
+		<mx:HBox styleName="smeLoansBackground" paddingLeft="5" width="100%" >
+			<mx:Label text="Upload EOD Worksheet: "/>
+			<components:ImageUploadButton id="uploadedDocBtn" label="Browse" isDocUpload="true" sendNotification="true"/>
+			<mx:Label text="{uploadedDocBtn.fileUrl!=''?uploadedDocBtn.fileUrl:''}" fontStyle="italic"/>
+			<s:Spacer width="50%"/>
+			<mx:Button label="Reset" />
+			<mx:Button label="Update" click="update_clickHandler(event)" />
+		</mx:HBox>
+		<s:Spacer height="10"/>
+		<mx:ViewStack id="iFrameStack" width="100%" height="90%" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+			<mx:HBox  width="100%" height="100%" >
+				<mx:VBox  width="45%" height="100%" >
+					<mx:Label text=" Uploading excell file must meet the below conditions:" fontWeight="bold" />
+					<mx:VBox width="100%" paddingLeft="25">
+						<mx:Label htmlText="{fileFormat}"/>
+						<mx:VBox width="100%" paddingLeft="20">
+							<mx:Label htmlText="{saveAs}"/>
+						</mx:VBox>
+						<mx:Label htmlText="{containSheet}"/>
+						<mx:VBox width="100%" paddingLeft="20">
+							<mx:Label htmlText="{denomination}"/>
+							<mx:Label htmlText="{received}"/>
+							<mx:Label htmlText="{payment}"/>
+						</mx:VBox>
+					</mx:VBox>
+				</mx:VBox>
+				<mx:VBox width="55%" height="100%">
+					<mx:Label text=" Please use below screen shot to save file as .xls" fontWeight="bold"/>
+					<mx:Image source="{bayBookXlsTemp}" width="98%" height="100%"/>
+				</mx:VBox>
+			</mx:HBox> 
+			<ns:IFrame id="iFrameDoc" width="100%" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off"/>
+		</mx:ViewStack>
+	</mx:VBox>
+	
+	
+</mx:Panel>

@@ -25,16 +25,17 @@
 				<menuitem label="Add Payment"/>
 			</menuitem>				-->
 			<menuitem label="Manage Documents">
-				<menuitem label="Upload Documents" />
+				<menuitem label="Upload Day Book" />
+				<menuitem label="Upload Loan Docs" />
 			</menuitem>
 		</fx:XMLList>
-		<!--<fx:XML id="adminMenuList">
+		<fx:XML id="adminMenuList">
 			<menuitem label="Admin Operations">
 				<menuitem label="Add Entitlemens To Branch" />
 				<menuitem label="Modify Entitlements"/>
 			</menuitem>
 		</fx:XML>
-		<menuitem label="Manage Denomination">
+		<!--<menuitem label="Manage Denomination">
 			<menuitem label="Add Denomination" />
 		</menuitem>
 		<menuitem label="Manage Vouchers">
@@ -113,7 +114,7 @@
 			{
 				facade.sendNotification(SMEConstants.LOAD_APPLN_COMP_META_DATA,true);
 				if(SMEModel.getinstance().isAdminUser){
-					//menuList += adminMenuList;
+					menuList += adminMenuList;
 				}
 			}
 		]]>
@@ -159,12 +160,15 @@
 							   selectedChildIndex="{displayStackChildIndex}"/>
 			<!--<comps:ManageDeposits styleName="containerVBox" label="Manage Deposits" width="100%" height="100%" 
 								  selectedChildIndex="{displayStackChildIndex}" />			-->
-			<comps:ManageDocuments styleName="containerVBox" label="Manage Documents" width="100%" height="100%"/>
+			
+			<comps:ManageDocuments styleName="containerVBox" label="Manage Documents" width="100%" height="100%"
+								   selectedChildIndex="{displayStackChildIndex}"/>
+			
 			<!--<comps:ManageDenomination styleName="containerVBox" label="Manage Denomination" width="100%" height="100%"/>
 			<comps:ManageVouchers styleName="containerVBox" label="Manage Denomination" width="100%" height="100%"/>
-			
+			-->
 			<comps:ManageEntitlementToBranch styleName="containerVBox" label="Manage Entitlements" width="100%" height="100%"
-											 selectedChildIndex="{displayStackChildIndex}"/>	-->
+											 selectedChildIndex="{displayStackChildIndex}"/>	
 			
 		</mx:ViewStack>
 	</mx:HBox>

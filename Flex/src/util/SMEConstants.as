@@ -80,6 +80,10 @@ package util
 		public static const USER_ROLE_ADMIN:String = "Admin";
 		public static const SEARCH_FLOW_CUSTOMER_SEARCH:String = "SEARCH_FLOW_CUSTOMER_SEARCH";
 		public static const ON_SEARCH_FLOW_CUSTOMER_SEARCH:String = "ON_SEARCH_FLOW_CUSTOMER_SEARCH";
+		public static const UPDATE_DAY_BOOK:String = "UPDATE_DAY_BOOK";
+		public static const ON_UPDATE_DAY_BOOK:String = "ON_UPDATE_DAY_BOOK";
+		public static const ON_GET_HTML_FROM_EXCEL:String = "ON_HTML_FROM_EXCEL";
+		public static const GET_HTML_FROM_EXCEL:String = "GET_HTML_FROM_EXCEL";
 		
 		public static const LOAN_STATUS_ARRAY:ArrayCollection = new ArrayCollection([          
             { loanStatusId:"1",loanStatus:"Active" },

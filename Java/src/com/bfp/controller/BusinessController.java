@@ -14,6 +14,7 @@ import com.bfp.valueobjects.AppConfigurationVO;
 import com.bfp.valueobjects.ApplicationComponentsDataVO;
 import com.bfp.valueobjects.BranchDetailsVO;
 import com.bfp.valueobjects.CustomerVO;
+import com.bfp.valueobjects.DayBookVO;
 import com.bfp.valueobjects.DepositLoanAccountHoldersVO;
 import com.bfp.valueobjects.DepositLoanInterestPeriodVO;
 import com.bfp.valueobjects.DepositLoanTransactionVO;
@@ -403,7 +404,15 @@ public class BusinessController extends MultiActionController {
 		return databaseService.saveBranchEntitlements(appConfigVO);
 	}
 	
+	public boolean updateDayBook(DayBookVO dayBookVO) throws Exception {
+		log.info("Method entry : BusinessController.updateDayBook");
+		return databaseService.updateDayBook(dayBookVO);
+	}
 	
+	public String getHTMLFromExcel(byte[] excelFile){
+		log.info("Method entry : BusinessController.getHTMLFromExcel");
+		return databaseService.getHTMLFromExcel(excelFile);
+	}
 	
 	public void testTemp(TempVO temp) throws Exception {
 		log.info("Method entry : BusinessController.addNewCustomer");

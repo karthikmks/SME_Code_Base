@@ -718,7 +718,7 @@ public class DataLoader implements IDataLoader {
 		//return sqlDao.executeSelect(XMLParser.parseXML(xmlFileName), inputDataList, null, dataSource);
 	}
 
-	public void insertTemp(String xmlFileName, TempVO tempVO,boolean isStoreProcFlow){
+	public void executeInsert(String xmlFileName, TempVO tempVO,boolean isStoreProcFlow){
 		if(isStoreProcFlow){
 			
 		}else{
@@ -748,8 +748,8 @@ public class DataLoader implements IDataLoader {
 		return customerId; 
 	}
 
-	public void insertBranchEntitlements(String xmlFileName, AppComponentVO appCompVO) throws Exception{
-		log.info("Method Entry : DataLoader.insertBranchEntitlements- xmlFileName: "+xmlFileName);
-		sqlDao.executeInsert(XMLParser.parseXML(xmlFileName), appCompVO, dataSource);
+	public void executeInsert(String xmlFileName, Object inputObj) throws Exception{
+		log.info("Method Entry : DataLoader.executeInsert- xmlFileName: "+xmlFileName);
+		sqlDao.executeInsert(XMLParser.parseXML(xmlFileName), inputObj, dataSource);
 	}
 }

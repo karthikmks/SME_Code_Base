@@ -1,4 +1,4 @@
-package com.bfp.test;
+package com.junit.com.bfp.test;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
