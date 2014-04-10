@@ -25,6 +25,7 @@ import com.bfp.valueobjects.JewelLoanTransactionVO;
 import com.bfp.valueobjects.JewelMasterVO;
 import com.bfp.valueobjects.JewelSchemeVO;
 import com.bfp.valueobjects.JewelTakeOverFromVO;
+import com.bfp.valueobjects.ManageDocumentsVO;
 import com.bfp.valueobjects.PaymentTransactionVO;
 import com.bfp.valueobjects.ReportInputParamsVO;
 import com.bfp.valueobjects.RequestVO;
@@ -414,10 +415,21 @@ public class BusinessController extends MultiActionController {
 		return databaseService.getHTMLFromExcel(excelFile);
 	}
 	
+	public boolean saveFileInTempFolder(Object fileObj){
+		log.info("Method entry : BusinessController.saveFileInTempFolder");
+		return databaseService.saveFileInTempFolder(fileObj);
+	}
+	
+	public String addNewMamagedDocuments(ManageDocumentsVO manageDocVO){
+		log.info("Method entry : BusinessController.addNewMamagedDocuments");
+		return databaseService.addNewMamagedDocuments(manageDocVO);
+	}
+	
 	public void testTemp(TempVO temp) throws Exception {
 		log.info("Method entry : BusinessController.addNewCustomer");
 		databaseService.testTemp(temp);
 	}
+	
 	
 	
 }

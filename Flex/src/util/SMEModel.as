@@ -4,6 +4,8 @@ package util
 	import components.ManageCustomer;
 	import components.ManageEntitlementToBranch;
 	
+	import mx.collections.ArrayCollection;
+	
 	import valueobject.AppConfigurationVO;
 	import valueobject.ApplicationComponentsDataVO;
 	import valueobject.BranchDetailsVO;

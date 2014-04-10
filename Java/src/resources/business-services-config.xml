@@ -34,6 +34,8 @@
 				<entry key="jewel.loan.directory" value="${jewel.loan.filerepositorylocation}" />
 				<entry key="day.book.sheet.names" value="${day.book.sheet.names}" />
 				<entry key="day.book.html.file" value="${day.book.html.file}" />
+				<entry key="documents.directory" value="${jewel.loan.manageddocrepositorylocation}" />
+				<entry key="temp.files.directory" value="${temp.files.directory}" />
 			</map>
 		</property>
 	</bean>

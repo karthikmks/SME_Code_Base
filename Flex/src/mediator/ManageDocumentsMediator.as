@@ -16,6 +16,7 @@ package mediator
 	import util.SMEModel;
 	
 	import valueobject.DayBookVO;
+	import valueobject.ManageDocumentsVO;
 
 	public class ManageDocumentsMediator extends Mediator implements IMediator
 	{
@@ -51,8 +52,10 @@ package mediator
 			return [	
 				SMEConstants.UPDATE_DAY_BOOK,
 				SMEConstants.GET_HTML_FROM_EXCEL,
-				SMEConstants.ON_GET_HTML_FROM_EXCEL
-				
+				SMEConstants.ON_GET_HTML_FROM_EXCEL,
+				SMEConstants.SAVE_TEMP_FILES,
+				SMEConstants.ADD_NEW_MANAGE_DOC,
+				SMEConstants.ON_ADD_NEW_MANAGE_DOC
 			]
 		}
 		
@@ -87,6 +90,20 @@ package mediator
 					}else{
 						Alert.show("Please check the file and try again."," Day Book Upload Error");
 						view.manageDayBook.clearAllFields();
+					}
+					break;
+				case SMEConstants.SAVE_TEMP_FILES:
+					docProxy.saveFileInTempFolder(notifBody);
+					break;
+				case SMEConstants.ADD_NEW_MANAGE_DOC:
+					docProxy.addNewMamagedDocuments(notifBody as ManageDocumentsVO);
+					break;
+				case SMEConstants.ON_ADD_NEW_MANAGE_DOC:
+					if(notifBody == "SUCCESS"){
+						Alert.show("Saved Successfully","Managed Documents");
+						view.mfplAttachments.clearAllfields(null);
+					}else{
+						Alert.show("Saved failure, Please try again.","Managed Documents");
 					}
 					break;
 			}

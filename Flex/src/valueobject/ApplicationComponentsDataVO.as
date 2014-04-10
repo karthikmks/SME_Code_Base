@@ -47,6 +47,8 @@ package valueobject
         public var branchConfigData:AppConfigurationVO; //AppConfigurationVO
         public var allBranchDetails:ArrayCollection; //BranchDetailsVO
 		
-
+		public var uICompDataMappingList:ArrayCollection;//UIComponentMapping
+		
+		public var tempFileDirectory:String;
 	}
 }

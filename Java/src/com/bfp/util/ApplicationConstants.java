@@ -8,6 +8,7 @@ public class ApplicationConstants {
 	public static String SUFFIX_CUSTOMER_DOCS = "_CUSTOMER_DOCS";
 	public static String SUFFIX_LOAN_DOCS = "_LOAN_DOCS";
 	public static String PREFIX_LOAN_TYPE = "LOAN_TYPE_";
+	public static String PREFIX_MANAGED_DOC = "MANAGED_DOC_";
 	
 	public static String CUSTOMER_PHOTO = "_CUSTOMER_PHOTO.jpg";
 	public static String CUSTOMER_ID_PHOTO = "_ID_PROOF.jpg";
@@ -36,12 +37,20 @@ public class ApplicationConstants {
 	public static String CUSTOMER_ID_PHOTO_KEY = "customer.idproof.filerepositorylocation";
 	public static String CUSTOMER_ADDR_PHOTO_KEY = "customer.addressproof.filerepositorylocation";
 	public static String CUSTOMER_PANCARD_PHOTO_KEY = "customer.pancard.filerepositorylocation";
+	public static String MANAGED_DOC_DIRECTORY_KEY = "documents.directory";
+	public static String TEMP_FILE_DIRECTORY_KEY = "temp.files.directory";
 	
 	public static String DAY_BOOK_SHEET_NAMES = "day.book.sheet.names";
 	public static String DAY_BOOK_SHEET_HTML_FILE = "day.book.html.file";
 	public static String ADD_DAY_BOOK = "ADD_DAY_BOOK";
 	public static String ADD_DAY_BOOK_PAY_N_RCD = "ADD_DAY_BOOK_PAY_N_RCD";
 	public static String DAY_BOOK_MAPPING_XML = "DAY_BOOK_MAPPING.xml";
+	public static String GET_UI_COMP_DATA_MAPPING = "GET_UI_COMP_DATA_MAPPING";
+	public static String GET_DYNAMIC_UI_COMPONENTS = "GET_DYNAMIC_UI_COMPONENTS";
+	
+	public static String INSERT_MANAGED_DOCUMENTS = "INSERT_MANAGED_DOCUMENTS";
+	public static String INSERT_MANAGED_DOC_COMPONENTS = "INSERT_MANAGED_DOC_COMPONENTS";
+	public static String GET_MANAGED_DOCUMENTS_MAX_ID = "GET_MANAGED_DOCUMENTS_MAX_ID";
 	
 	public static String DAY_BOOK_TYPE_RECEIVED = "R";
 	public static String DAY_BOOK_TYPE_PAYMENTS = "P"; 

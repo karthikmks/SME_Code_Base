@@ -84,6 +84,12 @@ package util
 		public static const ON_UPDATE_DAY_BOOK:String = "ON_UPDATE_DAY_BOOK";
 		public static const ON_GET_HTML_FROM_EXCEL:String = "ON_HTML_FROM_EXCEL";
 		public static const GET_HTML_FROM_EXCEL:String = "GET_HTML_FROM_EXCEL";
+		public static const SAVE_TEMP_FILES:String = "SAVE_TEMP_FILES";
+		public static const ADD_NEW_MANAGE_DOC:String = "ADD_NEW_MANAGE_DOC";
+		public static const ON_ADD_NEW_MANAGE_DOC:String = "ON_ADD_NEW_MANAGE_DOC";
+		
+		public static const DOC_UPLOAD_TYPES:String = "*.pdf;*.doc;*.docx;*.gif;*.jpeg;*.jpg;*.png";
+		public static var IMAGE_UPLOAD_TYPES_ARR:Array = [".gif",".jpeg",".jpg",".png"];
 		
 		public static const LOAN_STATUS_ARRAY:ArrayCollection = new ArrayCollection([          
             { loanStatusId:"1",loanStatus:"Active" },

@@ -22,6 +22,9 @@ public class ApplicationComponentsDataVO {
 	private AppConfigurationVO branchConfigData;
 	private List<BranchDetailsVO> allBranchDetails;
 	
+	private List<UIComponentMapping> uICompDataMappingList;
+	private String tempFileDirectory;
+	
 	public List<BranchDetailsVO> getAllBranchDetails() {
 		return allBranchDetails;
 	}
@@ -261,6 +264,18 @@ public class ApplicationComponentsDataVO {
 	}
 	public void setBranchConfigData(AppConfigurationVO branchConfigData) {
 		this.branchConfigData = branchConfigData;
+	}
+	public List<UIComponentMapping> getuICompDataMappingList() {
+		return uICompDataMappingList;
+	}
+	public void setuICompDataMappingList(List<UIComponentMapping> uICompDataMappingList) {
+		this.uICompDataMappingList = uICompDataMappingList;
+	}
+	public String getTempFileDirectory() {
+		return tempFileDirectory;
+	}
+	public void setTempFileDirectory(String tempFileDirectory) {
+		this.tempFileDirectory = tempFileDirectory;
 	}
 	
 }

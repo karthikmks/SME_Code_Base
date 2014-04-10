@@ -5,7 +5,7 @@
 
 <!--	<appender name="dailyRollingFile" class="org.apache.log4j.ConsoleAppender">-->
 	<appender name="dailyRollingFile" class="org.apache.log4j.DailyRollingFileAppender">
-		 <param name="File" value="C:/tiruppathir/apache-tomcat-7.0.42/apache-tomcat-7.0.42/webapps/smeportal-karthik/log/sme.log" /> 
+		 <param name="File" value="C:/Karthik/SME/log/sme.log" /> 
 		<param name="Append" value="true" />
 		<param name="DatePattern" value="'.'yyyy-MM-dd" />
 		<layout class="org.apache.log4j.PatternLayout">

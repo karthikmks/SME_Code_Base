@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  layout="absolute" headerHeight="0" width="100%" height="100%"
+		  xmlns:components="components.*" xmlns:ns="http://code.google.com/p/flex-iframe/">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.google.code.flexiframe.IFrame;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			import mx.controls.Label;
+			import mx.events.CloseEvent;
+			import mx.events.DropdownEvent;
+			import mx.events.ListEvent;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import util.SMEConstants;
+			import util.SMEModel;
+			import util.SMEUtility;
+			
+			import valueobject.ManageDocCompDtlVO;
+			import valueobject.ManageDocumentsVO;
+			import valueobject.UIComponentDetail;
+			import valueobject.UIComponentMapping;
+			
+			[Bindable]
+			[Embed(source="../assets/images/noimage.jpg")]
+			private var noImageFound:Class;
+			[Bindable]
+			[Embed(source="../assets/images/correct.gif")] 
+			private var correctSign:Class;
+			[Bindable]
+			public var historyGridData:ArrayCollection = new ArrayCollection;
+			[Bindable]
+			public var isUpdateFlow:Boolean = false;
+			[Bindable]
+			public var isPDFFile:Boolean = false;
+			
+			private var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			[Bindable]
+			private var uiCompMappingData:ArrayCollection = SMEModel.getinstance().appCompMetaData.uICompDataMappingList;
+			
+			protected function reset_clickHandler(event:MouseEvent):void
+			{
+				showHideIFrame(false,true);
+				Alert.show(SMEConstants.MSG_RESET_CONFIRM, "Reset",Alert.YES | Alert.NO, null,
+					resetConfirmHandler, null, Alert.NO); 
+			}
+			
+			protected function save_clickHandler(event:MouseEvent):void
+			{
+				showHideIFrame(false,true);
+				Alert.show(SMEConstants.MSG_RESET_CONFIRM, "Reset",Alert.YES | Alert.NO, null,
+					saveConfirmHandler, null, Alert.NO); 
+			}
+			
+			private function resetConfirmHandler(event:CloseEvent):void {
+				// Check to see if the OK button was pressed.
+				if (event.detail==Alert.YES) {
+					clearAllfields(null);		
+				}
+			}
+			
+			private function saveConfirmHandler(event:CloseEvent):void {
+				// Check to see if the OK button was pressed.
+				var formData:ManageDocumentsVO = getFormData();
+				if (event.detail==Alert.YES) {
+					if(formData==null){
+						Alert.show("Please enter all fields","Error");
+					}else{
+						facade.sendNotification(SMEConstants.ADD_NEW_MANAGE_DOC,formData);	
+						
+					}
+				}
+			}
+			
+			public function clearAllfields(event:Event):void{
+				txType.selectedIndex = -1;
+				category.selectedIndex = -1;
+				subCategory.selectedIndex = -1;
+				clearDocUploadContainer(null);
+			}
+			
+			public function checkBusinessValidation():Boolean{
+				
+				/* var valMsg:String = SMEUtility.doValidation(validatorArray); 
+				if(valMsg!=null && valMsg!=""){
+				Alert.show(SMEConstants.ERRR_MSG_ALL_FILEDS,"Error");
+				return false;
+				}else if(customerImg.source==noImageFound){
+				Alert.show(SMEConstants.ERRR_MSG_CUST_IMAGE,"Error");
+				return false;
+				}else if(idProofAttach.imgReference==null){
+				Alert.show(SMEConstants.ERRR_MSG_UPLOAD_ID_PROOF,"Error");
+				return false;
+				}else if(addrProofAttach.imgReference==null){
+				Alert.show(SMEConstants.ERRR_MSG_UPLOAD_ADDR_PROOF,"Error");
+				return false;
+				}else if(panCardAttach.imgReference==null){
+				Alert.show(SMEConstants.ERRR_MSG_UPLOAD_PANCARD,"Error");
+				return false;
+				}  */
+				return true;
+			}
+			
+			protected function clearDocUploadContainer(evt:Event):void{
+				docUploadContainer.removeAllChildren();
+				docUploadContainer.validateDisplayList();
+				showHideIFrame(false,true);
+			}
+			
+			protected function subCategory_changeHandler(event:ListEvent):void
+			{
+				clearDocUploadContainer(null);
+				var uIComponentMap:UIComponentMapping = subCategory.selectedItem as UIComponentMapping;
+				for(var ind:int=0;ind<uIComponentMap.uiComponentList.length;ind++){
+					var dynamicUIComponent:UIComponentDetail = uIComponentMap.uiComponentList[ind] as UIComponentDetail; 
+					var dynamicComp:Object = SMEUtility.dynamicCompGenerator(dynamicUIComponent);
+					if(dynamicComp!=null){
+						if(dynamicComp as CustomDocAttachment){
+							CustomDocAttachment(dynamicComp).addEventListener(MouseEvent.CLICK,displayDocument);
+						}
+						docUploadContainer.addChild(dynamicComp as DisplayObject);
+					}
+				}
+			}
+			
+			protected function displayDocument(event:MouseEvent):void
+			{
+				if(event.target as Label && event.currentTarget as CustomDocAttachment){
+					//docViewStack.removeAllChildren();
+					var labelField:Label = Label(event.target); 
+					var index:int = int(labelField.text.charAt(labelField.text.length-1))-1;
+					var obj:Object = CustomDocAttachment(event.currentTarget).docCollection.getItemAt(index);
+					if(SMEConstants.IMAGE_UPLOAD_TYPES_ARR.indexOf(obj.fileType)!=-1){
+						imgFrame.source = obj.attachedDoc;
+						showHideIFrame(false,false);
+					}else{
+						var url:String = obj.filePath as String;
+						url = url.replace("\\","/").replace("\\","/").replace("\\","/");
+						docIFrame.source = url;;//"http://localhost:8080/SMEPortal/temp_files/B1-001/March2014.pdf";
+						showHideIFrame(true,true);
+					}
+				}
+			}
+			
+			public function showHideIFrame(flag:Boolean,isDefaultImg:Boolean):void{
+				//docIFrame.visible = docIFrame.includeInLayout = flag;
+				isPDFFile = flag;
+				if(!flag){
+					docIFrame.source = "";
+				}
+				if(isDefaultImg){
+					imgFrame.source = noImageFound;
+				}
+				docIFrame.invalidateSize();
+				docIFrame.validateDisplayList();
+				docIFrame.validateNow();   
+			}
+			
+			public function getFormData():ManageDocumentsVO{
+				var manageDocVO:ManageDocumentsVO = new ManageDocumentsVO();
+				manageDocVO.typeId = UIComponentMapping(txType.selectedItem).uIComponentMappingId;
+				manageDocVO.categoryId = UIComponentMapping(category.selectedItem).uIComponentMappingId;
+				manageDocVO.subCategoryId = UIComponentMapping(subCategory.selectedItem).uIComponentMappingId;
+				manageDocVO.manageDocCompDetailList = new ArrayCollection();
+				manageDocVO.createdBy = SMEModel.getinstance().userProfileVO.userId;
+				manageDocVO.fileList = new ArrayCollection;
+				
+				for(var index:int = 0; index < docUploadContainer.numChildren;index++){
+					var manageDocCompDetail:ManageDocCompDtlVO = new ManageDocCompDtlVO();
+					
+					if(docUploadContainer.getChildAt(index) as CustomDocAttachment){
+						var customAttach:CustomDocAttachment = docUploadContainer.getChildAt(index) as CustomDocAttachment; 
+						manageDocCompDetail.uiCompId = customAttach.uiCompId;
+						manageDocCompDetail.uiCompValue = "";
+						//file list
+						var fileCount:int = 0;
+						for each(var obj:Object in customAttach.docCollection){
+							fileCount++;
+							//file location 
+							var currFileName:String = customAttach.docName+"_"+fileCount+obj.fileType;
+							
+							manageDocCompDetail.uiCompValue += currFileName+":"; 
+							var docMap:Object = new Object;
+							docMap[currFileName] = obj.attachedDoc;
+							manageDocVO.fileList.addItem(docMap);
+							
+						}
+						if(manageDocCompDetail.uiCompValue.charAt(manageDocCompDetail.uiCompValue.length-1)==":"){
+							manageDocCompDetail.uiCompValue = manageDocCompDetail.uiCompValue.substr(0,manageDocCompDetail.uiCompValue.length-1);
+						} 
+						
+					}else if(docUploadContainer.getChildAt(index) as TextInputFormItem){
+						var txtFormItem:TextInputFormItem = docUploadContainer.getChildAt(index) as TextInputFormItem; 
+						manageDocCompDetail.uiCompId = txtFormItem.uiCompId;
+						manageDocCompDetail.uiCompValue = txtFormItem.txtInput.text;
+						if(manageDocCompDetail.uiCompValue.length==0){
+							return null;
+						}
+					}
+					manageDocVO.manageDocCompDetailList.addItem(manageDocCompDetail);
+				}
+				
+				return manageDocVO;
+			}
+			
+			protected function combo_openHandler(event:DropdownEvent):void
+			{
+				showHideIFrame(false,true);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:VBox styleName="smeLoansBackground" width="100%" height="100%"  paddingLeft="5" paddingBottom="5" paddingRight="5" paddingTop="5">
+		
+		<components:CustomHeader headerText="Active" width="100%"/>
+		<mx:HBox styleName="smeLoansBackground" width="100%" paddingLeft="25">
+				<mx:FormItem styleName="smeFormItem" label="Type :" direction="horizontal" horizontalGap="0">
+					<mx:ComboBox id="txType" width="200"  prompt="Select" labelField="label" dataProvider="{uiCompMappingData}"
+								 change="clearDocUploadContainer(event)"
+								 tabIndex="1" open="combo_openHandler(event)"/>
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Category :" direction="horizontal" horizontalGap="0">
+					<mx:ComboBox id="category" width="200" prompt="Select" enabled="{txType.selectedIndex!=-1}"
+								 labelField="label" dataProvider="{txType.selectedItem.childList}"
+								 change="clearDocUploadContainer(event)"
+								 tabIndex="2"  open="combo_openHandler(event)"/>
+				</mx:FormItem>
+				<mx:FormItem styleName="smeFormItem" label="Sub-Category :" direction="horizontal" horizontalGap="0" >
+					<mx:ComboBox id="subCategory" width="200" prompt="Select" enabled="{category.selectedIndex!=-1}"
+								 labelField="label" dataProvider="{category.selectedItem.childList}"
+								 change="subCategory_changeHandler(event)"
+								 tabIndex="3"  open="combo_openHandler(event)"/> 
+				</mx:FormItem>
+		</mx:HBox>
+	<s:Spacer height="5"/>
+		<!--Document Upload Section-->
+		<components:CustomHeader headerText="Document Upload" width="100%"/>
+		<mx:HBox id="docUploadParent" styleName="smeLoansBackground" width="100%" >
+			<mx:Form id="docUploadContainer" styleName="smeForm" width="40%">
+			<!--Place the components here-->					
+			</mx:Form>
+			<s:Spacer width="5" />
+			<mx:VRule height="100%" />
+			<s:Spacer width="5" />
+			<mx:VBox id="docViewStack" maxHeight="350" height="350" width="60%">
+				<mx:Image id="imgFrame" source="{noImageFound}" maintainAspectRatio="false" 
+						  width="100%" height="100%" 
+						  visible="{!isPDFFile}"
+						  includeInLayout="{!isPDFFile}"/>
+				<ns:IFrame id="docIFrame" width="100%" height="100%" 
+						   visible="{isPDFFile}"
+						   includeInLayout="{isPDFFile}"/>
+			</mx:VBox>
+			<s:Spacer width="5" />
+			<mx:VRule height="100%" />
+			<s:Spacer width="5" />
+			
+		</mx:HBox>
+		
+		<components:CustomHeader width="100%"/>
+		<mx:HBox styleName="smeLoansBackground" width="100%" horizontalAlign="right">
+			<mx:Button label="Reset" click="reset_clickHandler(event)"/>
+			<mx:Button label="Save" click="save_clickHandler(event)" 
+					   visible="{!isUpdateFlow}"
+					   includeInLayout="{!isUpdateFlow}"/>
+			<mx:Button label="Update" click="save_clickHandler(event)"
+					   visible="{isUpdateFlow}"
+					   />
+		</mx:HBox>
+		
+	</mx:VBox>
+	
+	
+</mx:Panel>

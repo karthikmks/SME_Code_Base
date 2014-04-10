@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>
+			SELECT 
+				ui_component_details_id,
+				label,
+				ui_component_type,
+				doc_name
+			FROM 
+				ui_component_details
+			WHERE 
+				active = 'Y' AND ui_component_details_id IN (?)
+		</sqlquery>
+		
+		<databaseType>mysql</databaseType>
+		<inputvo>com.bfp.valueobjects.UIComponentMapping</inputvo>
+		<inputparams>
+			<!-- <inputparam>
+				<paramname>uIChildIds</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.UIComponentMapping
+					</classname>
+					<attribute>uIChildIds</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam> -->
+		</inputparams>
+		
+		<resultsets>
+			<resultset>
+				<resultsetname>uiCompDataMapping</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.UIComponentDetail
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>uIComponentDetailId</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>2</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Label</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>3</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>uIComponentType</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>4</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>DocName</voattribute>
+					<votype>String</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

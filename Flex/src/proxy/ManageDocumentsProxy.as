@@ -12,6 +12,7 @@ package proxy
 	import util.SMEConstants;
 	
 	import valueobject.DayBookVO;
+	import valueobject.ManageDocumentsVO;
 
 	public class ManageDocumentsProxy extends BaseProxy
 	{
@@ -67,6 +68,39 @@ package proxy
 			if (e is ResultEvent){
 				e.target.removeEventListener("fault",onGetHTMLFromExcel);
 				sendNotification(SMEConstants.ON_GET_HTML_FROM_EXCEL, (e as ResultEvent).result);
+			}
+			else if (e is FaultEvent){
+				Alert.show("Error Message: "+(e as FaultEvent).message);
+			}			
+		}
+		
+		public function saveFileInTempFolder(prams:Object):void{
+			//showLoadingMask();
+			createRPCRequest("saveFileInTempFolder", onSaveFileInTempFolder).send(prams);
+		}
+		private function onSaveFileInTempFolder(e:Event):void{
+			//closeLoadingMask();
+			e.target.removeEventListener("result",onSaveFileInTempFolder);
+			if (e is ResultEvent){
+				e.target.removeEventListener("fault",onSaveFileInTempFolder);
+				trace("saveFileInTempFolder : "+(e as ResultEvent).result);
+				//sendNotification(SMEConstants.ON_GET_HTML_FROM_EXCEL, (e as ResultEvent).result);
+			}
+			else if (e is FaultEvent){
+				Alert.show("Error Message: "+(e as FaultEvent).message);
+			}			
+		}
+		
+		public function addNewMamagedDocuments(prams:ManageDocumentsVO):void{
+			showLoadingMask();
+			createRPCRequest("addNewMamagedDocuments", onAddNewMamagedDocuments).send(prams);
+		}
+		private function onAddNewMamagedDocuments(e:Event):void{
+			closeLoadingMask();
+			e.target.removeEventListener("result",onAddNewMamagedDocuments);
+			if (e is ResultEvent){
+				e.target.removeEventListener("fault",onAddNewMamagedDocuments);
+				sendNotification(SMEConstants.ON_ADD_NEW_MANAGE_DOC, (e as ResultEvent).result);
 			}
 			else if (e is FaultEvent){
 				Alert.show("Error Message: "+(e as FaultEvent).message);

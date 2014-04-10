@@ -25,8 +25,9 @@
 				<menuitem label="Add Payment"/>
 			</menuitem>				-->
 			<menuitem label="Manage Documents">
+				<menuitem label="Active" />
+				<menuitem label="Audit" />
 				<menuitem label="Upload Day Book" />
-				<menuitem label="Upload Loan Docs" />
 			</menuitem>
 		</fx:XMLList>
 		<fx:XML id="adminMenuList">

@@ -5,9 +5,14 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,6 +34,7 @@ import net.sf.jxls.reader.XLSReader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.jdbc.core.support.SqlLobValue;
 
 import com.bear.gcs.bpm.of.activities.db.spring.valueobject.SQLObjects;
 import com.bear.gcs.bpm.of.utility.XMLParser;
@@ -61,6 +67,8 @@ import com.bfp.valueobjects.JewelSchemeVO;
 import com.bfp.valueobjects.JewelTakeOverFromVO;
 import com.bfp.valueobjects.JewelTypesVO;
 import com.bfp.valueobjects.LoanAssestSplitUpVO;
+import com.bfp.valueobjects.ManageDocCompDtlVO;
+import com.bfp.valueobjects.ManageDocumentsVO;
 import com.bfp.valueobjects.MaritalStatusVO;
 import com.bfp.valueobjects.NationalityVO;
 import com.bfp.valueobjects.OccupationVO;
@@ -75,8 +83,11 @@ import com.bfp.valueobjects.ResponseVO;
 import com.bfp.valueobjects.SearchRequestVO;
 import com.bfp.valueobjects.SearchResponseVO;
 import com.bfp.valueobjects.TempVO;
+import com.bfp.valueobjects.UIComponentDetail;
+import com.bfp.valueobjects.UIComponentMapping;
 import com.bfp.valueobjects.UserProfileVO;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import flex.messaging.FlexContext;
 
 /**
@@ -831,8 +842,11 @@ public class DatabaseService {
 			log.info("End- new customer drop down list value retrieval");
 
 			log.info("Satrt- get application config data");
+			applicationComponentsDataVO.setuICompDataMappingList(getUICompDataMapping());
 			applicationComponentsDataVO.setBranchConfigData(getBranchConfigData(branchDetailVO));
 			log.info("End- get application config data");
+			
+			applicationComponentsDataVO.setTempFileDirectory(fileRepositoryLocationMap.get(ApplicationConstants.TEMP_FILE_DIRECTORY_KEY).trim());
 
 			log.info("Info : Done with retrieveApplicationComponentsData and returning back to the caller");
 		}catch(Exception ex){
@@ -1958,6 +1972,127 @@ public class DatabaseService {
 		}
 		
 		return false;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<UIComponentMapping> getUICompDataMapping(){
+		log.info("Method entry : DatabaseService.getUICompDataMapping");
+		try {
+			List<UIComponentMapping> firstItr = dataLoader.executeSelect(ApplicationConstants.GET_UI_COMP_DATA_MAPPING);
+			List<UIComponentMapping> retrunListCopy = new ArrayList<UIComponentMapping>(firstItr);
+			List<UIComponentMapping> retrunListFinal = new ArrayList<UIComponentMapping>();
+			 
+			for(UIComponentMapping parentVo : firstItr){
+				if(parentVo.getuIChildIds()!=null && !"".equals(parentVo.getuIChildIds().trim())){
+					List obj = (List)XMLParser.parseXML(ApplicationConstants.GET_DYNAMIC_UI_COMPONENTS);
+
+					if(obj != null && !obj.isEmpty()){
+						SQLObjects ref = (SQLObjects) obj.get(0);
+						String sqlQuery = ref.getSqlQuery().replace("?", parentVo.getuIChildIds());
+						ref.setSqlQuery(sqlQuery);
+						System.out.println("SQL Query: "+sqlQuery);
+					}
+					//List<UIComponentDetail> uiCompData = dataLoader.executeSelect(ApplicationConstants.GET_DYNAMIC_UI_COMPONENTS,parentVo);
+					List<UIComponentDetail> uiCompData = dataLoader.executeSelect(obj,null);
+					
+					parentVo.setUiComponentList(uiCompData);
+				}
+				List<UIComponentMapping> secondItr = new ArrayList<UIComponentMapping>(retrunListCopy);
+				for(UIComponentMapping childVo : secondItr){
+					if(parentVo.getuIComponentMappingId() == childVo.getParentId()){
+						parentVo.getChildList().add(childVo);
+						retrunListCopy.remove(childVo);
+					}
+				}
+			}
+			for(UIComponentMapping parentVo : retrunListCopy){
+				for(UIComponentMapping parentVo2 : firstItr){
+					if(parentVo.getuIComponentMappingId() == parentVo2.getuIComponentMappingId()){
+						retrunListFinal.add(parentVo2);
+					}
+				}
+				
+			}
+			return retrunListFinal; 
+		} catch (Exception e) {
+			log.error("Exception in DatabaseService.getUICompDataMapping\n",e);
+			return null;
+		}
+	}
+	
+	public String addNewMamagedDocuments(ManageDocumentsVO manageDocVO){
+		log.info("Method entry : DatabaseService.addNewMamagedDocuments");
+		try{
+			String managedDocDir = fileRepositoryLocationMap.get(ApplicationConstants.MANAGED_DOC_DIRECTORY_KEY);
+			dataLoader.executeInsert(ApplicationConstants.INSERT_MANAGED_DOCUMENTS, manageDocVO);
+			ManageDocumentsVO parentManageDocVO = (ManageDocumentsVO) dataLoader.executeSelect(ApplicationConstants.GET_MANAGED_DOCUMENTS_MAX_ID).get(0);
+			String docPath = ApplicationConstants.PREFIX_MANAGED_DOC+parentManageDocVO.getManageDocumentsId();
+
+			log.info("Writing into file==>> STARTED");
+			for(Map<String, byte[]> fileMap : manageDocVO.getFileList()){
+				for(Map.Entry<String, byte[]> keyValue : fileMap.entrySet()){
+	
+					String filePathNName = keyValue.getKey();
+					File fileOrdir = new File(managedDocDir+"\\"+docPath);
+					if(!fileOrdir.exists()){
+						if(!fileOrdir.mkdirs()){
+							log.info("Error in directory creation");
+						}
+					}
+					log.info("File location==> "+fileOrdir.getPath());
+					FileOutputStream tempFileWriter = new FileOutputStream(fileOrdir.getPath()+"\\"+filePathNName);
+					tempFileWriter.write(keyValue.getValue());
+					tempFileWriter.close();
+				}
+			}
+			log.info("Writing into file==>> COMPLETED");
+			
+			for(ManageDocCompDtlVO docDeatilVO : manageDocVO.getManageDocCompDetailList()){
+				docDeatilVO.setParentId(parentManageDocVO.getManageDocumentsId());
+				dataLoader.executeInsert(ApplicationConstants.INSERT_MANAGED_DOC_COMPONENTS, docDeatilVO);
+			}
+			
+			return "SUCCESS";
+		
+		} catch (Exception e) {
+			log.error("Exception in DatabaseService.addNewMamagedDocuments\n",e);
+			return "FAIL";
+		}
+	}
+	
+	@SuppressWarnings({ "unchecked", "deprecation" })
+	public boolean saveFileInTempFolder(Object fileObj){
+		log.info("Method entry : DatabaseService.addNewMamagedDocuments");
+		try{
+			Map<String, byte[]> fileMap = (Map<String, byte[]>)fileObj;
+			String tempFileDir = fileRepositoryLocationMap.get(ApplicationConstants.TEMP_FILE_DIRECTORY_KEY).trim();
+			log.info("Writing into file==>> STARTED");
+			for(Map.Entry<String, byte[]> keyValue : fileMap.entrySet()){
+
+				HttpServletRequest hhtpReq = FlexContext.getHttpRequest();
+				String tmpFullFilePath = hhtpReq.getRealPath(tempFileDir);
+				String filePathNName = keyValue.getKey();
+				filePathNName = filePathNName.replace(tempFileDir, "");
+				String remPath = filePathNName.substring(0,filePathNName.lastIndexOf("\\"));
+				filePathNName =  filePathNName.substring(filePathNName.lastIndexOf("\\")+1, filePathNName.length());
+				
+				File fileOrdir = new File(tmpFullFilePath+"\\"+remPath);//remPath
+				if(!fileOrdir.exists()){
+					if(!fileOrdir.mkdirs()){
+						log.info("Error in directory creation");
+					}
+				}
+				log.info("File location==> "+fileOrdir.getPath());
+				FileOutputStream tempFileWriter = new FileOutputStream(fileOrdir.getPath()+"\\"+filePathNName);//filePathNName
+				tempFileWriter.write(keyValue.getValue());
+				tempFileWriter.close();
+			}
+			
+			return true;
+		} catch (Exception e) {
+			log.error("Exception in DatabaseService.addNewMamagedDocuments\n",e);
+			return false;
+		}
 	}
 
 }

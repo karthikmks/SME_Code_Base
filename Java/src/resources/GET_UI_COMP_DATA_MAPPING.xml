@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+		<sqlquery>
+			SELECT 
+				ui_component_mapping_id,
+				label,
+				parent_id,
+				order_no,
+				ui_component_id,
+				ui_child_id
+			FROM 
+				ui_component_mapping
+			WHERE 
+				active = 'Y'
+			ORDER BY order_no ASC 
+			
+		</sqlquery>
+		
+		<databaseType>mysql</databaseType>
+		<inputvo>com.bfp.valueobjects.UIComponentMapping</inputvo>
+		<inputparams>
+		</inputparams>
+		
+		<resultsets>
+			<resultset>
+				<resultsetname>uiCompDataMapping</resultsetname>
+				<Impl>
+					com.bear.gcs.bpm.of.activities.db.spring.utility.DDDARowMapperImpl
+				</Impl>
+				<valueobject>
+					com.bfp.valueobjects.UIComponentMapping
+				</valueobject>
+				<column>
+					<dbindex>1</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>uIComponentMappingId</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>2</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>Label</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>3</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>ParentId</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>4</dbindex>
+					<dbtype>Int</dbtype>
+					<voattribute>OrderNumber</voattribute>
+					<votype>int</votype>
+				</column>
+				<column>
+					<dbindex>5</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>uIComponentId</voattribute>
+					<votype>String</votype>
+				</column>
+				<column>
+					<dbindex>6</dbindex>
+					<dbtype>String</dbtype>
+					<voattribute>uIChildIds</voattribute>
+					<votype>String</votype>
+				</column>
+			</resultset>
+		</resultsets>
+	</storedprocedure>
+</storedprocedures>

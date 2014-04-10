@@ -1,16 +1,23 @@
 package util
 {
+	import components.CustomDocAttachment;
+	import components.TextInputFormItem;
+	
 	import flash.net.FileReference;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
+	
+	import flashx.textLayout.operations.CutOperation;
 	
 	import mx.collections.ArrayCollection;
 	import mx.collections.CursorBookmark;
 	import mx.collections.IList;
 	import mx.collections.IViewCursor;
 	import mx.collections.XMLListCollection;
+	import mx.containers.FormItem;
 	import mx.controls.Alert;
 	import mx.controls.DataGrid;
+	import mx.controls.TextInput;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.events.ValidationResultEvent;
 	import mx.formatters.DateFormatter;
@@ -34,6 +41,8 @@ package util
 	import util.PdfConstants;
 	import util.SMEConstants;
 	import util.SMEModel;
+	
+	import valueobject.UIComponentDetail;
 	
 	public class SMEUtility
 	{
@@ -201,6 +210,30 @@ package util
 			pdf.addCell(70, 10, headername, 0, 0, Align.CENTER);
 			pdf.setFont(newFont, 7);
 			pdf.newLine(5);
+		//}
+	}
+	
+	public static function dynamicCompGenerator(dynamicUIComp:UIComponentDetail):Object{
+		switch(dynamicUIComp.uIComponentType){
+			case "TEXT_INPUT":
+				var formItem:TextInputFormItem = new TextInputFormItem();
+				formItem.uiCompId = dynamicUIComp.uIComponentDetailId;
+				formItem.label = dynamicUIComp.label+" :";
+				return formItem
+				break;
+			case "ATTACHMENT":
+				var docUploadComp:CustomDocAttachment = new CustomDocAttachment;
+				docUploadComp.uiCompId = dynamicUIComp.uIComponentDetailId;
+				docUploadComp.label = dynamicUIComp.label+" :";
+				docUploadComp.docName = dynamicUIComp.docName;
+				return docUploadComp;
+				break;
 		}
+		return null;
+	}
+	
+	
+	
+	
 	}
 }
