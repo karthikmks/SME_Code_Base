@@ -29,6 +29,7 @@ mx|Button{
 	chromeColor:#E7E0CB;
 	color:#000000;
 	fontWeight:normal;
+	disabledColor:#000000;
 }
 mx|Panel{
 	paddingTop:10;
@@ -100,6 +101,7 @@ mx|ComboBox{
 	fontFamily:Calibri;
 	fontSize:14;
 	dropDownStyleName:smeComboBoxDropDown;
+	disabledColor:#000000;
 }
 
 /* Classes for components */

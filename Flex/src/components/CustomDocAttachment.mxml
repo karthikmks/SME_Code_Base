@@ -26,8 +26,12 @@
 			public var docName:String = "";
 			public var uiCompId:int;
 			private static var numOfDoc:int = 0;
+			public var docComments:String = "";
+			[Bindable]
+			public var viewOnly:Boolean = false;
 			
 			protected function docLoanAppln_clickHandler(event:MouseEvent):void{
+				facade.sendNotification(SMEConstants.CLEAR_PDF_VIEW,true);
 				uploadDoc();
 			}
 			
@@ -62,6 +66,7 @@
 				obj.attachedDoc = event.currentTarget.data;
 				obj.filePath = "";
 				obj.name =  event.currentTarget.name+event.currentTarget.type;
+				obj.comments = "";
 					
 				docCollection.addItem(obj);
 				if(numOfDoc == docCollection.length){
@@ -80,6 +85,26 @@
 						facade.sendNotification(SMEConstants.SAVE_TEMP_FILES,fileListObj);
 					}
 				}
+				addLinkLabel();
+			} 
+			
+			public function createDocLink(linkStr:String):void{
+				docCollection = new ArrayCollection;
+				var linkArray:Array = linkStr.split(":");
+				for each(var link:String in linkArray){
+					var filePath:String = SMEModel.getinstance().appCompMetaData.tempFileDirectory;
+					filePath += "\\"+SMEModel.getinstance().userProfileVO.userId+"\\"+link;
+					var obj:Object = new Object();
+					obj.filePath = filePath;
+					obj.name = link;
+					obj.fileType = link.split(".")[1];
+					obj.comments = "";
+					docCollection.addItem(obj);
+					addLinkLabel();
+				}
+			}
+			
+			private function addLinkLabel():void{
 				var linkLable:Label = new Label();
 				linkLable.styleName = "smeHyperLinkLabel";
 				linkLable.useHandCursor = true;
@@ -87,8 +112,7 @@
 				linkLable.buttonMode = true;
 				linkLable.text = "doc"+String(docCollection.length);
 				linkContainer.addChild(linkLable as DisplayObject);
-				
-			} 
+			}
 			
 		]]>
 	</fx:Script>
@@ -97,7 +121,7 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 <!--	<mx:TextInput id="loanAppln" text="{docName}"/>-->
-	<mx:Button id="docLoanAppln" label="Upload" click="docLoanAppln_clickHandler(event)"/>
+	<mx:Button id="uploadDocBtn" label="Upload" click="docLoanAppln_clickHandler(event)" enabled="{!viewOnly}" />
 	<mx:HBox id="linkContainer" paddingLeft="0" paddingRight="0" paddingBottom="0" paddingTop="0" horizontalGap="0">
 		
 	</mx:HBox>

@@ -5,8 +5,8 @@ public class ManageDocCompDtlVO {
 	private int manageDocCompDetialId;
 	private int parentId;
 	private int uiCompId;
-	
 	private String uiCompValue;
+	
 	public int getManageDocCompDetialId() {
 		return manageDocCompDetialId;
 	}
@@ -31,5 +31,6 @@ public class ManageDocCompDtlVO {
 	public void setUiCompValue(String uiCompValue) {
 		this.uiCompValue = uiCompValue;
 	}
+
 
 }

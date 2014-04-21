@@ -25,7 +25,7 @@
 				<menuitem label="Add Payment"/>
 			</menuitem>				-->
 			<menuitem label="Manage Documents">
-				<menuitem label="Active" />
+				<menuitem label="Add" />
 				<menuitem label="Audit" />
 				<menuitem label="Upload Day Book" />
 			</menuitem>

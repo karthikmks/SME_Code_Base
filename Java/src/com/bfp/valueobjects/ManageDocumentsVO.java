@@ -14,10 +14,33 @@ public class ManageDocumentsVO {
 	private String modifiedBy;
 	private String modifiedTimestamp;
 	private String activeFlag;
+	private String branchId;
+	private String keyField;
+	private String auditStatus;
+	private String branchDocComment;
+	private String auditorDocComment;
+	private String auditedBy;
+	private String auditedTimestamp;
+	private boolean isAuditorLogin;
+	private String logedInUser;
 	
 	private List<Map<String, byte[]>> fileList;
 	
 	private List<ManageDocCompDtlVO> manageDocCompDetailList;
+	
+	
+	public String getBranchDocComment() {
+		return branchDocComment;
+	}
+	public void setBranchDocComment(String branchDocComment) {
+		this.branchDocComment = branchDocComment;
+	}
+	public String getAuditorDocComment() {
+		return auditorDocComment;
+	}
+	public void setAuditorDocComment(String auditorDocComment) {
+		this.auditorDocComment = auditorDocComment;
+	}
 	
 	public int getManageDocumentsId() {
 		return manageDocumentsId;
@@ -86,6 +109,49 @@ public class ManageDocumentsVO {
 	public void setFileList(List<Map<String, byte[]>> fileList) {
 		this.fileList = fileList;
 	}
+	public String getBranchId() {
+		return branchId;
+	}
+	public void setBranchId(String branchId) {
+		this.branchId = branchId;
+	}
+	public String getKeyField() {
+		return keyField;
+	}
+	public void setKeyField(String keyField) {
+		this.keyField = keyField;
+	}
+	public String getAuditStatus() {
+		return auditStatus;
+	}
+	public void setAuditStatus(String auditStatus) {
+		this.auditStatus = auditStatus;
+	}
+	public String getAuditedBy() {
+		return auditedBy;
+	}
+	public void setAuditedBy(String auditedBy) {
+		this.auditedBy = auditedBy;
+	}
+	public String getAuditedTimestamp() {
+		return auditedTimestamp;
+	}
+	public void setAuditedTimestamp(String auditedTimestamp) {
+		this.auditedTimestamp = auditedTimestamp;
+	}
+	public boolean getIsAuditorLogin() {
+		return isAuditorLogin;
+	}
+	public void setIsAuditorLogin(boolean isAuditorLogin) {
+		this.isAuditorLogin = isAuditorLogin;
+	}
+	public String getLogedInUser() {
+		return logedInUser;
+	}
+	public void setLogedInUser(String logedInUser) {
+		this.logedInUser = logedInUser;
+	}
+	
 	
 	
 }

@@ -32,6 +32,7 @@ import net.sf.jxls.reader.ReaderBuilder;
 import net.sf.jxls.reader.XLSReadStatus;
 import net.sf.jxls.reader.XLSReader;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.support.SqlLobValue;
@@ -2020,44 +2021,146 @@ public class DatabaseService {
 		}
 	}
 	
-	public String addNewMamagedDocuments(ManageDocumentsVO manageDocVO){
+	public boolean addNewMamagedDocuments(ManageDocumentsVO manageDocVO){
 		log.info("Method entry : DatabaseService.addNewMamagedDocuments");
+		boolean returnFlag = false;
 		try{
-			String managedDocDir = fileRepositoryLocationMap.get(ApplicationConstants.MANAGED_DOC_DIRECTORY_KEY);
+			log.info("insert managed document");
 			dataLoader.executeInsert(ApplicationConstants.INSERT_MANAGED_DOCUMENTS, manageDocVO);
 			ManageDocumentsVO parentManageDocVO = (ManageDocumentsVO) dataLoader.executeSelect(ApplicationConstants.GET_MANAGED_DOCUMENTS_MAX_ID).get(0);
-			String docPath = ApplicationConstants.PREFIX_MANAGED_DOC+parentManageDocVO.getManageDocumentsId();
-
+			log.info("insert successful for manage document ID: "+parentManageDocVO.getManageDocumentsId());
+			manageDocVO.setManageDocumentsId(parentManageDocVO.getManageDocumentsId());
+			//saving files in directory
+			returnFlag = saveMangeDocInDir(manageDocVO);
+			if(!returnFlag){
+				for(ManageDocCompDtlVO docDeatilVO : manageDocVO.getManageDocCompDetailList()){
+					docDeatilVO.setParentId(manageDocVO.getManageDocumentsId());
+					dataLoader.executeInsert(ApplicationConstants.INSERT_MANAGED_DOC_COMPONENTS, docDeatilVO);
+				}
+			}
+			return returnFlag;
+		
+		} catch (Exception e) {
+			log.error("Exception in DatabaseService.addNewMamagedDocuments\n",e);
+			try {
+				dataLoader.executeInsert(ApplicationConstants.DELETE_MANAGED_DOCUMENTS, manageDocVO);
+			} catch (Exception e1) {
+				log.error("Exception while deleting in DatabaseService.addNewMamagedDocuments\n",e);
+			}
+		}
+		return returnFlag;
+	}
+	
+	private boolean saveMangeDocInDir(ManageDocumentsVO manageDocVO){
+		log.info("Method entry : DatabaseService.saveFilesInDir");
+		boolean returnFlag = false;
+		try{
+			String managedDocDir = fileRepositoryLocationMap.get(ApplicationConstants.MANAGED_DOC_DIRECTORY_KEY);
+			String docPath = ApplicationConstants.PREFIX_MANAGED_DOC+manageDocVO.getManageDocumentsId();
+	
 			log.info("Writing into file==>> STARTED");
 			for(Map<String, byte[]> fileMap : manageDocVO.getFileList()){
 				for(Map.Entry<String, byte[]> keyValue : fileMap.entrySet()){
-	
-					String filePathNName = keyValue.getKey();
-					File fileOrdir = new File(managedDocDir+"\\"+docPath);
-					if(!fileOrdir.exists()){
-						if(!fileOrdir.mkdirs()){
-							log.info("Error in directory creation");
+					if(keyValue.getKey()!=null && keyValue.getValue()!=null){
+						String filePathNName = keyValue.getKey();
+						File fileOrdir = new File(managedDocDir+"\\"+docPath);
+						if(!fileOrdir.exists()){
+							if(!fileOrdir.mkdirs()){
+								log.info("Error in directory creation");
+							}
 						}
+						log.info("File location==> "+fileOrdir.getPath());
+						FileOutputStream tempFileWriter = new FileOutputStream(fileOrdir.getPath()+"\\"+filePathNName);
+						tempFileWriter.write(keyValue.getValue());
+						tempFileWriter.close();
 					}
-					log.info("File location==> "+fileOrdir.getPath());
-					FileOutputStream tempFileWriter = new FileOutputStream(fileOrdir.getPath()+"\\"+filePathNName);
-					tempFileWriter.write(keyValue.getValue());
-					tempFileWriter.close();
 				}
 			}
 			log.info("Writing into file==>> COMPLETED");
 			
-			for(ManageDocCompDtlVO docDeatilVO : manageDocVO.getManageDocCompDetailList()){
-				docDeatilVO.setParentId(parentManageDocVO.getManageDocumentsId());
-				dataLoader.executeInsert(ApplicationConstants.INSERT_MANAGED_DOC_COMPONENTS, docDeatilVO);
+			returnFlag =  true;
+			clearFileInTempFolder(manageDocVO.getLogedInUser());
+		} catch (Exception e) {
+			log.error("Exception in DatabaseService.saveFilesInDir\n",e);
+		}
+		return returnFlag;
+	}
+	
+	public boolean updateMamagedDocInDetail(ManageDocumentsVO manageDocVO){
+		log.info("Method entry : DatabaseService.updateMamagedDocInDetail");
+		boolean returnFlag = false;
+		try{
+			if(manageDocVO.getIsAuditorLogin()){
+				dataLoader.executeInsert(ApplicationConstants.UPDATE_MANAGED_DOC_AUDITOR, manageDocVO);
+				returnFlag = true;
+			}else{
+				dataLoader.executeInsert(ApplicationConstants.UPDATE_MANAGED_DOC_BRANCH, manageDocVO);
+				returnFlag = saveMangeDocInDir(manageDocVO);
+				//update children
+				if(returnFlag){
+					for(ManageDocCompDtlVO docDeatilVO : manageDocVO.getManageDocCompDetailList()){
+						docDeatilVO.setParentId(manageDocVO.getManageDocumentsId());
+						dataLoader.executeInsert(ApplicationConstants.UPDATE_MANAGED_DOC_COMPONENTS, docDeatilVO);
+					}
+				}
+			}
+			return returnFlag;
+		} catch (Exception e) {
+			log.error("Exception in DatabaseService.updateMamagedDocInDetail\n",e);
+		}
+		return returnFlag;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	public List<ManageDocumentsVO> searchMamagedDoc(ManageDocumentsVO searchParam){
+		log.info("Method entry : DatabaseService.searchMamagedDoc");
+		try{
+			List<ManageDocumentsVO> childCompList=null;
+			if(searchParam.getCreatedTimestamp()!=null && !"".equals(searchParam.getCreatedTimestamp().trim())){
+				String formatedStr = formatDate(searchParam.getCreatedTimestamp());
+				searchParam.setCreatedTimestamp(formatedStr+"%");
+			}else{
+				searchParam.setCreatedTimestamp("%");
+			}
+			if(searchParam.getIsAuditorLogin()){
+				log.info("Auditor Login Flow setting branch id as' %'");
+				searchParam.setBranchId("%");
 			}
 			
-			return "SUCCESS";
-		
+			childCompList = dataLoader.executeSelect(ApplicationConstants.GET_MANAGED_DOCUMENTS, searchParam);
+				
+			return childCompList;
 		} catch (Exception e) {
-			log.error("Exception in DatabaseService.addNewMamagedDocuments\n",e);
-			return "FAIL";
+			log.error("Exception in DatabaseService.searchMamagedDoc\n",e);
 		}
+		return null;
+	}
+	
+	@SuppressWarnings({ "unchecked", "deprecation" })
+	public ManageDocumentsVO getMamagedDocInDetail(ManageDocumentsVO manageDocVO){
+		log.info("Method entry : DatabaseService.getMamagedDocInDetail");
+		try{
+			List<ManageDocCompDtlVO> childCompList = dataLoader.executeSelect(ApplicationConstants.GET_MANAGED_DOC_COMPONENTS, manageDocVO);
+			//clear temp directory
+			clearFileInTempFolder(manageDocVO.getLogedInUser());
+			
+			String sourceDocDir = fileRepositoryLocationMap.get(ApplicationConstants.MANAGED_DOC_DIRECTORY_KEY).trim()+
+									"\\"+ApplicationConstants.PREFIX_MANAGED_DOC+manageDocVO.getManageDocumentsId();
+			String destDocDir = fileRepositoryLocationMap.get(ApplicationConstants.TEMP_FILE_DIRECTORY_KEY).trim();
+			HttpServletRequest hhtpReq = FlexContext.getHttpRequest();
+			destDocDir = hhtpReq.getRealPath(destDocDir);
+			
+			//copy files from doc repository to temp file location for iFrame load
+			FileUtils.copyDirectory(new File(sourceDocDir), new File(destDocDir+"\\"+manageDocVO.getLogedInUser()));
+			
+			manageDocVO.setManageDocCompDetailList(childCompList);
+			return manageDocVO;
+		} catch(IOException e){
+			log.error("Exception while copying files to temp folder... \n",e);
+		} catch (Exception e) {
+			log.error("Exception in DatabaseService.getMamagedDocInDetail\n",e);
+		}
+		return null;
 	}
 	
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -2092,6 +2195,27 @@ public class DatabaseService {
 		} catch (Exception e) {
 			log.error("Exception in DatabaseService.addNewMamagedDocuments\n",e);
 			return false;
+		}
+	}
+	
+
+	@SuppressWarnings("deprecation")
+	private void clearFileInTempFolder(String userId){
+		log.info("Method entry : DatabaseService.clearFileInTempFolder");
+		try{
+			String tempFileDir = fileRepositoryLocationMap.get(ApplicationConstants.TEMP_FILE_DIRECTORY_KEY).trim();
+			tempFileDir += "\\"+userId;
+			HttpServletRequest hhtpReq = FlexContext.getHttpRequest();
+			String tmpFullFilePath = hhtpReq.getRealPath(tempFileDir);
+			File dir = new File(tmpFullFilePath);
+			if(dir.exists()){
+				FileUtils.deleteQuietly(dir);
+			}else{
+				log.info("Given directory does not exist: "+dir.getPath());
+			}
+			log.info("Temp Folder Deleted Successfully: "+tmpFullFilePath);
+		}catch (Exception e) {
+			log.error("Exception in DatabaseService.clearFileInTempFolder( BUT Continuing noraml flow) \n",e);
 		}
 	}
 

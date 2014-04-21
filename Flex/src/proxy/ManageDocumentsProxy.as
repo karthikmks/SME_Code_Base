@@ -106,5 +106,55 @@ package proxy
 				Alert.show("Error Message: "+(e as FaultEvent).message);
 			}			
 		}
+		
+		
+		public function searchMamagedDoc(prams:ManageDocumentsVO):void{
+			showLoadingMask();
+			createRPCRequest("searchMamagedDoc", onSearchMamagedDoc).send(prams);
+		}
+		private function onSearchMamagedDoc(e:Event):void{
+			closeLoadingMask();
+			e.target.removeEventListener("result",onSearchMamagedDoc);
+			if (e is ResultEvent){
+				e.target.removeEventListener("fault",onSearchMamagedDoc);
+				sendNotification(SMEConstants.ON_SEARCH_MANAGE_DOC, (e as ResultEvent).result);
+			}
+			else if (e is FaultEvent){
+				Alert.show("Error Message: "+(e as FaultEvent).message);
+			}			
+		}
+		
+		public function getMamagedDocInDetail(prams:ManageDocumentsVO):void{
+			showLoadingMask();
+			createRPCRequest("getMamagedDocInDetail", onGetMamagedDocInDetail).send(prams);
+		}
+		private function onGetMamagedDocInDetail(e:Event):void{
+			closeLoadingMask();
+			e.target.removeEventListener("result",onGetMamagedDocInDetail);
+			if (e is ResultEvent){
+				e.target.removeEventListener("fault",onGetMamagedDocInDetail);
+				sendNotification(SMEConstants.ON_GET_MANAGED_DOC_DETAILS, (e as ResultEvent).result);
+			}
+			else if (e is FaultEvent){
+				Alert.show("Error Message: "+(e as FaultEvent).message);
+			}			
+		}
+		
+		
+		public function updateMamagedDocInDetail(prams:ManageDocumentsVO):void{
+			showLoadingMask();
+			createRPCRequest("updateMamagedDocInDetail", onUpdateMamagedDocInDetail).send(prams);
+		}
+		private function onUpdateMamagedDocInDetail(e:Event):void{
+			closeLoadingMask();
+			e.target.removeEventListener("result",onUpdateMamagedDocInDetail);
+			if (e is ResultEvent){
+				e.target.removeEventListener("fault",onUpdateMamagedDocInDetail);
+				sendNotification(SMEConstants.ON_UPDATE_MANAGE_DOC, (e as ResultEvent).result);
+			}
+			else if (e is FaultEvent){
+				Alert.show("Error Message: "+(e as FaultEvent).message);
+			}			
+		}
 	}
 }

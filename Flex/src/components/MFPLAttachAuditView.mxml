@@ -3,7 +3,8 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx" 
 		  layout="absolute" headerHeight="0" width="100%" height="100%"
-		  xmlns:components="components.*" xmlns:ns="http://code.google.com/p/flex-iframe/">
+		  xmlns:components="components.*" xmlns:ns="http://code.google.com/p/flex-iframe/"
+		  creationComplete="panel1_creationCompleteHandler(event)">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -18,6 +19,7 @@
 			import mx.controls.Label;
 			import mx.events.CloseEvent;
 			import mx.events.DropdownEvent;
+			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			
 			import org.puremvc.as3.multicore.patterns.facade.Facade;
@@ -40,9 +42,12 @@
 			[Bindable]
 			public var historyGridData:ArrayCollection = new ArrayCollection;
 			[Bindable]
-			public var isUpdateFlow:Boolean = false;
+			public var isAuditorLogin:Boolean = false;
 			[Bindable]
 			public var isPDFFile:Boolean = false;
+			public var manageDocumentVO:ManageDocumentsVO=null;
+			[Bindable]
+			public var isAuditCompleted:Boolean = false;
 			
 			private var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
 			[Bindable]
@@ -58,7 +63,8 @@
 			protected function save_clickHandler(event:MouseEvent):void
 			{
 				showHideIFrame(false,true);
-				Alert.show("Are you sure!", "Save",Alert.YES | Alert.NO, null,
+				manageDocumentVO.auditStatus = event.target.name as String;
+				Alert.show("Are you sure!!!", "Save",Alert.YES | Alert.NO, null,
 					saveConfirmHandler, null, Alert.NO); 
 			}
 			
@@ -76,7 +82,7 @@
 					if(formData==null){
 						Alert.show("Please enter all fields","Error");
 					}else{
-						facade.sendNotification(SMEConstants.ADD_NEW_MANAGE_DOC,formData);	
+						facade.sendNotification(SMEConstants.UPDATE_MANAGE_DOC,formData);	
 						
 					}
 				}
@@ -117,17 +123,23 @@
 				showHideIFrame(false,true);
 			}
 			
-			protected function subCategory_changeHandler(event:ListEvent):void
+			//generate dynamic components
+			protected function subCategory_changeHandler(event:Event):void
 			{
-				clearDocUploadContainer(null);
+				//clearDocUploadContainer(null);
 				var uIComponentMap:UIComponentMapping = subCategory.selectedItem as UIComponentMapping;
 				for(var ind:int=0;ind<uIComponentMap.uiComponentList.length;ind++){
 					var dynamicUIComponent:UIComponentDetail = uIComponentMap.uiComponentList[ind] as UIComponentDetail; 
-					//skip auditor commets section from branch user
-					if(dynamicUIComponent.docName == SMEConstants.ID_AUDITOR_COMMENTS){
-						continue;
+					var dynamicComp:Object = null;
+					if(dynamicUIComponent.docName == SMEConstants.ID_AUDITOR_COMMENTS){ 
+						dynamicComp = SMEUtility.dynamicCompGenerator(dynamicUIComponent,!isAuditorLogin);
+					}else{
+						if(isAuditCompleted){
+							dynamicComp = SMEUtility.dynamicCompGenerator(dynamicUIComponent,isAuditCompleted);
+						}else{
+							dynamicComp = SMEUtility.dynamicCompGenerator(dynamicUIComponent,isAuditorLogin);
+						}
 					}
-					var dynamicComp:Object = SMEUtility.dynamicCompGenerator(dynamicUIComponent);
 					
 					if(dynamicComp!=null){
 						if(dynamicComp as CustomDocAttachment){
@@ -145,25 +157,22 @@
 			protected function displayDocument(event:MouseEvent):void
 			{
 				if(event.target as Label && event.currentTarget as CustomDocAttachment){
+					//docViewStack.removeAllChildren();
 					var labelField:Label = Label(event.target); 
 					var index:int = int(labelField.text.charAt(labelField.text.length-1))-1;
-					
 					var currentAttachment:CustomDocAttachment = CustomDocAttachment(event.currentTarget);
-					var attachObj:Object = currentAttachment.docCollection.getItemAt(index);
 					
-					if(SMEConstants.IMAGE_UPLOAD_TYPES_ARR.indexOf(attachObj.fileType)!=-1){
-						imgFrame.source = attachObj.attachedDoc;
-						showHideIFrame(false,false);
-					}else{
-						var url:String = attachObj.filePath as String;
-						url = url.replace("\\","/").replace("\\","/").replace("\\","/");
-						docIFrame.source = url;;//"http://localhost:8080/SMEPortal/temp_files/B1-001/March2014.pdf";
-						showHideIFrame(true,true);
-					}
+					var attachObj:Object = currentAttachment.docCollection.getItemAt(index);
+				
+					var url:String = attachObj.filePath as String;
+					url = url.replace("\\","/").replace("\\","/").replace("\\","/");
+					docIFrame.source = url;;//"http://localhost:8080/SMEPortal/temp_files/B1-001/March2014.pdf";
+					showHideIFrame(true,true);
 				}
 			}
 			
 			public function showHideIFrame(flag:Boolean,isDefaultImg:Boolean):void{
+				//docIFrame.visible = docIFrame.includeInLayout = flag;
 				isPDFFile = flag;
 				if(!flag){
 					docIFrame.source = "";
@@ -177,21 +186,21 @@
 			}
 			
 			public function getFormData():ManageDocumentsVO{
-				var manageDocVO:ManageDocumentsVO = new ManageDocumentsVO();
-				manageDocVO.branchId = SMEModel.getinstance().userProfileVO.branchId;
-				manageDocVO.typeId = UIComponentMapping(txType.selectedItem).uIComponentMappingId;
-				manageDocVO.categoryId = UIComponentMapping(category.selectedItem).uIComponentMappingId;
-				manageDocVO.subCategoryId = UIComponentMapping(subCategory.selectedItem).uIComponentMappingId;
-				manageDocVO.manageDocCompDetailList = new ArrayCollection();
-				manageDocVO.createdBy = SMEModel.getinstance().userProfileVO.userId;
-				manageDocVO.auditStatus = "Submitted"
+				manageDocumentVO.branchId = SMEModel.getinstance().userProfileVO.branchId;
+				manageDocumentVO.typeId = UIComponentMapping(txType.selectedItem).uIComponentMappingId;
+				manageDocumentVO.categoryId = UIComponentMapping(category.selectedItem).uIComponentMappingId;
+				manageDocumentVO.subCategoryId = UIComponentMapping(subCategory.selectedItem).uIComponentMappingId;
+				manageDocumentVO.manageDocCompDetailList = new ArrayCollection();
+				manageDocumentVO.modifiedBy = SMEModel.getinstance().userProfileVO.userId;
+				manageDocumentVO.auditedBy = SMEModel.getinstance().userProfileVO.userId;
+				manageDocumentVO.isAuditorLogin = isAuditorLogin;
 				
-				manageDocVO.fileList = new ArrayCollection;
+				manageDocumentVO.fileList = new ArrayCollection;
 				var isKeyField:Boolean = true;
 				
 				for(var index:int = 0; index < docUploadContainer.numChildren;index++){
 					var manageDocCompDetail:ManageDocCompDtlVO = new ManageDocCompDtlVO();
-					
+						
 					if(docUploadContainer.getChildAt(index) as CustomDocAttachment){
 						var customAttach:CustomDocAttachment = docUploadContainer.getChildAt(index) as CustomDocAttachment; 
 						manageDocCompDetail.uiCompId = customAttach.uiCompId;
@@ -201,12 +210,12 @@
 						for each(var obj:Object in customAttach.docCollection){
 							fileCount++;
 							//file location 
-							var currFileName:String = customAttach.docName+"_"+fileCount+obj.fileType;
+							var currFileName:String = customAttach.docName+"_"+fileCount+"."+obj.fileType;
 							
 							manageDocCompDetail.uiCompValue += currFileName+":"; 
 							var docMap:Object = new Object;
 							docMap[currFileName] = obj.attachedDoc;
-							manageDocVO.fileList.addItem(docMap);
+							manageDocumentVO.fileList.addItem(docMap);
 							
 						}
 						if(manageDocCompDetail.uiCompValue.charAt(manageDocCompDetail.uiCompValue.length-1)==":"){
@@ -218,12 +227,12 @@
 						trace("txtFormItem id: "+txtFormItem.id);
 						if(txtFormItem.id == SMEConstants.ID_BRANCH_COMMENTS){
 							if(txtFormItem.isTextArea){
-								manageDocVO.branchDocComment = txtFormItem.txtArea.text;
+								manageDocumentVO.branchDocComment = txtFormItem.txtArea.text;
 								continue;
 							}
 						}else if(txtFormItem.id == SMEConstants.ID_AUDITOR_COMMENTS){
 							if(txtFormItem.isTextArea){
-								manageDocVO.auditorDocComment = txtFormItem.txtArea.text;
+								manageDocumentVO.auditorDocComment = txtFormItem.txtArea.text;
 								continue;
 							}
 						}else{
@@ -231,7 +240,7 @@
 								isKeyField = false;
 								var labelStr:String = txtFormItem.label;
 								labelStr = labelStr.replace(" :","");
-								manageDocVO.keyField = labelStr+"/"+txtFormItem.txtInput.text;
+								manageDocumentVO.keyField = labelStr+"/"+txtFormItem.txtInput.text;
 							}
 							manageDocCompDetail.uiCompId = txtFormItem.uiCompId;
 							manageDocCompDetail.uiCompValue = txtFormItem.txtInput.text;
@@ -242,15 +251,69 @@
 					}else{
 						continue;
 					}
-					manageDocVO.manageDocCompDetailList.addItem(manageDocCompDetail);
+					manageDocumentVO.manageDocCompDetailList.addItem(manageDocCompDetail);
 				}
 				
-				return manageDocVO;
+				return manageDocumentVO;
 			}
 			
 			protected function combo_openHandler(event:DropdownEvent):void
 			{
 				showHideIFrame(false,true);
+			}
+			
+			//set result data
+			public function setFormData(mangeDcVO:ManageDocumentsVO):void{
+			
+				calculateTypeCatIndex(mangeDcVO);
+				//create dynamic components
+				subCategory_changeHandler(null);
+				
+				//set dynamic components
+				SMEUtility.dynamicCompSetValue(docUploadContainer,mangeDcVO.manageDocCompDetailList,mangeDcVO);
+				
+				//resolve unknown issue
+				calculateTypeCatIndex(mangeDcVO);
+			}
+			
+			protected function panel1_creationCompleteHandler(event:FlexEvent):void
+			{
+				if(manageDocumentVO!=null){
+					setFormData(manageDocumentVO);
+				}
+				
+			}
+			
+			private function calculateTypeCatIndex(mangeDcVO:ManageDocumentsVO):void{
+				var dataColl:ArrayCollection = SMEModel.getinstance().appCompMetaData.uICompDataMappingList;
+				//set type,category & sub-type
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var comMapLevel1:UIComponentMapping = dataColl[inx] as UIComponentMapping;
+					if(comMapLevel1.uIComponentMappingId == mangeDcVO.typeId){
+						txType.selectedIndex = inx;
+						var dataColl2:ArrayCollection = comMapLevel1.childList;
+						//categiry iteration
+						for (var inx2:int=0;inx2<dataColl2.length;inx2++){
+							var comMapLevel2:UIComponentMapping = dataColl2[inx2] as UIComponentMapping;
+							if(comMapLevel2.uIComponentMappingId == mangeDcVO.categoryId){
+								category.selectedIndex = inx2;
+								//sub-category data provider setting
+								subCategory.dataProvider = category.selectedItem.childList as ArrayCollection;
+								var dataColl3:ArrayCollection = comMapLevel2.childList;
+								//sub-categiry iteration
+								for (var inx3:int=0;inx3<dataColl3.length;inx3++){
+									var comMapLevel3:UIComponentMapping = dataColl3[inx3] as UIComponentMapping;
+									if(comMapLevel3.uIComponentMappingId == mangeDcVO.subCategoryId){
+										subCategory.selectedIndex = inx3;
+										break;
+									}
+								}
+								break;
+							}
+						}
+						break;
+					}
+				}
 			}
 			
 		]]>
@@ -260,30 +323,33 @@
 		
 		<components:CustomHeader headerText="Add Documents" width="100%"/>
 		<mx:HBox styleName="smeLoansBackground" width="100%" paddingLeft="25">
-				<mx:FormItem styleName="smeFormItem" label="Type :" direction="horizontal" horizontalGap="0">
-					<mx:ComboBox id="txType" width="200"  prompt="Select" labelField="label" dataProvider="{uiCompMappingData}"
-								 change="clearDocUploadContainer(event)"
-								 tabIndex="1" open="combo_openHandler(event)"/>
-				</mx:FormItem>
-				<mx:FormItem styleName="smeFormItem" label="Category :" direction="horizontal" horizontalGap="0">
-					<mx:ComboBox id="category" width="200" prompt="Select" enabled="{txType.selectedIndex!=-1}"
-								 labelField="label" dataProvider="{txType.selectedItem.childList}"
-								 change="clearDocUploadContainer(event)"
-								 tabIndex="2"  open="combo_openHandler(event)"/>
-				</mx:FormItem>
-				<mx:FormItem styleName="smeFormItem" label="Sub-Category :" direction="horizontal" horizontalGap="0" >
-					<mx:ComboBox id="subCategory" width="200" prompt="Select" enabled="{category.selectedIndex!=-1}"
-								 labelField="label" dataProvider="{category.selectedItem.childList}"
-								 change="subCategory_changeHandler(event)"
-								 tabIndex="3"  open="combo_openHandler(event)"/> 
-				</mx:FormItem>
+			<mx:FormItem styleName="smeFormItem" label="Type :" direction="horizontal" horizontalGap="0">
+				<mx:ComboBox id="txType" width="200"  prompt="Select" labelField="label" dataProvider="{uiCompMappingData}"
+							 change="clearDocUploadContainer(event)"
+							 tabIndex="1" open="combo_openHandler(event)"
+							 enabled="false"/>
+			</mx:FormItem>
+			<mx:FormItem styleName="smeFormItem" label="Category :" direction="horizontal" horizontalGap="0">
+				<mx:ComboBox id="category" width="200" prompt="Select" enabled="{txType.selectedIndex!=-1 &amp;&amp; txType.enabled}"
+							 labelField="label" dataProvider="{txType.selectedItem.childList}"
+							 change="clearDocUploadContainer(event)"
+							 tabIndex="2"  open="combo_openHandler(event)"
+							 />
+			</mx:FormItem>
+			<!--change="subCategory_changeHandler(event)"-->
+			<mx:FormItem styleName="smeFormItem" label="Sub-Category :" direction="horizontal" horizontalGap="0" >
+				<mx:ComboBox id="subCategory" width="200" prompt="Select" enabled="{category.selectedIndex!=-1 &amp;&amp; txType.enabled}"
+							 labelField="label" 
+							 tabIndex="3"  open="combo_openHandler(event)"
+							 /> 
+			</mx:FormItem>
 		</mx:HBox>
-	<s:Spacer height="5"/>
+		<s:Spacer height="5"/>
 		<!--Document Upload Section-->
 		<components:CustomHeader headerText="Document Upload" width="100%"/>
 		<mx:HBox id="docUploadParent" styleName="smeLoansBackground" width="100%" >
 			<mx:Form id="docUploadContainer" styleName="smeForm" width="40%">
-			<!--Place the components here-->					
+				<!--Place the components here-->					
 			</mx:Form>
 			<s:Spacer width="5" />
 			<mx:VRule height="100%" />
@@ -296,13 +362,6 @@
 				<ns:IFrame id="docIFrame" width="100%" height="100%" 
 						   visible="{isPDFFile}"
 						   includeInLayout="{isPDFFile}"/>
-				<!--<mx:HRule width="100%" visible="{txtCmt.visible}" includeInLayout="{txtCmt.visible}"/>
-				<mx:HBox width="100%" visible="{txtCmt.visible}" includeInLayout="{txtCmt.visible}" styleName="smeLoansBackground">
-					<s:TextInput id="txtCmt" prompt="Please add your comments if required for auditor review." width="100%" 
-								 visible="false"
-								 includeInLayout="false"
-								 maxChars="400"/>
-				</mx:HBox>-->
 			</mx:VBox>
 			<s:Spacer width="5" />
 			<mx:VRule height="100%" />
@@ -312,15 +371,20 @@
 		
 		<components:CustomHeader width="100%"/>
 		<mx:HBox styleName="smeLoansBackground" width="100%" horizontalAlign="right">
-			<mx:Button label="Reset" click="reset_clickHandler(event)"/>
-			<mx:Button label="Save" click="save_clickHandler(event)" 
-					   visible="{!isUpdateFlow}"
-					   includeInLayout="{!isUpdateFlow}"/>
-			<mx:Button label="Update" click="save_clickHandler(event)"
-					   visible="{isUpdateFlow}"
-					   />
+			<mx:Button name="Auditor Replied" label="Notify Branch" click="save_clickHandler(event)"
+					   visible="{isAuditorLogin}"
+					   includeInLayout="{isAuditorLogin}"/>
+			<mx:Button name="Audit Completed" label="Audit Completed" enabled="{!isAuditCompleted}" click="save_clickHandler(event)" 
+					   visible="{isAuditorLogin}"
+					   includeInLayout="{isAuditorLogin}"/>
+			
+			<mx:Button name="Branch Replied" label="Reply To Auditor" enabled="{!isAuditCompleted}" click="save_clickHandler(event)"
+					   visible="{!isAuditorLogin}"
+					   includeInLayout="{!isAuditorLogin}"/>
+			<mx:Button id="closeBtn" label="Close"/>
+			<s:Spacer width="100"/>
 		</mx:HBox>
-		
+		<s:Spacer height="4"/>
 	</mx:VBox>
 	
 	

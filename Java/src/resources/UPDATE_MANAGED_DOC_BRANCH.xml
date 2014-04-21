@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<storedprocedures>
+	<storedprocedure code="1" name="sql">
+	<sqlquery>
+	
+	UPDATE manage_documents SET 
+		modified_by = ?,
+		modified_timestamp = now(),
+		branch_comments = ?,
+		key_column = ?,
+		audit_status = ?
+	WHERE manage_documents_id = ? 
+	
+	</sqlquery>	
+	
+	<databaseType>mysql</databaseType>		
+		<inputvo>com.bfp.valueobjects.ManageDocumentsVO</inputvo>	
+		<inputparams>
+			<inputparam>
+				<paramname>modifiedBy</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.ManageDocumentsVO
+					</classname>
+					<attribute>ModifiedBy</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>branchDocComment</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.ManageDocumentsVO
+					</classname>
+					<attribute>BranchDocComment</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>keyField</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.ManageDocumentsVO
+					</classname>
+					<attribute>KeyField</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>auditStatus
+			<inputparam>
+				<paramname>AuditStatus</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.ManageDocumentsVO
+					</classname>
+					<attribute>AuditStatus</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>manageDocumentsId</paramname>
+				<paramtype>Int</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.ManageDocumentsVO
+					</classname>
+					<attribute>ManageDocumentsId</attribute>
+					<votype>int</votype>
+				</function>
+			</inputparam>
+		</inputparams>
+	</storedprocedure>
+</storedprocedures>

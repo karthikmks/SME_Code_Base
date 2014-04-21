@@ -1,9 +1,11 @@
 package mediator
 {
+	import components.MFPLAttachAuditView;
 	import components.ManageDocuments;
 	
 	import flash.utils.ByteArray;
 	
+	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	
 	import org.puremvc.as3.multicore.interfaces.IMediator;
@@ -55,7 +57,14 @@ package mediator
 				SMEConstants.ON_GET_HTML_FROM_EXCEL,
 				SMEConstants.SAVE_TEMP_FILES,
 				SMEConstants.ADD_NEW_MANAGE_DOC,
-				SMEConstants.ON_ADD_NEW_MANAGE_DOC
+				SMEConstants.ON_ADD_NEW_MANAGE_DOC,
+				SMEConstants.GET_MANAGED_DOC_DETAILS,
+				SMEConstants.ON_GET_MANAGED_DOC_DETAILS,
+				SMEConstants.SEARCH_MANAGE_DOC,
+				SMEConstants.ON_SEARCH_MANAGE_DOC,
+				SMEConstants.UPDATE_MANAGE_DOC,
+				SMEConstants.ON_UPDATE_MANAGE_DOC,
+				SMEConstants.CLEAR_PDF_VIEW
 			]
 		}
 		
@@ -92,20 +101,64 @@ package mediator
 						view.manageDayBook.clearAllFields();
 					}
 					break;
+				
 				case SMEConstants.SAVE_TEMP_FILES:
 					docProxy.saveFileInTempFolder(notifBody);
 					break;
+			
 				case SMEConstants.ADD_NEW_MANAGE_DOC:
 					docProxy.addNewMamagedDocuments(notifBody as ManageDocumentsVO);
 					break;
+				
 				case SMEConstants.ON_ADD_NEW_MANAGE_DOC:
-					if(notifBody == "SUCCESS"){
+					if(notifBody!=null && (notifBody as Boolean)==true){
 						Alert.show("Saved Successfully","Managed Documents");
 						view.mfplAttachments.clearAllfields(null);
 					}else{
-						Alert.show("Saved failure, Please try again.","Managed Documents");
+						Alert.show("Save failure, Please try again.","Managed Documents");
 					}
 					break;
+				
+				case SMEConstants.SEARCH_MANAGE_DOC:
+					docProxy.searchMamagedDoc(notifBody as ManageDocumentsVO);
+					break;
+				
+				case SMEConstants.ON_SEARCH_MANAGE_DOC:
+					if(notifBody!=null && (notifBody as ArrayCollection).length>0){
+						view.mfplSearchAttachmt.resultDataColl = notifBody as ArrayCollection;
+					}else{
+						Alert.show("No record found.","Managed Documents");
+						view.mfplSearchAttachmt.resultDataColl = new ArrayCollection;
+					}
+					break;
+				
+				case SMEConstants.GET_MANAGED_DOC_DETAILS:
+					docProxy.getMamagedDocInDetail(notifBody as ManageDocumentsVO);
+					break;
+				
+				case SMEConstants.ON_GET_MANAGED_DOC_DETAILS:
+					view.mfplSearchAttachmt.launchMFPLAttachment(notifBody as ManageDocumentsVO);
+					break;
+				
+				case SMEConstants.UPDATE_MANAGE_DOC:
+					docProxy.updateMamagedDocInDetail(notifBody as ManageDocumentsVO);
+					break;
+				
+				case SMEConstants.ON_UPDATE_MANAGE_DOC:
+					if(notifBody!=null && (notifBody as Boolean)==true){
+						if(view.mfplSearchAttachmt.titlePopUpWindow!=null){
+							view.mfplSearchAttachmt.closeSelectCustomerPopUp(null);
+						}
+						Alert.show("Updated Successfully","Managed Documents");
+					}else{
+						Alert.show("Update failure, Please try again.","Managed Documents");
+					}
+					break;
+				
+				case SMEConstants.CLEAR_PDF_VIEW:
+					notifBody
+					break;
+				
 			}
 		}
 	

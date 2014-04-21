@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  layout="absolute" headerHeight="0" width="100%" height="100%"
+		  xmlns:components="components.*" xmlns:ns="http://code.google.com/p/flex-iframe/">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import flashx.textLayout.container.ISandboxSupport;
+			
+			import mx.collections.ArrayCollection;
+			import mx.containers.TitleWindow;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
+			import mx.utils.object_proxy;
+			
+			import org.puremvc.as3.multicore.patterns.facade.Facade;
+			
+			import util.SMEConstants;
+			import util.SMEModel;
+			import util.SMEUtility;
+			
+			import valueobject.ManageDocumentsVO;
+			import valueobject.UIComponentMapping;
+			
+			[Bindable]
+			[Embed(source="../assets/images/noimage.jpg")]
+			private var noImageFound:Class;
+			[Bindable]
+			[Embed(source="../assets/images/correct.gif")] 
+			private var correctSign:Class;
+			
+			private var facade:Facade = ApplicationFacade.getInstance(SME.MAIN_APPLN);
+			[Bindable]
+			private var uiCompMappingData:ArrayCollection = SMEModel.getinstance().appCompMetaData.uICompDataMappingList;
+			[Bindable]
+			public var resultDataColl:ArrayCollection = new ArrayCollection; 
+			public var titlePopUpWindow:TitleWindow = null;
+			public var searcParamBackUp:ManageDocumentsVO=null;
+			[Bindable]         
+			public var isAuditorLogin:Boolean = 
+				SMEModel.getinstance().userProfileVO.role == SMEConstants.USER_ROLE_AUDITOR?true:false;
+			
+			private function serialLabelFunction(item:Object, column:DataGridColumn):String{
+				var index:int = resultDataColl.getItemIndex(item);
+				if (index > -1)
+					return (index + 1).toString();
+				return "";
+			}
+			
+			private function typeLabelFunction(item:Object, column:DataGridColumn):String{
+				var docVO:ManageDocumentsVO = item as ManageDocumentsVO;
+				var dataColl:ArrayCollection = SMEModel.getinstance().appCompMetaData.uICompDataMappingList;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var comMap:UIComponentMapping = dataColl[inx] as UIComponentMapping;
+					if(comMap.uIComponentMappingId == docVO.typeId){
+						return comMap.label;
+					}
+				}
+				return "";
+			}
+			private function categoryLabelFunction(item:Object, column:DataGridColumn):String{
+				var docVO:ManageDocumentsVO = item as ManageDocumentsVO;
+				var dataColl:ArrayCollection = SMEModel.getinstance().appCompMetaData.uICompDataMappingList;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var comMapLevel1:UIComponentMapping = dataColl[inx] as UIComponentMapping;
+					if(comMapLevel1.uIComponentMappingId == docVO.typeId){
+						var dataColl2:ArrayCollection = comMapLevel1.childList;
+						for (var inx2:int=0;inx2<dataColl2.length;inx2++){
+							var comMapLevel2:UIComponentMapping = dataColl2[inx2] as UIComponentMapping;
+							if(comMapLevel2.uIComponentMappingId == docVO.categoryId){
+								return comMapLevel2.label;
+							}
+						}
+					}
+				}
+				return "";
+			}
+			private function subCategoryLblFunction(item:Object, column:DataGridColumn):String{
+				var docVO:ManageDocumentsVO = item as ManageDocumentsVO;
+				//Level 1
+				var dataColl:ArrayCollection = SMEModel.getinstance().appCompMetaData.uICompDataMappingList;
+				for (var inx:int=0;inx<dataColl.length;inx++){
+					var comMapLevel1:UIComponentMapping = dataColl[inx] as UIComponentMapping;
+					if(comMapLevel1.uIComponentMappingId == docVO.typeId){
+						//Level 2
+						var dataColl2:ArrayCollection = comMapLevel1.childList;
+						for (var inx2:int=0;inx2<dataColl2.length;inx2++){
+							var comMapLevel2:UIComponentMapping = dataColl2[inx2] as UIComponentMapping;
+							if(comMapLevel2.uIComponentMappingId == docVO.categoryId){
+								//Level 3
+								var dataColl3:ArrayCollection = comMapLevel2.childList;
+								for (var inx3:int=0;inx3<dataColl3.length;inx3++){
+									var comMapLevel3:UIComponentMapping = dataColl3[inx3] as UIComponentMapping;
+									if(comMapLevel3.uIComponentMappingId == docVO.subCategoryId){
+										return comMapLevel3.label;
+									}
+								}
+							}
+						}
+					}
+				}
+				return "";
+			}
+			
+			private function createdDateLblFun(item:Object, column:DataGridColumn):String{
+				var docVO:ManageDocumentsVO = item as ManageDocumentsVO;
+				return SMEUtility.getFormattedDate(docVO.createdTimestamp.split(" ")[0]);
+			}
+			
+			private function makeAuditLblFun(item:Object, column:DataGridColumn):String{
+				if(isAuditorLogin){
+					return "Click for Audit";
+				}else{
+					return "Click for Update";
+				}
+			}
+			
+			public function checkBusinessValidation():Boolean{
+				if(txType.selectedIndex<0){
+					Alert.show("Please select type!!!","Error");
+					return false;
+				}else if(category.selectedIndex<0){
+					Alert.show("Please select category!!!","Error");
+					return false;
+				}
+				return true;
+			}
+		
+			protected function searchGrid_clickHandler(event:ListEvent):void{
+				//trace(""+event.columnIndex)
+				if(event && event.columnIndex == searchGrid.columns.length-1){
+					var manageDocV:ManageDocumentsVO = searchGrid.selectedItem as ManageDocumentsVO;
+					manageDocV.isAuditorLogin = isAuditorLogin;
+					manageDocV.branchId = SMEModel.getinstance().userProfileVO.branchId;
+					manageDocV.logedInUser = SMEModel.getinstance().userProfileVO.userId;
+					facade.sendNotification(SMEConstants.GET_MANAGED_DOC_DETAILS,manageDocV);
+				}
+				
+			}
+			
+			protected function searchBtn_clickHandler(event:MouseEvent):void{
+				if(checkBusinessValidation()){
+					var searchParam:ManageDocumentsVO = new ManageDocumentsVO;
+					searchParam.typeId = txType.selectedItem.uIComponentMappingId;
+					searchParam.categoryId = category.selectedItem.uIComponentMappingId;
+					searchParam.createdTimestamp = fromDate.text;
+					searchParam.branchId = SMEModel.getinstance().userProfileVO.branchId;
+					searchParam.isAuditorLogin = isAuditorLogin;
+					searchParam.logedInUser = SMEModel.getinstance().userProfileVO.userId;
+					searcParamBackUp = searchParam;
+					facade.sendNotification(SMEConstants.SEARCH_MANAGE_DOC,searcParamBackUp);
+				}
+			}
+			
+			protected function resetBtn_clickHandler(event:MouseEvent):void{
+				Alert.show(SMEConstants.MSG_RESET_CONFIRM, "Reset",Alert.YES | Alert.NO, null,
+					resetConfirmHandler, null, Alert.NO); 
+			}
+			private function resetConfirmHandler(event:CloseEvent):void {
+				// Check to see if the OK button was pressed.
+				if (event.detail==Alert.YES) {
+					clearAllfields(null);		
+				}
+			}
+			
+			public function clearAllfields(event:Event):void{
+				txType.selectedIndex = -1;
+				category.selectedIndex = -1;
+				fromDate.text = "";
+				resultDataColl = new ArrayCollection;
+			}
+			
+			public function launchMFPLAttachment(manageDocVO:ManageDocumentsVO):void{
+				
+				titlePopUpWindow = TitleWindow(PopUpManager.createPopUp(DisplayObject(FlexGlobals.topLevelApplication), TitleWindow, true));
+				titlePopUpWindow.title = "Manage Document - Audit";
+				titlePopUpWindow.showCloseButton = true;
+				titlePopUpWindow.addEventListener(CloseEvent.CLOSE,closeSelectCustomerPopUp);
+				titlePopUpWindow.height = Application(FlexGlobals.topLevelApplication).height - 25;
+				titlePopUpWindow.width = Application(FlexGlobals.topLevelApplication).width - 50;
+				
+				var auditorReview:MFPLAttachAuditView = new MFPLAttachAuditView();
+				auditorReview.manageDocumentVO = ObjectUtil.copy(manageDocVO) as ManageDocumentsVO;
+				auditorReview.addEventListener(FlexEvent.CREATION_COMPLETE,auditorViewCreationComplt);
+				
+				if(manageDocVO.auditStatus == SMEConstants.STATUS_AUDIT_COMPLETED){
+					auditorReview.isAuditCompleted = true;
+				}
+				
+				if(SMEModel.getinstance().userProfileVO.role == SMEConstants.USER_ROLE_AUDITOR){
+					auditorReview.isAuditorLogin = true;
+				}
+				titlePopUpWindow.addChildAt(auditorReview,0);
+				PopUpManager.centerPopUp(titlePopUpWindow);
+			}
+			
+			private function auditorViewCreationComplt(event:Event):void {
+				MFPLAttachAuditView(event.target).closeBtn.addEventListener(MouseEvent.CLICK,closeSelectCustomerPopUp);
+			}
+			
+			public function closeSelectCustomerPopUp(event:Event):void {
+				if(event==null && titlePopUpWindow!=null){
+					facade.sendNotification(SMEConstants.SEARCH_MANAGE_DOC,searcParamBackUp);
+				}
+				if(titlePopUpWindow!=null){
+					PopUpManager.removePopUp(titlePopUpWindow as TitleWindow);
+					titlePopUpWindow = null;
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:VBox styleName="smeLoansBackground" width="100%" height="100%"  paddingLeft="5" paddingBottom="5" paddingRight="5" paddingTop="5">
+		
+		<components:CustomHeader width="100%" height="25" headerText="Manage Document- Audit"/>
+		<mx:HBox styleName="smeLoansBackground" width="100%" paddingLeft="25">
+			<mx:FormItem styleName="smeFormItem" label="Type :" direction="horizontal" horizontalGap="0">
+				<mx:ComboBox id="txType" width="200"  prompt="Select" labelField="label" dataProvider="{uiCompMappingData}"
+							 tabIndex="1"/>
+			</mx:FormItem>
+			<mx:FormItem styleName="smeFormItem" label="Category :" direction="horizontal" horizontalGap="0">
+				<mx:ComboBox id="category" width="200" prompt="Select" enabled="{txType.selectedIndex!=-1}"
+							 labelField="label" dataProvider="{txType.selectedItem.childList}"
+							 tabIndex="2"/>
+			</mx:FormItem>
+			<mx:FormItem styleName="smeFormItem" label="Date :" direction="horizontal" horizontalGap="0" >
+				<mx:DateField id="fromDate" width="100"/>
+			</mx:FormItem>
+			<mx:FormItem styleName="smeFormItem" label="" direction="horizontal" horizontalGap="5" >
+				<mx:Button label="Search" click="searchBtn_clickHandler(event)"/>
+				<mx:Button label="Reset" click="resetBtn_clickHandler(event)"/>
+			</mx:FormItem>
+			
+		</mx:HBox>
+		<s:Spacer height="5"/>
+		<!--Document Upload Section-->
+		<mx:HRule width="100%"/>
+		<mx:HBox id="docUploadParent" styleName="smeLoansBackground" width="100%" height="90%">
+			<mx:DataGrid id="searchGrid" width="100%" height="100%" dataProvider="{resultDataColl}" itemClick="searchGrid_clickHandler(event)"
+						 styleName="smeDatagrid"
+						 horizontalScrollPolicy="auto"
+						 verticalScrollPolicy="auto">
+				<mx:columns>
+					<mx:DataGridColumn headerText="S.No" labelFunction="serialLabelFunction"  width="35"/>
+					<mx:DataGridColumn headerText="Branch" dataField="branchId" width="60"/>
+					<mx:DataGridColumn headerText="Type" labelFunction="typeLabelFunction" width="80"/>
+					<mx:DataGridColumn headerText="Category" labelFunction="categoryLabelFunction" width="80"/>
+					<mx:DataGridColumn headerText="Sub-Category" labelFunction="subCategoryLblFunction" width="180"/>
+					<mx:DataGridColumn headerText="Date Initiated" labelFunction="createdDateLblFun" width="90"/>
+					<mx:DataGridColumn headerText="Reference/Number" dataField="keyField" width="160" />
+					<mx:DataGridColumn headerText="Uploaded By" dataField="createdBy" width="85"/>
+					
+					<!--<mx:DataGridColumn headerText="Modified By" dataField="modifiedBy"/>
+					<mx:DataGridColumn headerText="Modified Date" dataField="modifiedTimestamp"/>-->
+					
+					<mx:DataGridColumn headerText="Audit Status" dataField="auditStatus" width="100" />
+					<mx:DataGridColumn headerText="{isAuditorLogin?'Audit':'Update/Details'}" labelFunction="makeAuditLblFun" textDecoration="underline" color="#0000FF"
+									   width="90"/>
+				</mx:columns> 
+			</mx:DataGrid>
+		</mx:HBox>
+	
+	</mx:VBox>
+	
+	
+</mx:Panel>

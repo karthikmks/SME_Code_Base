@@ -5,14 +5,18 @@
 	
 	INSERT INTO manage_documents(
 		type_id,
+		branch_id,
 		category_id,
 		sub_category_id,
 		created_by,
 		created_timestamp,
 		modified_by,
 		modified_timestamp,
-		active_flag) 
-	VALUES(?,?,?,?,now(),?,now(),'Y') 
+		branch_comments,
+		key_column,
+		active_flag,
+		audit_status) 
+	VALUES(?,?,?,?,?,now(),?,now(),?,?,'Y',?) 
 	</sqlquery>	
 	
 	<databaseType>mysql</databaseType>		
@@ -28,6 +32,17 @@
 					<votype>int</votype>
 				</function>
 			</inputparam>
+			<inputparam>
+				<paramname>branchId</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.ManageDocumentsVO
+					</classname>
+					<attribute>BranchId</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			
 			<inputparam>
 				<paramname>categoryId</paramname>
 				<paramtype>Int</paramtype>
@@ -48,7 +63,6 @@
 					<votype>int</votype>
 				</function>
 			</inputparam>
-			
 			
 			<inputparam>
 				<paramname>createdBy</paramname>
@@ -71,7 +85,37 @@
 					<votype>String</votype>
 				</function>
 			</inputparam>
+			<inputparam>
+				<paramname>branchDocComment</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.ManageDocumentsVO
+					</classname>
+					<attribute>BranchDocComment</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
 			
+			<inputparam>
+				<paramname>keyField</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.ManageDocumentsVO
+					</classname>
+					<attribute>KeyField</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
+			<inputparam>
+				<paramname>auditStatus</paramname>
+				<paramtype>String</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.ManageDocumentsVO
+					</classname>
+					<attribute>AuditStatus</attribute>
+					<votype>String</votype>
+				</function>
+			</inputparam>
 		</inputparams>
 	</storedprocedure>
 </storedprocedures>

@@ -18,6 +18,15 @@ package valueobject
 		public var modifiedBy:String;
 		public var modifiedTimestamp:String;
 		public var activeFlag:String;
+		public var branchId:String;
+		public var keyField:String;
+		public var auditStatus:String;
+		public var branchDocComment:String;
+		public var auditorDocComment:String;
+		public var auditedBy:String;
+		public var auditedTimestamp:String;
+		public var isAuditorLogin:Boolean;
+		public var logedInUser:String;
 		
 		public var manageDocCompDetailList:ArrayCollection; //ManageDocCompDtlVO
 		public var fileList:ArrayCollection;

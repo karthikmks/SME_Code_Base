@@ -420,15 +420,30 @@ public class BusinessController extends MultiActionController {
 		return databaseService.saveFileInTempFolder(fileObj);
 	}
 	
-	public String addNewMamagedDocuments(ManageDocumentsVO manageDocVO){
+	public boolean addNewMamagedDocuments(ManageDocumentsVO manageDocVO){
 		log.info("Method entry : BusinessController.addNewMamagedDocuments");
 		return databaseService.addNewMamagedDocuments(manageDocVO);
+	}
+	
+	public List<ManageDocumentsVO> searchMamagedDoc(ManageDocumentsVO searchParam){
+		log.info("Method entry : BusinessController.searchMamagedDoc");
+		return databaseService.searchMamagedDoc(searchParam);
+	}
+	public ManageDocumentsVO getMamagedDocInDetail(ManageDocumentsVO manageDocVO){
+		log.info("Method entry : BusinessController.getMamagedDocInDetail");
+		return databaseService.getMamagedDocInDetail(manageDocVO);
+	}
+	
+	public boolean updateMamagedDocInDetail(ManageDocumentsVO manageDocVO){
+		log.info("Method entry : BusinessController.updateMamagedDocInDetail");
+		return databaseService.updateMamagedDocInDetail(manageDocVO);
 	}
 	
 	public void testTemp(TempVO temp) throws Exception {
 		log.info("Method entry : BusinessController.addNewCustomer");
 		databaseService.testTemp(temp);
 	}
+	
 	
 	
 	

@@ -14,6 +14,7 @@ package util
 	import mx.collections.IList;
 	import mx.collections.IViewCursor;
 	import mx.collections.XMLListCollection;
+	import mx.containers.Form;
 	import mx.containers.FormItem;
 	import mx.controls.Alert;
 	import mx.controls.DataGrid;
@@ -42,6 +43,8 @@ package util
 	import util.SMEConstants;
 	import util.SMEModel;
 	
+	import valueobject.ManageDocCompDtlVO;
+	import valueobject.ManageDocumentsVO;
 	import valueobject.UIComponentDetail;
 	
 	public class SMEUtility
@@ -210,30 +213,96 @@ package util
 			pdf.addCell(70, 10, headername, 0, 0, Align.CENTER);
 			pdf.setFont(newFont, 7);
 			pdf.newLine(5);
-		//}
-	}
-	
-	public static function dynamicCompGenerator(dynamicUIComp:UIComponentDetail):Object{
-		switch(dynamicUIComp.uIComponentType){
-			case "TEXT_INPUT":
-				var formItem:TextInputFormItem = new TextInputFormItem();
-				formItem.uiCompId = dynamicUIComp.uIComponentDetailId;
-				formItem.label = dynamicUIComp.label+" :";
-				return formItem
-				break;
-			case "ATTACHMENT":
-				var docUploadComp:CustomDocAttachment = new CustomDocAttachment;
-				docUploadComp.uiCompId = dynamicUIComp.uIComponentDetailId;
-				docUploadComp.label = dynamicUIComp.label+" :";
-				docUploadComp.docName = dynamicUIComp.docName;
-				return docUploadComp;
-				break;
 		}
-		return null;
-	}
 	
-	
-	
+		public static function dynamicCompGenerator(dynamicUIComp:UIComponentDetail,viewOnly:Boolean=false):Object{
+			switch(dynamicUIComp.uIComponentType){
+				case "TEXT_INPUT":
+					var formItem:TextInputFormItem = new TextInputFormItem();
+					formItem.uiCompId = dynamicUIComp.uIComponentDetailId;
+					formItem.label = dynamicUIComp.label+" :";
+					if(viewOnly){
+						formItem.viewOnly = viewOnly;
+					}
+					return formItem
+					break;
+			
+				case "ATTACHMENT":
+					var docUploadComp:CustomDocAttachment = new CustomDocAttachment;
+					docUploadComp.uiCompId = dynamicUIComp.uIComponentDetailId;
+					docUploadComp.label = dynamicUIComp.label+" :";
+					docUploadComp.docName = dynamicUIComp.docName;
+					if(viewOnly){
+						docUploadComp.viewOnly = viewOnly;
+					}
+					return docUploadComp;
+					break;
+			
+				case "TEXT_AREA":
+					var formItem:TextInputFormItem = new TextInputFormItem();
+					formItem.uiCompId = dynamicUIComp.uIComponentDetailId;
+					formItem.label = dynamicUIComp.label+" :";
+					formItem.id = dynamicUIComp.docName;
+					formItem.isTextArea = true;
+					if(viewOnly){
+						formItem.viewOnly = viewOnly;
+					}
+					return formItem
+					break;
+			}
+			return null;
+		}
+		
+		public static function dynamicCompSetValue(dynamicUICont:Form,valueList:ArrayCollection,
+												   manageDocumentVO:ManageDocumentsVO=null):Boolean{
+			
+			for(var ind:int=0;ind<dynamicUICont.numChildren;ind++){
+				var containerObj:Object = dynamicUICont.getChildAt(ind);
+				
+				switch(containerObj){
+					
+					case containerObj as TextInputFormItem:
+						var formItem:TextInputFormItem = containerObj as TextInputFormItem;
+						trace("txtFormItem id: "+formItem.id);
+						if(formItem.id == SMEConstants.ID_BRANCH_COMMENTS){
+							if(formItem.isTextArea){
+								formItem.txtArea.text = manageDocumentVO.branchDocComment;
+								break;
+							}
+						}else if(formItem.id == SMEConstants.ID_AUDITOR_COMMENTS){
+							if(formItem.isTextArea){
+								formItem.txtArea.text = manageDocumentVO.auditorDocComment;
+								break;
+							}
+						}
+						for(var j:int=0;j<valueList.length;j++){
+							var dynamicUIValue:ManageDocCompDtlVO = valueList.getItemAt(j) as ManageDocCompDtlVO;
+							if(formItem.uiCompId == dynamicUIValue.uiCompId){
+								if(formItem.isTextArea){
+									formItem.txtArea.text = dynamicUIValue.uiCompValue;
+								}else{
+									formItem.txtInput.text = dynamicUIValue.uiCompValue;
+								}
+								break;
+							}
+						}
+						break;
+					
+					case containerObj as CustomDocAttachment:
+						var docUploadComp:CustomDocAttachment = containerObj as CustomDocAttachment;
+						for(var j2:int=0;j2<valueList.length;j2++){
+							var dynamicUIValue2:ManageDocCompDtlVO = valueList.getItemAt(j2) as ManageDocCompDtlVO;
+							if(docUploadComp.uiCompId == dynamicUIValue2.uiCompId){
+								docUploadComp.createDocLink(dynamicUIValue2.uiCompValue);
+								break;
+							}
+						}
+						break;
+				}
+			}
+			return true;
+		}
+		
 	
 	}
 }

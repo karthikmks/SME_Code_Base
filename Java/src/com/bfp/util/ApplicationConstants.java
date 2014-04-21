@@ -1,5 +1,6 @@
 package com.bfp.util;
 
+
 public class ApplicationConstants {
 
 	
@@ -49,11 +50,21 @@ public class ApplicationConstants {
 	public static String GET_DYNAMIC_UI_COMPONENTS = "GET_DYNAMIC_UI_COMPONENTS";
 	
 	public static String INSERT_MANAGED_DOCUMENTS = "INSERT_MANAGED_DOCUMENTS";
+	public static String DELETE_MANAGED_DOCUMENTS = "DELETE_MANAGED_DOCUMENTS";
+	public static String UPDATE_MANAGED_DOC_BRANCH = "UPDATE_MANAGED_DOC_BRANCH";
+	public static String UPDATE_MANAGED_DOC_AUDITOR = "UPDATE_MANAGED_DOC_AUDITOR";
 	public static String INSERT_MANAGED_DOC_COMPONENTS = "INSERT_MANAGED_DOC_COMPONENTS";
+	public static String UPDATE_MANAGED_DOC_COMPONENTS = "UPDATE_MANAGED_DOC_COMPONENTS";
 	public static String GET_MANAGED_DOCUMENTS_MAX_ID = "GET_MANAGED_DOCUMENTS_MAX_ID";
+	public static String AUDIT_STATUS_BRANCH_REPLIED = "Branch Replied";
+	
+	public static String GET_MANAGED_DOCUMENTS = "GET_MANAGED_DOCUMENTS";
+	public static String GET_MANAGED_DOC_COMPONENTS = "GET_MANAGED_DOC_COMPONENTS";
+	public static String DB_COLUMN_CREATED_TS = "created_timestamp";
 	
 	public static String DAY_BOOK_TYPE_RECEIVED = "R";
 	public static String DAY_BOOK_TYPE_PAYMENTS = "P"; 
+	
 	
 	public static String TEST_TEMP = "TEST_TEMP";
 	

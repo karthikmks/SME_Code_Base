@@ -77,6 +77,8 @@ package util
 		public static const VALIDATE_USER_PROFILE:String = "VALIDATE_USER_PROFILE";
 		public static const ON_VALIDATE_USER_PROFILE:String = "ON_VALIDATE_USER_PROFILE";
 		
+		//to identify auditor login
+		public static const USER_ROLE_AUDITOR:String = "Admin";
 		public static const USER_ROLE_ADMIN:String = "Admin";
 		public static const SEARCH_FLOW_CUSTOMER_SEARCH:String = "SEARCH_FLOW_CUSTOMER_SEARCH";
 		public static const ON_SEARCH_FLOW_CUSTOMER_SEARCH:String = "ON_SEARCH_FLOW_CUSTOMER_SEARCH";
@@ -86,7 +88,17 @@ package util
 		public static const GET_HTML_FROM_EXCEL:String = "GET_HTML_FROM_EXCEL";
 		public static const SAVE_TEMP_FILES:String = "SAVE_TEMP_FILES";
 		public static const ADD_NEW_MANAGE_DOC:String = "ADD_NEW_MANAGE_DOC";
+		public static const UPDATE_MANAGE_DOC:String = "UPDATE_MANAGE_DOC";
+		public static const ON_UPDATE_MANAGE_DOC:String = "ON_UPDATE_MANAGE_DOC";
 		public static const ON_ADD_NEW_MANAGE_DOC:String = "ON_ADD_NEW_MANAGE_DOC";
+		public static const GET_MANAGED_DOC_DETAILS:String = "GET_MANAGED_DOC_DETAILS";
+		public static const ON_GET_MANAGED_DOC_DETAILS:String = "ON_GET_MANAGED_DOC_DETAILS";
+		public static const SEARCH_MANAGE_DOC:String = "SEARCH_MANAGE_DOC";
+		public static const ON_SEARCH_MANAGE_DOC:String = "ON_SEARCH_MANAGE_DOC";
+		public static const ID_AUDITOR_COMMENTS:String = "auditorComments";
+		public static const ID_BRANCH_COMMENTS:String = "branchComments";
+		public static const CLEAR_PDF_VIEW:String = "CLEAR_PDF_VIEW";
+		public static const STATUS_AUDIT_COMPLETED:String = "Audit Completed";
 		
 		public static const DOC_UPLOAD_TYPES:String = "*.pdf;*.doc;*.docx;*.gif;*.jpeg;*.jpg;*.png";
 		public static var IMAGE_UPLOAD_TYPES_ARR:Array = [".gif",".jpeg",".jpg",".png"];

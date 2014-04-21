@@ -3,37 +3,15 @@
 	<storedprocedure code="1" name="sql">
 	<sqlquery>
 	
-	INSERT INTO manage_doc_comp_detial(
-		parent_id,
-		ui_comp_id,
-		ui_comp_value) 
-	VALUES(?,?,?)
+	UPDATE manage_doc_comp_detial SET 
+		ui_comp_value = ? 
+	WHERE parent_id = ? AND ui_comp_id = ? 
 	 
 	</sqlquery>	
 	
 	<databaseType>mysql</databaseType>		
 		<inputvo>com.bfp.valueobjects.ManageDocCompDtlVO</inputvo>	
 		<inputparams>
-			<inputparam>
-				<paramname>parentId</paramname>
-				<paramtype>Int</paramtype>
-				<function>
-					<classname>com.bfp.valueobjects.ManageDocCompDtlVO
-					</classname>
-					<attribute>ParentId</attribute>
-					<votype>int</votype>
-				</function>
-			</inputparam>
-			<inputparam>
-				<paramname>uiCompId</paramname>
-				<paramtype>Int</paramtype>
-				<function>
-					<classname>com.bfp.valueobjects.ManageDocCompDtlVO
-					</classname>
-					<attribute>UiCompId</attribute>
-					<votype>int</votype>
-				</function>
-			</inputparam>
 			<inputparam>
 				<paramname>uiCompValue</paramname>
 				<paramtype>String</paramtype>
@@ -44,6 +22,29 @@
 					<votype>String</votype>
 				</function>
 			</inputparam>
+			
+			<inputparam>
+				<paramname>parentId</paramname>
+				<paramtype>Int</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.ManageDocCompDtlVO
+					</classname>
+					<attribute>ParentId</attribute>
+					<votype>int</votype>
+				</function>
+			</inputparam>
+			
+			<inputparam>
+				<paramname>uiCompId</paramname>
+				<paramtype>Int</paramtype>
+				<function>
+					<classname>com.bfp.valueobjects.ManageDocCompDtlVO
+					</classname>
+					<attribute>UiCompId</attribute>
+					<votype>int</votype>
+				</function>
+			</inputparam>
+			
 		</inputparams>
 	</storedprocedure>
 </storedprocedures>
